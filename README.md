@@ -55,7 +55,7 @@ The installation guide assumes use of Android Studio.
 
 2. Add the repositories section at the top level of your build file:
 
-	```
+	```gradle
 	repositories {
 	   maven { url 'http://maven02.iproov.com:8081/artifactory/libs-release-local/' }
 	}
@@ -63,7 +63,7 @@ The installation guide assumes use of Android Studio.
 
 3. Add the dependencies section at the top level of your build file:
 
-	```
+	```gradle
 	dependencies {
 	   compile('com.iproov.sdk:iproov:3.2.0@aar') {
 	       transitive=true
@@ -174,13 +174,10 @@ You can obtain an Exception relating to the cause of the failure as follows:
 Exception e = (Exception) data.getSerializableExtra(IProov.EXTRA_EXCEPTION);
 ```
 
-You may wish to display the `localizedMessage` to the user.
+You may wish to display the `localizedMessage` to the user.
+## FAQs
 
-
-
-##FAQs
-
-###Why is the iProov AAR file so large?
+### Why is the iProov AAR file so large?
 
 The AAR file is ~36MB. The reason the file is so large is that it include the jniLibs folder which is part of OpenCV, but must be bundled with iProov instead of the OpenCV library, due to Gradle limitations (we are working on a workaround, but in any event this bulk would simply be shifted to the OpenCV library).
 
@@ -200,4 +197,4 @@ productFlavors {
 
 You can then deploy separate APKs to Google Play for each architecture (which is a supported feature of Google Play), or simply restrict your APK to common architectures if you prefer.
 
-A full discussion of this feature is beyond the scope of this article, please see http://tools.android.com/tech-docs/new-build-system/tips for further information.
+A full discussion of this feature is beyond the scope of this article, please see [the build system documentation](http://tools.android.com/tech-docs/new-build-system/tips) for further information.
