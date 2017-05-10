@@ -1,0 +1,203 @@
+# iProov Android SDK (v3.2.0)
+
+## Introduction
+
+The iProov Android SDK provides a programmatic interface for embedding the iProov technology within a 3rd party Android application (“host app”).
+
+The iProov SDK supports Android API Level 16 (Android 4.1) and above, which as of May 2017 encompasses ~98% of active Android devices.
+
+Within this repository you can find the Waterloo Bank sample Android app, which illustrates an examples iProov integration.
+
+## Upgrade Guide
+
+### Upgrading from SDK v3.1.0 and earlier
+
+Previously, iProov was launched by starting an Intent with the action `IProov.INTENT_IPROOV`. We have now moved to using explicit Intents.
+
+We have also taken this opportunity to simplify the process of launching iProov, so we provide a series of `IProov.newIntent()` methods that builds the Intent for you, via a simple, clean API.
+
+For further information, see the Launch Modes section. An example of the new approach versus the old one is as follows:
+
+#### Old method (pre-v3.2.0):
+
+```java
+Intent i = new Intent(IProov.INTENT_IPROOV);
+i.putExtra(IProov.EXTRA_MODE, IProov.Mode.Verify.ordinal());
+i.putExtra(IProov.EXTRA_SERVICE_PROVIDER, "{{service-provider}}");
+i.putExtra(IProov.EXTRA_USERNAME, "{{username}}");
+startActivityForResult(i, 0);
+```
+
+#### New method (v3.2.0):
+
+```java
+Intent i = IProov.newVerifyUsernameIntent(this, "{{service-provider}}", "{{username}}");
+startActivityForResult(i, 0);
+
+```
+
+The delivery of the iProov result to your Activity via `onActivityResult()` is unchanged.
+
+### Upgrading from SDK v2.6.5 and earlier
+
+You are no longer required to explicitly initialise iProov with a call `IProov.init(context)` before using iProov in your application, which was introduced in SDK v2.6.4.
+
+You should remove any calls to `IProov.init(context)` from your application.
+## Installation
+
+The Android SDK is provided in AAR format (Android Library Project) as a Maven dependency.
+
+>NOTE FOR ECLIPSE USERS: The SDK is packaged in AAR format. Android Studio (which is now the main Android development environment being promoted by Google) has excellent support for AAR dependencies. For legacy projects still using Eclipse, support for AARs is limited, but can be achieved using various plugins/workarounds. For more information on using AAR dependencies within Eclipse, please see [here](https://commonsware.com/blog/2014/07/03/consuming-aars-eclipse.html) (However, please note that this is unsupported.)
+
+The installation guide assumes use of Android Studio.
+
+1. Open the build.gradle file corresponding to your new or existing Android Studio project with which you wish to integrate (commonly, this is the build.gradle file for the `app` module).
+
+2. Add the repositories section at the top level of your build file:
+
+	```
+	repositories {
+	   maven { url 'http://maven02.iproov.com:8081/artifactory/libs-release-local/' }
+	}
+	```
+
+3. Add the dependencies section at the top level of your build file:
+
+	```
+	dependencies {
+	   compile('com.iproov.sdk:iproov:3.2.0@aar') {
+	       transitive=true
+	   }
+	}
+	```
+
+You may now build your project!
+
+## Launch Modes
+
+There are 2 primary ways iProov can be launched for verification or enrollment:
+
+* By being called natively from within a host application.
+
+* From a GCM (push) notification.
+
+* iProov is always launched via an Intent from your application.
+
+When starting a new iProov session, the starting point is always to create a new Intent using one of the static Intent-creating methods, as shown below.
+
+### 1. Verify (with Service Provider)
+
+You would use this launch mode where you are a service provider who knows the username you want to authenticate against, but nothing else. iProov will handle the entire end-to-end process of generating a new token and authenticating the user.
+
+```java
+Intent i = IProov.newVerifyUsernameIntent(this, "{{service-provider}}", "{{username}}");
+startActivityForResult(i, 0);
+```
+
+For an explanation of receiving the result from the Intent, see the “Intent Result” section below.
+
+### 2. Verify (with Token)
+
+You would use this launch mode where you already have the encrypted token for the user you wish to authenticate (you may have already generated this elsewhere and now wish to authenticate the user).
+
+```java
+Intent i = IProov.newVerifyTokenIntent(this, "{{service-provider}}", "{{encrypted-token}}");
+startActivityForResult(i, 0);
+```
+
+### 3. Enrol (with Service Provider)
+
+You would launch this mode where you are a service provider who wishes to enrol a new user, with a given username.
+
+```java
+Intent i = IProov.newEnrolUsernameIntent(this, "{{service-provider}}", "{{username}}");
+startActivityForResult(i, 0);
+```
+
+### 4. Enrol (with Token)
+
+You would launch this mode where you are a service provider who wishes to enrol a new user, where you already have the encrypted token for the user you wish to enrol (you may have already generated this elsewhere and now wish to authenticate the user).
+
+```java
+Intent i = IProov.newEnrolTokenIntent(this, "{{service-provider}}", "{{encrypted-token}}");
+startActivityForResult(i, 0);
+```
+
+### 5. iProov with Notification
+
+When the notification is received, you can create the Intent and directly attach the Bundle containing the notification, iProov will then handle everything for you automatically:
+
+```java
+Intent i = IProov.newNotificationIntent(this, bundle);
+```
+
+In most cases rather than launch the `Intent` directly, you would then most likely wrap it into a `PendingIntent` and attach it to a Notification to be displayed to the user via the `NotificationManager`.
+
+When launching the `Intent` from a `PendingIntent` (as opposed to `startActivityForResult()`), the iProov session is launched as a standalone session. When the iProov session completes, your application cannot handle the result.
+
+Providing a full tutorial on integrating push with your app is beyond the scope of this documentation. Please see Google's [Cloud Messaging Documentation](https://developers.google.com/cloud-messaging/) for further information.
+
+## Intent Result
+
+When launching iProov from an Intent, your application will in most cases (aside from GCM notifications) wish to handle the result.
+
+In order to do so, make sure you always launch your Intent with `startActivityForResult()`. When the iProov session is complete, `onActivityResult()` will then be called in the Activity which launched the Intent.
+
+The `resultCode` parameter will be one of 3 values:
+
+#### `IProov.RESULT_SUCCESS`
+
+The iProov session has completed and iProov has successfully verified or enrolled the user. You can obtain the encrypted token for this user from the returned Intent with:
+
+```java
+String encryptedToken = data.getStringExtra(IProov.EXTRA_ENCRYPTED_TOKEN)
+```
+
+> SECURITY WARNING: Never use iProov as a local authentication method. You cannot rely on the fact that a result was received to prove that the user was authenticated successfully (it is possible the iProov process could be manipulated locally by a malicious app). You can treat the verified result as a hint to your app to update the UI, etc. but must always independently validate the encrypted token server-side before performing any authenticated user actions.
+
+#### `IProov.RESULT_FAILURE`
+
+The iProov process has completed and iProov has failed to verify or enrol the user. The result Intent provides a reason that the authentication could not be confirmed. This could be a generic message, or could provide tips to the user to improve their chance of iProoving successfully (e.g. “lighting too dark”, etc.)
+
+```java
+String reason = data.getStringExtra(IProov.EXTRA_REASON)
+```
+
+You should present this to the user as it may provide an informative hint for the user to increase their chances of iProoving successfully next time.
+
+#### `IProov.RESULT_ERROR`
+
+The iProov process failed entirely (i.e. iProov was unable to verify or enrol the user due to a system or network issue). This could be for a number of reasons, for example the user cancelled the iProov process, or there was an unrecoverable network issue.
+You can obtain an Exception relating to the cause of the failure as follows:
+
+```java
+Exception e = (Exception) data.getSerializableExtra(IProov.EXTRA_EXCEPTION);
+```
+
+You may wish to display the `localizedMessage` to the user.
+
+
+
+##FAQs
+
+###Why is the iProov AAR file so large?
+
+The AAR file is ~36MB. The reason the file is so large is that it include the jniLibs folder which is part of OpenCV, but must be bundled with iProov instead of the OpenCV library, due to Gradle limitations (we are working on a workaround, but in any event this bulk would simply be shifted to the OpenCV library).
+
+The reason for the jniLibs folder being so large is that it includes OpenCV .so and .a compiled library files for arm64-v8a, armeabi, armeabi-v7a, mips, mips64, x86 and x86-64 architectures.
+
+By default, this will add ~36MB to the size of your app’s APK by including iProov. To significantly reduce the file size, you should use Gradle’s `abiFilter` feature to only build for certain architectures:
+
+```gradle
+productFlavors {
+   arm {
+       ndk {
+           abiFilter "armeabi-v7a"
+       }
+   }
+}
+```
+
+You can then deploy separate APKs to Google Play for each architecture (which is a supported feature of Google Play), or simply restrict your APK to common architectures if you prefer.
+
+A full discussion of this feature is beyond the scope of this article, please see http://tools.android.com/tech-docs/new-build-system/tips for further information.
