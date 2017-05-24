@@ -83,12 +83,20 @@ public class MainActivity extends Activity {
     }
 
     private void login(String username) {
-        Intent i = IProov.newVerifyUsernameIntent(this, WB_SERVICE_PROVIDER, username);
+        Intent i = new IProov.NativeClaim.Builder(this)
+                .setMode(IProov.Mode.Verify)
+                .setUsername(username)
+                .setServiceProvider(WB_SERVICE_PROVIDER)
+                .getIntent();
         startActivityForResult(i, 0);
     }
 
     private void register(String username) {
-        Intent i = IProov.newEnrolUsernameIntent(this, WB_SERVICE_PROVIDER, username);
+        Intent i = new IProov.NativeClaim.Builder(this)
+                .setMode(IProov.Mode.Enrol)
+                .setUsername(username)
+                .setServiceProvider(WB_SERVICE_PROVIDER)
+                .getIntent();
         startActivityForResult(i, 0);
     }
 

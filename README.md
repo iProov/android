@@ -1,6 +1,6 @@
-# iProov Android SDK (v3.2.0)
+# iProov Android SDK (v3.3.1)
 
-## Introduction
+## 🤖 Introduction
 
 The iProov Android SDK provides a programmatic interface for embedding the iProov technology within a 3rd party Android application (“host app”).
 
@@ -8,9 +8,33 @@ The iProov SDK supports Android API Level 16 (Android 4.1) and above, which as o
 
 Within this repository you can find the Waterloo Bank sample Android app, which illustrates an examples iProov integration.
 
-## Upgrade Guide
+## 🛠 Upgrade Guide
 
-### Upgrading from SDK v3.1.0 and earlier
+### Upgrading from SDK v3.2
+
+In SDK v3.1.0, we moved to explicit Intents with methods to build the Intent for you. We had feedback from users that they wanted more customisation options when creating an iProov request, so we have now moved to a builder-style approach for building the intent which allows a much greater degree of flexibility.
+
+#### Old method (v3.2):
+
+```java
+Intent i = IProov.newVerifyUsernameIntent(this, "{{service-provider}}", "{{username}}");
+startActivityForResult(i, 0);
+```
+
+#### New method (v3.3):
+
+```java
+Intent i = new IProov.NativeClaim.Builder(this)
+        .setMode(IProov.Mode.Verify)
+        .setServiceProvider("{{service-provider}}")
+        .setUsername("{{username}}")
+        .getIntent();
+startActivityForResult(i, 0);
+```
+
+Consult the documentation for the full set of builders and available options that they can accept.
+
+### Upgrading from SDK v3.1 and earlier
 
 Previously, iProov was launched by starting an Intent with the action `IProov.INTENT_IPROOV`. We have now moved to using explicit Intents.
 
@@ -18,7 +42,7 @@ We have also taken this opportunity to simplify the process of launching iProov,
 
 For further information, see the Launch Modes section. An example of the new approach versus the old one is as follows:
 
-#### Old method (pre-v3.2.0):
+#### Old method (pre-v3.2):
 
 ```java
 Intent i = new Intent(IProov.INTENT_IPROOV);
@@ -28,7 +52,7 @@ i.putExtra(IProov.EXTRA_USERNAME, "{{username}}");
 startActivityForResult(i, 0);
 ```
 
-#### New method (v3.2.0):
+#### New method (v3.2):
 
 ```java
 Intent i = IProov.newVerifyUsernameIntent(this, "{{service-provider}}", "{{username}}");
@@ -43,7 +67,7 @@ The delivery of the iProov result to your Activity via `onActivityResult()` is u
 You are no longer required to explicitly initialise iProov with a call `IProov.init(context)` before using iProov in your application, which was introduced in SDK v2.6.4.
 
 You should remove any calls to `IProov.init(context)` from your application.
-## Installation
+## 📲 Installation
 
 The Android SDK is provided in AAR format (Android Library Project) as a Maven dependency.
 
@@ -65,7 +89,7 @@ The installation guide assumes use of Android Studio.
 
 	```gradle
 	dependencies {
-	   compile('com.iproov.sdk:iproov:3.2.0@aar') {
+	   compile('com.iproov.sdk:iproov:3.3.1@aar') {
 	       transitive=true
 	   }
 	}
@@ -73,7 +97,7 @@ The installation guide assumes use of Android Studio.
 
 You may now build your project!
 
-## Launch Modes
+## 🚀 Launch Modes
 
 There are 2 primary ways iProov can be launched for verification or enrollment:
 
@@ -81,7 +105,7 @@ There are 2 primary ways iProov can be launched for verification or enrollment:
 
 * From a GCM (push) notification.
 
-* iProov is always launched via an Intent from your application.
+iProov is always launched via an Intent from your application.
 
 When starting a new iProov session, the starting point is always to create a new Intent using one of the static Intent-creating methods, as shown below.
 
@@ -90,7 +114,11 @@ When starting a new iProov session, the starting point is always to create a new
 You would use this launch mode where you are a service provider who knows the username you want to authenticate against, but nothing else. iProov will handle the entire end-to-end process of generating a new token and authenticating the user.
 
 ```java
-Intent i = IProov.newVerifyUsernameIntent(this, "{{service-provider}}", "{{username}}");
+Intent i = new IProov.NativeClaim.Builder(this)
+        .setMode(IProov.Mode.Verify)
+        .setServiceProvider("{{service-provider}}")
+        .setUsername("{{username}}")
+        .getIntent();
 startActivityForResult(i, 0);
 ```
 
@@ -101,7 +129,11 @@ For an explanation of receiving the result from the Intent, see the “Intent Re
 You would use this launch mode where you already have the encrypted token for the user you wish to authenticate (you may have already generated this elsewhere and now wish to authenticate the user).
 
 ```java
-Intent i = IProov.newVerifyTokenIntent(this, "{{service-provider}}", "{{encrypted-token}}");
+Intent i = new IProov.NativeClaim.Builder(this)
+        .setMode(IProov.Mode.Verify)
+        .setServiceProvider("{{service-provider}}")
+        .setEncryptedToken("{{encrypted-token}}")
+        .getIntent();
 startActivityForResult(i, 0);
 ```
 
@@ -110,7 +142,11 @@ startActivityForResult(i, 0);
 You would launch this mode where you are a service provider who wishes to enrol a new user, with a given username.
 
 ```java
-Intent i = IProov.newEnrolUsernameIntent(this, "{{service-provider}}", "{{username}}");
+Intent i = new IProov.NativeClaim.Builder(this)
+        .setMode(IProov.Mode.Enrol)
+        .setServiceProvider("{{service-provider}}")
+        .setUsername("{{username}}")
+        .getIntent();
 startActivityForResult(i, 0);
 ```
 
@@ -119,16 +155,22 @@ startActivityForResult(i, 0);
 You would launch this mode where you are a service provider who wishes to enrol a new user, where you already have the encrypted token for the user you wish to enrol (you may have already generated this elsewhere and now wish to authenticate the user).
 
 ```java
-Intent i = IProov.newEnrolTokenIntent(this, "{{service-provider}}", "{{encrypted-token}}");
+Intent i = new IProov.NativeClaim.Builder(this)
+        .setMode(IProov.Mode.Enrol)
+        .setServiceProvider("{{service-provider}}")
+        .setEncryptedToken("{{encrypted-token}}")
+        .getIntent();
 startActivityForResult(i, 0);
 ```
 
 ### 5. iProov with Notification
 
-When the notification is received, you can create the Intent and directly attach the Bundle containing the notification, iProov will then handle everything for you automatically:
+When the notification is received, you can use a `NotificationClaim.Builder` to attach the `Bundle` from the notification:
 
 ```java
-Intent i = IProov.newNotificationIntent(this, bundle);
+Intent i = new IProov.NativeClaim.Builder(this)
+        .setBundle(bundle)
+        .getIntent();
 ```
 
 In most cases rather than launch the `Intent` directly, you would then most likely wrap it into a `PendingIntent` and attach it to a Notification to be displayed to the user via the `NotificationManager`.
@@ -137,7 +179,23 @@ When launching the `Intent` from a `PendingIntent` (as opposed to `startActivity
 
 Providing a full tutorial on integrating push with your app is beyond the scope of this documentation. Please see Google's [Cloud Messaging Documentation](https://developers.google.com/cloud-messaging/) for further information.
 
-## Intent Result
+### Additional options
+
+Starting in SDK v3.3, you can now set additional options on the builder to customise the iProov experience for your app.
+
+The following additional option can be set for `NativeClaim` builder:
+
+* `setPod(String)` - sets the pod your claim should use
+
+These additional options can be set for both `NativeClaim` and `NotificationClaim` builders:
+
+* `setPrivacyPolicyDisabled(boolean)` - disables the Privacy Policy
+
+* `setInstructionsDialogDisabled(boolean)` - disables the instructions dialog
+
+* `setMessageDisabled(boolean)` - disables the message shown during the canny preview
+
+## 🎯 Intent Result
 
 When launching iProov from an Intent, your application will in most cases (aside from GCM notifications) wish to handle the result.
 
@@ -175,7 +233,7 @@ Exception e = (Exception) data.getSerializableExtra(IProov.EXTRA_EXCEPTION);
 ```
 
 You may wish to display the `localizedMessage` to the user.
-## FAQs
+## 🤷‍♂️ FAQs
 
 ### Why is the iProov AAR file so large?
 
