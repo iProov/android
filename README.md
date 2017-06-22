@@ -1,4 +1,4 @@
-# iProov Android SDK (v3.3.1)
+# iProov Android SDK (v3.4.0)
 
 ## 🤖 Introduction
 
@@ -10,6 +10,30 @@ Within this repository you can find the Waterloo Bank sample Android app, which 
 
 ## 🛠 Upgrade Guide
 
+### Upgrading from SDK v3.3
+
+All changes from 3.3 are non-breaking. There are now some additional options available to customize the interface presented by the SDK:
+
+```java
+IProov.UIOptions options = new IProov.UIOptions()
+        .setBackgroundTint(Color.BLACK)         //background colour shown after the flashing stops. Default Color.BLACK
+        .setShowIndeterminateSpinner(true)      //when true, shows an indeterminate upload progress instead of a progress bar. Default false
+        .setSpinnerTint(Color.WHITE)            //only has an effect when setShowIndeterminateSpinner is true. Default Color.WHITE
+        .setTextTint(Color.WHITE)               //only has an effect when setShowIndeterminateSpinner is true. Default Color.WHITE
+        .setAutostart(true);                    //instead of requiring a user tap, auto-countdown from 3 when face is detected. Default false
+        .setLocaleOverride("");                 //overrides the device locale setting for the iProov SDK. Must be a 2-letter ISO 639-1 code: http://www.loc.gov/standards/iso639-2/php/code_list.php
+
+
+Intent i = new IProov.NativeClaim.Builder(this)
+        .setMode(IProov.Mode.Verify)
+        .setServiceProvider("{{api-key}}")
+        .setUsername("{{username}}")
+        .setUIOptions(options)
+        .getIntent();
+startActivityForResult(i, 0);
+```
+
+
 ### Upgrading from SDK v3.2
 
 In SDK v3.1.0, we moved to explicit Intents with methods to build the Intent for you. We had feedback from users that they wanted more customisation options when creating an iProov request, so we have now moved to a builder-style approach for building the intent which allows a much greater degree of flexibility.
@@ -17,7 +41,7 @@ In SDK v3.1.0, we moved to explicit Intents with methods to build the Intent for
 #### Old method (v3.2):
 
 ```java
-Intent i = IProov.newVerifyUsernameIntent(this, "{{service-provider}}", "{{username}}");
+Intent i = IProov.newVerifyUsernameIntent(this, "{{api-key}}", "{{username}}");
 startActivityForResult(i, 0);
 ```
 
@@ -26,7 +50,7 @@ startActivityForResult(i, 0);
 ```java
 Intent i = new IProov.NativeClaim.Builder(this)
         .setMode(IProov.Mode.Verify)
-        .setServiceProvider("{{service-provider}}")
+        .setServiceProvider("{{api-key}}")
         .setUsername("{{username}}")
         .getIntent();
 startActivityForResult(i, 0);
@@ -47,7 +71,7 @@ For further information, see the Launch Modes section. An example of the new app
 ```java
 Intent i = new Intent(IProov.INTENT_IPROOV);
 i.putExtra(IProov.EXTRA_MODE, IProov.Mode.Verify.ordinal());
-i.putExtra(IProov.EXTRA_SERVICE_PROVIDER, "{{service-provider}}");
+i.putExtra(IProov.EXTRA_SERVICE_PROVIDER, "{{api-key}}");
 i.putExtra(IProov.EXTRA_USERNAME, "{{username}}");
 startActivityForResult(i, 0);
 ```
@@ -55,7 +79,7 @@ startActivityForResult(i, 0);
 #### New method (v3.2):
 
 ```java
-Intent i = IProov.newVerifyUsernameIntent(this, "{{service-provider}}", "{{username}}");
+Intent i = IProov.newVerifyUsernameIntent(this, "{{api-key}}", "{{username}}");
 startActivityForResult(i, 0);
 
 ```
@@ -81,7 +105,7 @@ The installation guide assumes use of Android Studio.
 
 	```gradle
 	repositories {
-	   maven { url 'http://maven02.iproov.com:8081/artifactory/libs-release-local/' }
+	   maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
 	}
 	```
 
@@ -89,7 +113,7 @@ The installation guide assumes use of Android Studio.
 
 	```gradle
 	dependencies {
-	   compile('com.iproov.sdk:iproov:3.3.1@aar') {
+	   compile('com.iproov.sdk:iproov:3.4.0@aar') {
 	       transitive=true
 	   }
 	}
@@ -116,7 +140,7 @@ You would use this launch mode where you are a service provider who knows the us
 ```java
 Intent i = new IProov.NativeClaim.Builder(this)
         .setMode(IProov.Mode.Verify)
-        .setServiceProvider("{{service-provider}}")
+        .setServiceProvider("{{api-key}}")
         .setUsername("{{username}}")
         .getIntent();
 startActivityForResult(i, 0);
@@ -131,7 +155,7 @@ You would use this launch mode where you already have the encrypted token for th
 ```java
 Intent i = new IProov.NativeClaim.Builder(this)
         .setMode(IProov.Mode.Verify)
-        .setServiceProvider("{{service-provider}}")
+        .setServiceProvider("{{api-key}}")
         .setEncryptedToken("{{encrypted-token}}")
         .getIntent();
 startActivityForResult(i, 0);
@@ -144,7 +168,7 @@ You would launch this mode where you are a service provider who wishes to enrol 
 ```java
 Intent i = new IProov.NativeClaim.Builder(this)
         .setMode(IProov.Mode.Enrol)
-        .setServiceProvider("{{service-provider}}")
+        .setServiceProvider("{{api-key}}")
         .setUsername("{{username}}")
         .getIntent();
 startActivityForResult(i, 0);
@@ -157,7 +181,7 @@ You would launch this mode where you are a service provider who wishes to enrol 
 ```java
 Intent i = new IProov.NativeClaim.Builder(this)
         .setMode(IProov.Mode.Enrol)
-        .setServiceProvider("{{service-provider}}")
+        .setServiceProvider("{{api-key}}")
         .setEncryptedToken("{{encrypted-token}}")
         .getIntent();
 startActivityForResult(i, 0);
@@ -237,11 +261,12 @@ You may wish to display the `localizedMessage` to the user.
 
 ### Why is the iProov AAR file so large?
 
-The AAR file is ~36MB. The reason the file is so large is that it include the jniLibs folder which is part of OpenCV, but must be bundled with iProov instead of the OpenCV library, due to Gradle limitations (we are working on a workaround, but in any event this bulk would simply be shifted to the OpenCV library).
+Since release 3.3 we've put a lot of thought into reducing the footprint of the APK library. The two most major changes have been:
 
-The reason for the jniLibs folder being so large is that it includes OpenCV .so and .a compiled library files for arm64-v8a, armeabi, armeabi-v7a, mips, mips64, x86 and x86-64 architectures.
+* we have rebuilt the OpenCV library from the ground up to strip out any unused parts
+* iProov now only supports Arm processor architectures, plus x86 running under Arm emulation mode (Houdini). This should account for > 99% of Android devices out there; but if you have a specific requirement to target x86 or MIPS, you can download the OpenCV library (version 3.2 is required) from http://opencv.org/releases.html and copy the relevant libopencv_java3.so file(s) under the architecture you need into the jniLibs directory (in appropriate architecture-specific subdirectory). You won't benefit from our work on shrinking the OpenCV library, but can mitigate this using the abiFilter technique described below.
 
-By default, this will add ~36MB to the size of your app’s APK by including iProov. To significantly reduce the file size, you should use Gradle’s `abiFilter` feature to only build for certain architectures:
+Including iProov will add ~7MB to the size of your app's APK (compared to ~36MB for version 3.3). You can reduce this size even further by using Gradle’s `abiFilter` feature to only build for certain architectures:
 
 ```gradle
 productFlavors {
