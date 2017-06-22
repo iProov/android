@@ -29,13 +29,13 @@ android {
 }
 
 repositories {
-    maven { url 'http://maven02.iproov.com:8081/artifactory/libs-release-local/' }
+    maven { url 'https://raw.githubusercontent.com/soupangel/iproov-test/3_4_0_release/maven/' }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile('com.iproov.sdk:iproov:3.3.1@aar') {
+    compile('com.iproov.sdk:iproov:3.4.0@aar') {
         transitive = true
     }
 }
