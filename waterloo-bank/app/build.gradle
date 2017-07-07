@@ -29,7 +29,7 @@ android {
 }
 
 repositories {
-    maven { url 'https://raw.githubusercontent.com/soupangel/iproov-test/3_4_0_release/maven/' }
+    maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
 }
 
 dependencies {
