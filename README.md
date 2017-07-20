@@ -1,4 +1,4 @@
-# iProov Android SDK (v3.4.1)
+# iProov Android SDK (v3.4.2)
 
 ## 🤖 Introduction
 
@@ -113,7 +113,7 @@ The installation guide assumes use of Android Studio.
 
 	```gradle
 	dependencies {
-	   compile('com.iproov.sdk:iproov:3.4.1@aar') {
+	   compile('com.iproov.sdk:iproov:3.4.2@aar') {
 	       transitive=true
 	   }
 	}
