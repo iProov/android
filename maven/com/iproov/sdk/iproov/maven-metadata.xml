@@ -3,11 +3,12 @@
   <groupId>com.iproov.sdk</groupId>
   <artifactId>iproov</artifactId>
   <versioning>
-    <release>3.4.1</release>
+    <release>3.4.2</release>
     <versions>
       <version>3.4.0</version>
       <version>3.4.1</version>
+      <version>3.4.2</version>
     </versions>
-    <lastUpdated>20170714112035</lastUpdated>
+    <lastUpdated>20170720142246</lastUpdated>
   </versioning>
 </metadata>
