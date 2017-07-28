@@ -1,4 +1,4 @@
-# iProov Android SDK (v3.4.2)
+# iProov Android SDK (v3.5.0)
 
 ## 🤖 Introduction
 
@@ -10,25 +10,31 @@ Within this repository you can find the Waterloo Bank sample Android app, which 
 
 ## 🛠 Upgrade Guide
 
+### Upgrading from SDK v3.4.x
+
+NB: the UIOptions class has been renamed to IProovConfig. IProovConfig now also includes `setPrivacyPolicyDisabled`, `setInstructionsDialogDisabled` and `setMessageDisabled`, which have been moved from `NativeClaim.Builder`
+
 ### Upgrading from SDK v3.3
 
-All changes from 3.3 are non-breaking. There are now some additional options available to customize the interface presented by the SDK:
+There are now some additional options available to customize the interface presented by the SDK:
 
 ```java
-IProov.UIOptions options = new IProov.UIOptions()
+IProov.IProovConfig config = new IProov.IProovConfig()
         .setBackgroundTint(Color.BLACK)         //background colour shown after the flashing stops. Default Color.BLACK
         .setShowIndeterminateSpinner(true)      //when true, shows an indeterminate upload progress instead of a progress bar. Default false
         .setSpinnerTint(Color.WHITE)            //only has an effect when setShowIndeterminateSpinner is true. Default Color.WHITE
         .setTextTint(Color.WHITE)               //only has an effect when setShowIndeterminateSpinner is true. Default Color.WHITE
-        .setAutostart(true);                    //instead of requiring a user tap, auto-countdown from 3 when face is detected. Default false
-        .setLocaleOverride("");                 //overrides the device locale setting for the iProov SDK. Must be a 2-letter ISO 639-1 code: http://www.loc.gov/standards/iso639-2/php/code_list.php
-
+        .setAutostart(true)                     //instead of requiring a user tap, auto-countdown from 3 when face is detected. Default false
+        .setPrivacyPolicyDisabled(true)         //disables the privacy policy. Default false
+        .setInstructionsDialogDisabled(true)    //disables the instructions dialog. Default false
+        .setMessageDisabled(true)               //disables the message shown during canny preview. Default false
+        .setLocaleOverride("");                 //overrides the device locale setting for the iProov SDK. Must be a 2-letter ISO 639-1 code: http://www.loc.gov/standards/iso639-2/php/code_list.php. Currently only supports "en" and "nl".
 
 Intent i = new IProov.NativeClaim.Builder(this)
         .setMode(IProov.Mode.Verify)
         .setServiceProvider("{{api-key}}")
         .setUsername("{{username}}")
-        .setUIOptions(options)
+        .setIProovConfig(config)
         .getIntent();
 startActivityForResult(i, 0);
 ```
@@ -113,7 +119,7 @@ The installation guide assumes use of Android Studio.
 
 	```gradle
 	dependencies {
-	   compile('com.iproov.sdk:iproov:3.4.2@aar') {
+	   compile('com.iproov.sdk:iproov:3.5.0@aar') {
 	       transitive=true
 	   }
 	}
@@ -202,22 +208,6 @@ In most cases rather than launch the `Intent` directly, you would then most like
 When launching the `Intent` from a `PendingIntent` (as opposed to `startActivityForResult()`), the iProov session is launched as a standalone session. When the iProov session completes, your application cannot handle the result.
 
 Providing a full tutorial on integrating push with your app is beyond the scope of this documentation. Please see Google's [Cloud Messaging Documentation](https://developers.google.com/cloud-messaging/) for further information.
-
-### Additional options
-
-Starting in SDK v3.3, you can now set additional options on the builder to customise the iProov experience for your app.
-
-The following additional option can be set for `NativeClaim` builder:
-
-* `setPod(String)` - sets the pod your claim should use
-
-These additional options can be set for both `NativeClaim` and `NotificationClaim` builders:
-
-* `setPrivacyPolicyDisabled(boolean)` - disables the Privacy Policy
-
-* `setInstructionsDialogDisabled(boolean)` - disables the instructions dialog
-
-* `setMessageDisabled(boolean)` - disables the message shown during the canny preview
 
 ## 🎯 Intent Result
 
