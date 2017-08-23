@@ -1,4 +1,4 @@
-# iProov Android SDK (v3.5.2)
+# iProov Android SDK (v3.5.3)
 
 ## 🤖 Introduction
 
