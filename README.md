@@ -1,4 +1,4 @@
-# iProov Android SDK (v3.5.4)
+# iProov Android SDK (v4.0.0)
 
 ## 🤖 Introduction
 
@@ -7,6 +7,10 @@ The iProov Android SDK provides a programmatic interface for embedding the iProo
 The iProov SDK supports Android API Level 16 (Android 4.1) and above, which as of May 2017 encompasses ~98% of active Android devices.
 
 Within this repository you can find the Waterloo Bank sample Android app, which illustrates an examples iProov integration.
+
+## Important Note: Certificate Pinning
+
+SDK versions 4.0.0 and above now implement certificate pinning by default. This improves the security of SSL transport, but means you will need to release a new build of your application with an updated SDK if the remote certificate ever changes. A new configuration option to disable pinning is now available (see below) if required.
 
 ## 🛠 Upgrade Guide
 
@@ -20,22 +24,34 @@ There are now some additional options available to customize the interface prese
 
 ```java
 IProov.IProovConfig config = new IProov.IProovConfig()
-        .setBackgroundTint(Color.BLACK)         //background colour shown after the flashing stops. Default Color.BLACK
-        .setShowIndeterminateSpinner(true)      //when true, shows an indeterminate upload progress instead of a progress bar. Default false
-        .setSpinnerTint(Color.WHITE)            //only has an effect when setShowIndeterminateSpinner is true. Default Color.WHITE
-        .setTextTint(Color.WHITE)               //only has an effect when setShowIndeterminateSpinner is true. Default Color.WHITE
-        .setAutostart(true)                     //instead of requiring a user tap, auto-countdown from 3 when face is detected. Default false
-        .setPrivacyPolicyDisabled(true)         //disables the privacy policy. Default false
-        .setInstructionsDialogDisabled(true)    //disables the instructions dialog. Default false
-        .setMessageDisabled(true)               //disables the message shown during canny preview. Default false
-        .setLocaleOverride("");                 //overrides the device locale setting for the iProov SDK. Must be a 2-letter ISO 639-1 code: http://www.loc.gov/standards/iso639-2/php/code_list.php. Currently only supports "en" and "nl".
+.setBackgroundTint(Color.BLACK)         //background colour shown after the flashing stops. Default Color.BLACK
+.setShowIndeterminateSpinner(true)      //when true, shows an indeterminate upload progress instead of a progress bar. Default false
+.setSpinnerTint(Color.WHITE)            //only has an effect when setShowIndeterminateSpinner is true. Default Color.WHITE
+.setTextTint(Color.WHITE)               //only has an effect when setShowIndeterminateSpinner is true. Default Color.WHITE
+.setAutostart(true)                     //instead of requiring a user tap, auto-countdown from 3 when face is detected. Default false
+.setPrivacyPolicyDisabled(true)         //disables the privacy policy. Default false
+.setInstructionsDialogDisabled(true)    //disables the instructions dialog. Default false
+.setMessageDisabled(true)               //disables the message shown during canny preview. Default false
+.setLocaleOverride("")                 //overrides the device locale setting for the iProov SDK. Must be a 2-letter ISO 639-1 code: http://www.loc.gov/standards/iso639-2/php/code_list.php. Currently only supports "en" and "nl".
+
+//change the colour of the edge and background for the starting face visualisation, for normal light and low light conditions
+//NB: for low light colour scheme, please use a background colour sufficiently bright to allow the face to be illuminated for face detection purposes.
+.setStartingBackgroundColor(Color.WHITE)
+.setStartingEdgeColor(Color.BLACK)
+.setLowLightBackgroundColor(Color.WHITE)
+.setLowLightEdgeColor(Color.BLACK)
+
+.setBaseURL("https://eu.rp.secure.iproov.me/") //change the server base URL. This is an advanced setting - please contact us if you wish to use your own base URL (eg. for proxying requests)
+.setCertificateFiles(new int[]{R.raw.custom})//optionally supply an array of paths of certificates to be used for pinning. Useful when using your own baseURL or for overriding the built-in certificate pinning for some other reason.
+//certificates should be generated in DER-encoded X.509 certificate format, eg. with the command $ openssl x509 -in cert.crt -outform der -out cert.der
+.setPinningDisabled(false); //when true (not recommended), disables certificate pinning to the server. Default false
 
 Intent i = new IProov.NativeClaim.Builder(this)
-        .setMode(IProov.Mode.Verify)
-        .setServiceProvider("{{api-key}}")
-        .setUsername("{{username}}")
-        .setIProovConfig(config)
-        .getIntent();
+.setMode(IProov.Mode.Verify)
+.setServiceProvider("{{api-key}}")
+.setUsername("{{username}}")
+.setIProovConfig(config)
+.getIntent();
 startActivityForResult(i, 0);
 ```
 
@@ -55,10 +71,10 @@ startActivityForResult(i, 0);
 
 ```java
 Intent i = new IProov.NativeClaim.Builder(this)
-        .setMode(IProov.Mode.Verify)
-        .setServiceProvider("{{api-key}}")
-        .setUsername("{{username}}")
-        .getIntent();
+.setMode(IProov.Mode.Verify)
+.setServiceProvider("{{api-key}}")
+.setUsername("{{username}}")
+.getIntent();
 startActivityForResult(i, 0);
 ```
 
@@ -109,21 +125,21 @@ The installation guide assumes use of Android Studio.
 
 2. Add the repositories section at the top level of your build file:
 
-	```gradle
-	repositories {
-	   maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
-	}
-	```
+```gradle
+repositories {
+maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
+}
+```
 
 3. Add the dependencies section at the top level of your build file:
 
-	```gradle
-	dependencies {
-	   compile('com.iproov.sdk:iproov:3.5.4@aar') {
-	       transitive=true
-	   }
-	}
-	```
+```gradle
+dependencies {
+compile('com.iproov.sdk:iproov:4.0.0@aar') {
+transitive=true
+}
+}
+```
 
 You may now build your project!
 
@@ -145,10 +161,10 @@ You would use this launch mode where you are a service provider who knows the us
 
 ```java
 Intent i = new IProov.NativeClaim.Builder(this)
-        .setMode(IProov.Mode.Verify)
-        .setServiceProvider("{{api-key}}")
-        .setUsername("{{username}}")
-        .getIntent();
+.setMode(IProov.Mode.Verify)
+.setServiceProvider("{{api-key}}")
+.setUsername("{{username}}")
+.getIntent();
 startActivityForResult(i, 0);
 ```
 
@@ -160,10 +176,10 @@ You would use this launch mode where you already have the encrypted token for th
 
 ```java
 Intent i = new IProov.NativeClaim.Builder(this)
-        .setMode(IProov.Mode.Verify)
-        .setServiceProvider("{{api-key}}")
-        .setEncryptedToken("{{encrypted-token}}")
-        .getIntent();
+.setMode(IProov.Mode.Verify)
+.setServiceProvider("{{api-key}}")
+.setEncryptedToken("{{encrypted-token}}")
+.getIntent();
 startActivityForResult(i, 0);
 ```
 
@@ -173,10 +189,10 @@ You would launch this mode where you are a service provider who wishes to enrol 
 
 ```java
 Intent i = new IProov.NativeClaim.Builder(this)
-        .setMode(IProov.Mode.Enrol)
-        .setServiceProvider("{{api-key}}")
-        .setUsername("{{username}}")
-        .getIntent();
+.setMode(IProov.Mode.Enrol)
+.setServiceProvider("{{api-key}}")
+.setUsername("{{username}}")
+.getIntent();
 startActivityForResult(i, 0);
 ```
 
@@ -186,10 +202,10 @@ You would launch this mode where you are a service provider who wishes to enrol 
 
 ```java
 Intent i = new IProov.NativeClaim.Builder(this)
-        .setMode(IProov.Mode.Enrol)
-        .setServiceProvider("{{api-key}}")
-        .setEncryptedToken("{{encrypted-token}}")
-        .getIntent();
+.setMode(IProov.Mode.Enrol)
+.setServiceProvider("{{api-key}}")
+.setEncryptedToken("{{encrypted-token}}")
+.getIntent();
 startActivityForResult(i, 0);
 ```
 
@@ -199,8 +215,8 @@ When the notification is received, you can use a `NotificationClaim.Builder` to 
 
 ```java
 Intent i = new IProov.NativeClaim.Builder(this)
-        .setBundle(bundle)
-        .getIntent();
+.setBundle(bundle)
+.getIntent();
 ```
 
 In most cases rather than launch the `Intent` directly, you would then most likely wrap it into a `PendingIntent` and attach it to a Notification to be displayed to the user via the `NotificationManager`.
@@ -229,13 +245,16 @@ String encryptedToken = data.getStringExtra(IProov.EXTRA_ENCRYPTED_TOKEN)
 
 #### `IProov.RESULT_FAILURE`
 
-The iProov process has completed and iProov has failed to verify or enrol the user. The result Intent provides a reason that the authentication could not be confirmed. This could be a generic message, or could provide tips to the user to improve their chance of iProoving successfully (e.g. “lighting too dark”, etc.)
+The iProov process has completed and iProov has failed to verify or enrol the user. The result Intent provides a reason that the authentication could not be confirmed. This could be a generic message, or could provide tips to the user to improve their chance of iProoving successfully (e.g. “lighting too dark”, etc.). There may also be an `EXTRA_FEEDBACK` which provides additional info.
 
 ```java
 String reason = data.getStringExtra(IProov.EXTRA_REASON)
+String feedback = data.getStringExtra(IProov.EXTRA_FEEDBACK)
 ```
 
-You should present this to the user as it may provide an informative hint for the user to increase their chances of iProoving successfully next time.
+`EXTRA_FEEDBACK` could be one of:
+* `ambiguous_outcome`
+* `network_problem`
 
 #### `IProov.RESULT_ERROR`
 
@@ -247,27 +266,3 @@ Exception e = (Exception) data.getSerializableExtra(IProov.EXTRA_EXCEPTION);
 ```
 
 You may wish to display the `localizedMessage` to the user.
-## 🤷‍♂️ FAQs
-
-### Why is the iProov AAR file so large?
-
-Since release 3.3 we've put a lot of thought into reducing the footprint of the APK library. The two most major changes have been:
-
-* we have rebuilt the OpenCV library from the ground up to strip out any unused parts
-* iProov now only supports Arm processor architectures, plus x86 running under Arm emulation mode (Houdini). This should account for > 99% of Android devices out there; but if you have a specific requirement to target x86 or MIPS, you can download the OpenCV library (version 3.2 is required) from http://opencv.org/releases.html and copy the relevant libopencv_java3.so file(s) under the architecture you need into the jniLibs directory (in appropriate architecture-specific subdirectory). You won't benefit from our work on shrinking the OpenCV library, but can mitigate this using the abiFilter technique described below.
-
-Including iProov will add ~7MB to the size of your app's APK (compared to ~36MB for version 3.3). You can reduce this size even further by using Gradle’s `abiFilter` feature to only build for certain architectures:
-
-```gradle
-productFlavors {
-   arm {
-       ndk {
-           abiFilter "armeabi-v7a"
-       }
-   }
-}
-```
-
-You can then deploy separate APKs to Google Play for each architecture (which is a supported feature of Google Play), or simply restrict your APK to common architectures if you prefer.
-
-A full discussion of this feature is beyond the scope of this article, please see [the build system documentation](http://tools.android.com/tech-docs/new-build-system/tips) for further information.
