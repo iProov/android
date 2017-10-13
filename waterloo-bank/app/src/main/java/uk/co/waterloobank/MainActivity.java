@@ -116,7 +116,14 @@ public class MainActivity extends Activity {
 
         } else {
 
-            final IProov.Mode mode = (IProov.Mode) data.getSerializableExtra(IProov.EXTRA_MODE);
+            final IProov.Mode mode;
+
+            if(data != null) {
+                mode = (IProov.Mode) data.getSerializableExtra(IProov.EXTRA_MODE);
+            }
+            else{
+                mode = IProov.Mode.Device;
+            }
             String title = (mode == IProov.Mode.Verify) ? "Login failed" : "Registration failed";
             String message = null;
 
