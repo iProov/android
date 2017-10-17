@@ -1,4 +1,4 @@
-# iProov Android SDK (v4.0.0)
+# iProov Android SDK (v4.0.1)
 
 ## 🤖 Introduction
 
@@ -135,7 +135,7 @@ maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
 
 ```gradle
 dependencies {
-compile('com.iproov.sdk:iproov:4.0.0@aar') {
+compile('com.iproov.sdk:iproov:4.0.1@aar') {
 transitive=true
 }
 }
