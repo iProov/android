@@ -17,7 +17,7 @@ import com.iproov.sdk.IProov;
 
 public class MainActivity extends Activity {
 
-    private static final String WB_SERVICE_PROVIDER = "a73e90cf90e3ede70fd38639ef621f072aca8364";
+    private static final String WB_SERVICE_PROVIDER = null; //TODO: place your API key here
 
     private Button loginButton;
     private Button registerButton;
@@ -83,6 +83,16 @@ public class MainActivity extends Activity {
     }
 
     private void login(String username) {
+
+        if(WB_SERVICE_PROVIDER == null || WB_SERVICE_PROVIDER.isEmpty()){
+            new AlertDialog.Builder(this)
+                    .setTitle("Missing API key")
+                    .setMessage("Please edit WB_SERVICE_PROVIDER in MainActivity.java")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return;
+        }
+
         Intent i = new IProov.NativeClaim.Builder(this)
                 .setMode(IProov.Mode.Verify)
                 .setUsername(username)
@@ -92,6 +102,16 @@ public class MainActivity extends Activity {
     }
 
     private void register(String username) {
+
+        if(WB_SERVICE_PROVIDER == null || WB_SERVICE_PROVIDER.isEmpty()){
+            new AlertDialog.Builder(this)
+                    .setTitle("Missing API key")
+                    .setMessage("Please edit WB_SERVICE_PROVIDER in MainActivity.java")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return;
+        }
+
         Intent i = new IProov.NativeClaim.Builder(this)
                 .setMode(IProov.Mode.Enrol)
                 .setUsername(username)
