@@ -28,6 +28,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 ```gradle
 repositories {
     maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 ```
 
