@@ -177,7 +177,35 @@ You can obtain an Exception relating to the cause of the failure as follows:
 Exception e = (Exception) data.getSerializableExtra(IProov.EXTRA_EXCEPTION);
 ```
 
-You may wish to display the `localizedMessage` to the user.
+You may wish to display the `localizedMessage` to the user. You can get one of the following reasons using `e.getReason()` when `e` is an instance of `IProovException`:
+
+```java
+public enum Reason {
+    GENERAL_ERROR,
+    NETWORK_ERROR,
+    STREAMING_ERROR,
+    UNKNOWN_IDENTITY,
+    ALREADY_ENROLLED,
+    USER_PRESSED_BACK,
+    USER_PRESSED_HOME,
+    UNSUPPORTED_DEVICE,
+    CAMERA_PERMISSION_DENIED,
+    GOOGLE_PLAY_SERVICES_MISSING;
+ }
+```
+
+A description of these errors are as follows:
+
+- **GENERAL_ERROR** - An unknown error has occurred (this should not happen). Let us know if you get this.
+- **NETWORK_ERROR** - An issue occurred with the API (e.g. timeout, disconnection, etc.).
+- **STREAMING_ERROR** - An error occurred with the video streaming process.
+- **UNKNOWN_IDENTITY** - Some Service Providers will reject user IDs that have not enrolled.
+- **ALREADY_ENROLLED** - During enrolment, a user with this user ID has already enrolled.
+- **USER_PRESSED_BACK** - The user voluntarily pressed the back button to end the claim.
+- **USER_PRESSED_HOME** - The user voluntarily sent the app to the background.
+- **UNSUPPORTED_DEVICE** - The device is not supported, (e.g. does not have a front-facing camera).
+- **CAMERA_PERMISSION_DENIED** - The user disallowed access to the camera when prompted.
+- **GOOGLE_PLAY_SERVICES_MISSING** - This should never happen when downloading an iProov-embedded app from the Google Play store, but you may encounter it during testing. To resolve, visit the Play store and download any available updates.
 
 ## ⚙ Configuration Options
 
