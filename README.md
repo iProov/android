@@ -231,7 +231,7 @@ IProov.IProovConfig config = new IProov.IProovConfig()
     .setLowLightBackgroundColor(Color.WHITE)
     .setLowLightEdgeColor(Color.BLACK)
 
-    .setBaseURL("https://eu.rp.secure.iproov.me") //change the server base URL. This is an advanced setting - please contact us if you wish to use your own base URL (eg. for proxying requests)
+    .setBaseURL("https://eu.rp.secure.iproov.me")  //change the server base URL. This is an advanced setting - please contact us if you wish to use your own base URL (eg. for proxying requests)
     .setCertificateFiles(new int[]{R.raw.custom})  //optionally supply an array of paths of certificates to be used for pinning. Useful when using your own baseURL or for overriding the built-in certificate pinning for some other reason.
     //certificates should be generated in DER-encoded X.509 certificate format, eg. with the command $ openssl x509 -in cert.crt -outform der -out cert.der
     .setPinningDisabled(false);                    //when true (not recommended), disables certificate pinning to the server. Default false
