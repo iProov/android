@@ -1,4 +1,4 @@
-# iProov Android SDK (v4.1.3)
+# iProov Android SDK (v4.1.4)
 
 ## 🤖 Introduction
 
@@ -10,8 +10,7 @@ Within this repository you can find the Waterloo Bank sample Android app, which 
 
 ## ❗ Android Studio Version Compatibility
 
-Due to breaking changes in Gradle 3.x (bundled in Android Studio 3), version 4.1+ of the iProov SDK requires compilation target, build tools and android compatibility library versions to be 27 or above in the host project. If you require Android Studio 2.x, Gradle 2.x, and/or build tools version 25, instead **please use version 4.0.x**, the latest version of which will until further notice retain feature and support parity with version 4.1.x.
-
+Due to breaking changes in Gradle 3.x (bundled in Android Studio 3), version 4.1+ of the iProov SDK requires compilation target, build tools and android compatibility library versions to be 27 or above in the host project.
 
 ## 🛠 Upgrade Guide
 
@@ -28,7 +27,6 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 ```gradle
 repositories {
     maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 ```
 
@@ -36,17 +34,7 @@ repositories {
 
 ```gradle
 dependencies {
-    compile('com.iproov.sdk:iproov:4.1.3@aar') {
-        transitive=true
-    }
-}
-```
-
-*Or, for Android Studio 2.x:*
-
-```gradle
-dependencies {
-    compile('com.iproov.sdk:iproov:4.0.3@aar') {
+    compile('com.iproov.sdk:iproov:4.1.4@aar') {
         transitive=true
     }
 }
