@@ -1,4 +1,4 @@
-# iProov Android SDK (v4.1.4)
+# iProov Android SDK (v4.1.5)
 
 ## 🤖 Introduction
 
@@ -34,7 +34,7 @@ repositories {
 
 ```gradle
 dependencies {
-    compile('com.iproov.sdk:iproov:4.1.4@aar') {
+    compile('com.iproov.sdk:iproov:4.1.5@aar') {
         transitive=true
     }
 }
@@ -178,6 +178,7 @@ public enum Reason {
     USER_PRESSED_HOME,
     UNSUPPORTED_DEVICE,
     CAMERA_PERMISSION_DENIED,
+    SSL_EXCEPTION,
     GOOGLE_PLAY_SERVICES_MISSING;
  }
 ```
@@ -193,6 +194,7 @@ A description of these errors are as follows:
 - **USER_PRESSED_HOME** - The user voluntarily sent the app to the background.
 - **UNSUPPORTED_DEVICE** - The device is not supported, (e.g. does not have a front-facing camera).
 - **CAMERA_PERMISSION_DENIED** - The user disallowed access to the camera when prompted.
+- **SSL_EXCEPTION** - Certificates provided for pinning were corrupted or otherwise unable to be processed.
 - **GOOGLE_PLAY_SERVICES_MISSING** - This should never happen when downloading an iProov-embedded app from the Google Play store, but you may encounter it during testing. To resolve, visit the Play store and download any available updates.
 
 ## ⚙ Configuration Options
