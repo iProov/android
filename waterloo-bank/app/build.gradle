@@ -8,7 +8,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 4
-        versionName "4.1.7"
+        versionName "4.1.8"
     }
     buildTypes {
         release {
@@ -26,7 +26,7 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:27.0.2'
-    compile('com.iproov.sdk:iproov:4.1.7@aar') {
+    compile('com.iproov.sdk:iproov:4.1.8@aar') {
         transitive = true
     }
 }
