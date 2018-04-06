@@ -1,4 +1,4 @@
-# iProov Android SDK (v4.1.8)
+# iProov Android SDK (v4.1.9)
 
 ## 🤖 Introduction
 
@@ -34,7 +34,7 @@ repositories {
 
 ```gradle
 dependencies {
-    compile('com.iproov.sdk:iproov:4.1.8@aar') {
+    compile('com.iproov.sdk:iproov:4.1.9@aar') {
         transitive=true
     }
 }
@@ -179,7 +179,8 @@ public enum Reason {
     UNSUPPORTED_DEVICE,
     CAMERA_PERMISSION_DENIED,
     SSL_EXCEPTION,
-    GOOGLE_PLAY_SERVICES_MISSING;
+    GOOGLE_PLAY_SERVICES_MISSING,
+    SERVER_ABORT;
  }
 ```
 
@@ -196,6 +197,7 @@ A description of these errors are as follows:
 - **CAMERA_PERMISSION_DENIED** - The user disallowed access to the camera when prompted.
 - **SSL_EXCEPTION** - Certificates provided for pinning were corrupted or otherwise unable to be processed.
 - **GOOGLE_PLAY_SERVICES_MISSING** - This should never happen when downloading an iProov-embedded app from the Google Play store, but you may encounter it during testing. To resolve, visit the Play store and download any available updates.
+- **SERVER_ABORT** - The token was invalidated server-side.
 
 ## ⚙ Configuration Options
 
