@@ -1,4 +1,4 @@
-# iProov Android SDK (v4.1.9)
+# iProov Android SDK (v4.1.10)
 
 ## 🤖 Introduction
 
@@ -34,10 +34,18 @@ repositories {
 
 ```gradle
 dependencies {
-    compile('com.iproov.sdk:iproov:4.1.9@aar') {
+    compile('com.iproov.sdk:iproov:4.1.10@aar') {
         transitive=true
     }
 }
+```
+
+4. Add the following line to your AndroidManifest.xml to ensure face detection is [made available by the installer](https://developers.google.com/vision/android/multi-tracker-tutorial#querying_the_detector_operational_status):
+
+```xml
+<meta-data
+    android:name="com.google.android.gms.vision.DEPENDENCIES"
+    android:value="face" />
 ```
 
 You may now build your project!
@@ -215,6 +223,7 @@ IProov.IProovConfig config = new IProov.IProovConfig()
     .setMessageDisabled(true)               //disables the message shown during canny preview. Default false
     .setLocaleOverride("")                  //overrides the device locale setting for the iProov SDK. Must be a 2-letter ISO 639-1 code: http://www.loc.gov/standards/iso639-2/php/code_list.php. Currently only supports "en" and "nl".
     .setEnableScreenshots(true)             //for added security, screenshotting is disabled during IProoving; re-enable this here. Default false
+    .setSwapMessagePosition(true)           //if true, feedback messages during face positioning will display at the top of the screen instead of the bottom
 
     //change the colour of the edge and background for the starting face visualisation, for normal light and low light conditions
     //NB: for low light colour scheme, please use a background colour sufficiently bright to allow the face to be illuminated for face detection purposes.
