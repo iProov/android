@@ -231,6 +231,10 @@ IProov.IProovConfig config = new IProov.IProovConfig()
     .setStartingEdgeColor(Color.BLACK)
     .setLowLightBackgroundColor(Color.WHITE)
     .setLowLightEdgeColor(Color.BLACK)
+    
+    //fonts are identified by filename and must be included in the "assets" directory of the host project
+    .setRegularFont("SomeFont.ttf")         //change the default font used within the SDK 
+    .setBoldFont("SomeFont-Bold.ttf")       //boldFont is used for feedback messages and the countdown timer
 
     .setBaseURL("https://eu.rp.secure.iproov.me")  //change the server base URL. This is an advanced setting - please contact us if you wish to use your own base URL (eg. for proxying requests)
     .setCertificateFiles(new int[]{R.raw.custom})  //optionally supply an array of paths of certificates to be used for pinning. Useful when using your own baseURL or for overriding the built-in certificate pinning for some other reason.
