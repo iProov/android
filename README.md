@@ -1,4 +1,4 @@
-# iProov Android SDK (v4.1.12)
+# iProov Android SDK (v4.1.13)
 
 ## 🤖 Introduction
 
@@ -34,7 +34,7 @@ repositories {
 
 ```gradle
 dependencies {
-    compile('com.iproov.sdk:iproov:4.1.12@aar') {
+    compile('com.iproov.sdk:iproov:4.1.13@aar') {
         transitive=true
     }
 }
