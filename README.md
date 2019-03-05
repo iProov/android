@@ -1,10 +1,10 @@
-# iProov Android SDK (v4.1.16)
+# iProov Android SDK (v4.2.0)
 
 ## 🤖 Introduction
 
 The iProov Android SDK provides a programmatic interface for embedding the iProov technology within a 3rd party Android application (“host app”).
 
-The iProov SDK supports Android API Level 16 (Android 4.1) and above, which as of May 2017 encompasses ~98% of active Android devices.
+The iProov SDK supports Android API Level 16 (Android 4.1) and above, which as of March 2019 encompasses ~99.5% of active Android devices.
 
 Within this repository you can find the Waterloo Bank sample Android app, which illustrates an example iProov integration.
 
@@ -34,7 +34,7 @@ repositories {
 
 ```gradle
 dependencies {
-    compile('com.iproov.sdk:iproov:4.1.16@aar') {
+    implementation('com.iproov.sdk:iproov:4.2.0@aar') {
         transitive=true
     }
 }
@@ -77,6 +77,8 @@ startActivityForResult(i, 0);
 
 For an explanation of receiving the result from the Intent, see the “Intent Result” section below.
 
+> ⚠️ NOTE: This launch mode is designed for evaluation/testing. Use the Verify (with Token) launch mode in production apps.
+
 ### 2. Verify (with Token)
 
 You would use this launch mode where you already have a token for the user you wish to authenticate (you have already generated this by calling the REST API from your server and now wish to authenticate the user).
@@ -102,6 +104,8 @@ Intent i = new IProov.NativeClaim.Builder(this)
     .getIntent();
 startActivityForResult(i, 0);
 ```
+
+> ⚠️ NOTE: This launch mode is designed for evaluation/testing. Use the Enrol (with Token) launch mode in production apps.
 
 ### 4. Enrol (with Token)
 
@@ -148,7 +152,7 @@ The iProov session has completed and iProov has successfully verified or enrolle
 String token = data.getStringExtra(IProov.EXTRA_ENCRYPTED_TOKEN)
 ```
 
-> SECURITY WARNING: Never use iProov as a local authentication method. You cannot rely on the fact that a result was received to prove that the user was authenticated successfully (it is possible the iProov process could be manipulated locally by a malicious app). You can treat the verified result as a hint to your app to update the UI, etc. but must always independently validate the token server-side (using the validate API call) before performing any authenticated user actions.
+> ⚠️ SECURITY WARNING: Never use iProov as a local authentication method. You cannot rely on the fact that a result was received to prove that the user was authenticated successfully (it is possible the iProov process could be manipulated locally by a malicious app). You can treat the verified result as a hint to your app to update the UI, etc. but must always independently validate the token server-side (using the validate API call) before performing any authenticated user actions.
 
 #### `IProov.RESULT_FAILURE`
 
@@ -164,9 +168,9 @@ String feedback = data.getStringExtra(IProov.EXTRA_FEEDBACK)
 * `network_problem`
 * `user_timeout`
 
-#### `IProov.RESULT_ERROR`
+#### `IProov.RESULT_ERROR` or `IProov.RESULT_USER_CANCELED`
 
-The iProov process failed entirely (i.e. iProov was unable to verify or enrol the user due to a system or network issue). This could be for a number of reasons, for example the user cancelled the iProov process, or there was an unrecoverable network issue.
+The iProov process failed entirely (i.e. iProov was unable to verify or enrol the user due to a system or network issue). This could be for a number of reasons, for example the user cancelled the iProov process (`IProov.RESULT_USER_CANCELED`), or there was an unrecoverable network issue (`IProov.RESULT_ERROR`).
 You can obtain an Exception relating to the cause of the failure as follows:
 
 ```java
@@ -231,6 +235,11 @@ IProov.IProovConfig config = new IProov.IProovConfig()
     .setStartingEdgeColor(Color.BLACK)
     .setLowLightBackgroundColor(Color.WHITE)
     .setLowLightEdgeColor(Color.BLACK)
+
+    // You can also set the colour of the oval (which also sets the accompanying text color):
+    .setConnectingOvalColor(Color.RED)      // The app is connecting to the server. Default: grey (#5c5c5c)
+    .setNotReadyOvalColor(Color.BLUE)       // Cannot start iProoving until the user takes action (e.g. move closer, etc). Default: orange (#f5a623)
+    .setReadyOvalColor(Color.GREEN)         // Ready to start iProoving. Default: green (#01bf46)
     
     //fonts are identified by filename and must be included in the "assets" directory of the host project
     .setRegularFont("SomeFont.ttf")         //change the default font used within the SDK 
