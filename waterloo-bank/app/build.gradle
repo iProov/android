@@ -26,7 +26,7 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.0.2'
-    implementation('com.iproov.sdk:iproov:4.2.0@aar') {
+    implementation('com.iproov.sdk:iproov:4.2.1@aar') {
         transitive = true
     }
 }
