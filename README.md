@@ -1,4 +1,4 @@
-# iProov Android SDK (v4.2.1)
+# iProov Android SDK (v4.3.0-beta1)
 
 ## 🤖 Introduction
 
@@ -34,7 +34,7 @@ repositories {
 
 ```gradle
 dependencies {
-    implementation('com.iproov.sdk:iproov:4.2.1@aar') {
+    implementation('com.iproov.sdk:iproov:4.3.0-beta1@aar') {
         transitive=true
     }
 }
@@ -228,6 +228,7 @@ IProov.IProovConfig config = new IProov.IProovConfig()
     .setLocaleOverride("")                  //overrides the device locale setting for the iProov SDK. Must be a 2-letter ISO 639-1 code: http://www.loc.gov/standards/iso639-2/php/code_list.php. Currently only supports "en" and "nl".
     .setEnableScreenshots(true)             //for added security, screenshotting is disabled during IProoving; re-enable this here. Default false
     .setSwapMessagePosition(true)           //if true, feedback messages during face positioning will display at the top of the screen instead of the bottom
+    .setForceClassicFaceDetector(true)		// when true, always uses the Android API Level 1 face detector rather than GMS Vision API, even if Google Play Services is available on the device (default is false)
 
     //change the colour of the edge and background for the starting face visualisation, for normal light and low light conditions
     //NB: for low light colour scheme, please use a background colour sufficiently bright to allow the face to be illuminated for face detection purposes.
