@@ -1,4 +1,4 @@
-# iProov Android SDK (v4.3.0)
+# iProov Android SDK (v4.4.0-beta1)
 
 ## 🤖 Introduction
 
@@ -34,18 +34,10 @@ repositories {
 
 ```gradle
 dependencies {
-    implementation('com.iproov.sdk:iproov:4.3.0@aar') {
+    implementation('com.iproov.sdk:iproov:4.4.0-beta1@aar') {
         transitive=true
     }
 }
-```
-
-4. Add the following line to your AndroidManifest.xml to ensure face detection is [made available by the installer](https://developers.google.com/vision/android/multi-tracker-tutorial#querying_the_detector_operational_status):
-
-```xml
-<meta-data
-    android:name="com.google.android.gms.vision.DEPENDENCIES"
-    android:value="face" />
 ```
 
 You may now build your project!
@@ -191,7 +183,6 @@ public enum Reason {
     UNSUPPORTED_DEVICE,
     CAMERA_PERMISSION_DENIED,
     SSL_EXCEPTION,
-    GOOGLE_PLAY_SERVICES_MISSING,
     SERVER_ABORT;
  }
 ```
@@ -208,7 +199,6 @@ A description of these errors are as follows:
 - **UNSUPPORTED_DEVICE** - The device is not supported, (e.g. does not have a front-facing camera).
 - **CAMERA_PERMISSION_DENIED** - The user disallowed access to the camera when prompted.
 - **SSL_EXCEPTION** - Certificates provided for pinning were corrupted or otherwise unable to be processed.
-- **GOOGLE_PLAY_SERVICES_MISSING** - This should never happen when downloading an iProov-embedded app from the Google Play store, but you may encounter it during testing. To resolve, visit the Play store and download any available updates.
 - **SERVER_ABORT** - The token was invalidated server-side.
 
 ## ⚙ Configuration Options
@@ -228,7 +218,6 @@ IProov.IProovConfig config = new IProov.IProovConfig()
     .setLocaleOverride("")                  //overrides the device locale setting for the iProov SDK. Must be a 2-letter ISO 639-1 code: http://www.loc.gov/standards/iso639-2/php/code_list.php. Currently only supports "en" and "nl".
     .setEnableScreenshots(true)             //for added security, screenshotting is disabled during IProoving; re-enable this here. Default false
     .setSwapMessagePosition(true)           //if true, feedback messages during face positioning will display at the top of the screen instead of the bottom
-    .setForceClassicFaceDetector(true)		// when true, always uses the Android API Level 1 face detector rather than GMS Vision API, even if Google Play Services is available on the device (default is false)
 
     //change the colour of the edge and background for the starting face visualisation, for normal light and low light conditions
     //NB: for low light colour scheme, please use a background colour sufficiently bright to allow the face to be illuminated for face detection purposes.
