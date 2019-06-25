@@ -56,7 +56,10 @@ class MainActivityKotlin : AppCompatActivity() {
         showLoadingViews()
         val token = apiClient.getToken(Claim.ClaimType.VERIFY, userID)
         val options = IProov.Options()
-        options.autostart = true
+        options.apply {
+            autostart = true
+            boldFont = "Merriweather-Bold.ttf"
+        }
 
         connection.launch(options, token, object : IProov.IProovCaptureListener {
             override fun onSuccess(token: String) {

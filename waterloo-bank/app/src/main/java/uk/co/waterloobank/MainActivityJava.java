@@ -68,8 +68,10 @@ public class MainActivityJava extends AppCompatActivity {
         hideButtons();
         showLoadingViews();
         final String token = apiClient.getToken(Claim.ClaimType.VERIFY, userID);
+
         final IProov.Options options = new IProov.Options();
         options.setAutostart(true);
+        options.setBoldFont("Merriweather-Bold.ttf");
 
         connection.launch(options, token, new IProov.IProovCaptureListener() {
 
