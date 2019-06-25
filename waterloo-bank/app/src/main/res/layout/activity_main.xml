@@ -1,50 +1,76 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                tools:context=".MainActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context=".MainActivityKotlin">
 
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:src="@mipmap/logo"/>
+        android:src="@mipmap/logo" />
 
     <EditText
+        android:id="@+id/usernameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/usernameEditText"
         android:layout_below="@+id/imageView"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="false"
+        android:layout_alignParentLeft="true"
         android:layout_marginTop="35dp"
-        android:singleLine="true"
-        android:inputType="textEmailAddress"/>
+        android:inputType="textEmailAddress"
+        android:singleLine="true" />
 
     <Button
+        android:id="@+id/loginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login"
-        android:id="@+id/loginButton"
         android:layout_below="@+id/usernameEditText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="38dp"
         android:paddingLeft="30dp"
-        android:paddingRight="30dp"/>
+        android:paddingRight="30dp"
+        android:background="@android:color/holo_red_light"
+        android:textColor="@android:color/white"
+        android:text="Login" />
 
     <Button
+        android:id="@+id/registerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Register"
-        android:id="@+id/registerButton"
+        android:layout_below="@+id/loginButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
-        android:layout_below="@+id/loginButton"
-        android:layout_centerHorizontal="true"/>
+        android:background="@android:color/holo_red_light"
+        android:textColor="@android:color/white"
+        android:text="Register" />
+
+    <TextView
+        android:id="@+id/captureStatus"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/registerButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:textSize="24sp"
+        tools:text="Capture Status" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:visibility="gone"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/captureStatus"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
 
 
 </RelativeLayout>
