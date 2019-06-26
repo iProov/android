@@ -29,6 +29,11 @@ class MainActivityKotlin : AppCompatActivity() {
         connection = IProov.getIProovConnection(this)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        connection.stop()
+    }
+
     private fun hideLoadingViews() {
         progressBar.visibility = View.GONE
         progressBar.progress = 0
@@ -55,13 +60,8 @@ class MainActivityKotlin : AppCompatActivity() {
         hideButtons()
         showLoadingViews()
         val token = apiClient.getToken(Claim.ClaimType.VERIFY, userID)
-        val options = IProov.Options()
-        options.apply {
-            autostart = true
-            boldFont = "Merriweather-Bold.ttf"
-        }
 
-        connection.launch(options, token, object : IProov.IProovCaptureListener {
+        connection.launch(createOptions(), token, object : IProov.IProovCaptureListener {
             override fun onSuccess(token: String) {
                 onResult("Success", "Successfully iProoved.\nToken:$token")
             }
@@ -86,10 +86,8 @@ class MainActivityKotlin : AppCompatActivity() {
 
     private fun register(userID: String) {
         val token = apiClient.getToken(Claim.ClaimType.ENROL, userID)
-        val options = IProov.Options()
-        options.autostart = true
 
-        connection.launch(options, token, object : IProov.IProovCaptureListener {
+        connection.launch(createOptions(), token, object : IProov.IProovCaptureListener {
             override fun onSuccess(token: String) {
                 onResult("Success", "Successfully registered.\nToken:$token")
             }
@@ -130,8 +128,13 @@ class MainActivityKotlin : AppCompatActivity() {
         progressBar.progress = progressValue
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        connection.stop()
+    private fun createOptions(): IProov.Options {
+        val options = IProov.Options()
+        options.apply {
+            autostart = true
+            boldFont = "Merriweather-Bold.ttf"
+            logoImage = R.mipmap.ic_launcher
+        }
+        return options
     }
 }

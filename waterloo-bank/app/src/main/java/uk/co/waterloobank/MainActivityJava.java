@@ -43,6 +43,12 @@ public class MainActivityJava extends AppCompatActivity {
         connection = IProov.getIProovConnection(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        connection.stop();
+    }
+
     private void hideLoadingViews() {
         progressBar.setVisibility(View.GONE);
         progressBar.setProgress(0);
@@ -69,11 +75,7 @@ public class MainActivityJava extends AppCompatActivity {
         showLoadingViews();
         final String token = apiClient.getToken(Claim.ClaimType.VERIFY, userID);
 
-        final IProov.Options options = new IProov.Options();
-        options.setAutostart(true);
-        options.setBoldFont("Merriweather-Bold.ttf");
-
-        connection.launch(options, token, new IProov.IProovCaptureListener() {
+        connection.launch(createOptions(), token, new IProov.IProovCaptureListener() {
 
             @Override
             public void onSuccess(String token) {
@@ -106,10 +108,8 @@ public class MainActivityJava extends AppCompatActivity {
         hideButtons();
         showLoadingViews();
         final String token = apiClient.getToken(Claim.ClaimType.ENROL, userID);
-        final IProov.Options options = new IProov.Options();
-        options.setAutostart(true);
 
-        connection.launch(options, token, new IProov.IProovCaptureListener() {
+        connection.launch(createOptions(), token, new IProov.IProovCaptureListener() {
 
             @Override
             public void onSuccess(String token) {
@@ -154,9 +154,11 @@ public class MainActivityJava extends AppCompatActivity {
         progressBar.setProgress(progressValue);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        connection.stop();
+    private IProov.Options createOptions() {
+        final IProov.Options options = new IProov.Options();
+        options.setAutostart(true);
+        options.setLogoImage( R.mipmap.ic_launcher);
+        options.setBoldFont("Merriweather-Bold.ttf");
+        return options;
     }
 }
