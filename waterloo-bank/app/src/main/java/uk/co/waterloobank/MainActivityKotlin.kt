@@ -157,12 +157,11 @@ class MainActivityKotlin : AppCompatActivity() {
     }
 
     private fun createOptions(): IProov.Options {
-        val options = IProov.Options()
-        options.apply {
-            autostart = true
-            boldFont = "Merriweather-Bold.ttf"
-            logoImage = R.mipmap.ic_launcher
-        }
-        return options
+        return IProov.Options()
+                .apply {
+                    autostart = true
+                    boldFont = "Merriweather-Bold.ttf"
+                    logoImage = R.mipmap.ic_launcher
+                }
     }
 }
