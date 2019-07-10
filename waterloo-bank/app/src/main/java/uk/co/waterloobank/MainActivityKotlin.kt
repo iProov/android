@@ -2,7 +2,6 @@ package uk.co.waterloobank
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.iproov.androidapiclient.kotlinfuel.ApiClientFuel
@@ -69,9 +68,9 @@ class MainActivityKotlin : AppCompatActivity() {
 
         val apiClientFuel = ApiClientFuel(
                 this,
-                "https://eu.rp.secure.iproov.me/api/v2/",
-                "0b7f668c0c3295056e574fcb973a58a2e68fe196",
-                "ac3057d5f5f6cde818a11c50633c416ad8488ae9"
+                Constants.BASE_URL,
+                Constants.API_KEY,
+                Constants.SECRET
         )
 
         uiScope.launch(Dispatchers.IO) {
@@ -108,9 +107,9 @@ class MainActivityKotlin : AppCompatActivity() {
 
         val apiClientFuel = ApiClientFuel(
                 this,
-                "https://eu.rp.secure.iproov.me/api/v2/",
-                "0b7f668c0c3295056e574fcb973a58a2e68fe196",
-                "ac3057d5f5f6cde818a11c50633c416ad8488ae9"
+                Constants.BASE_URL,
+                Constants.API_KEY,
+                Constants.SECRET
         )
 
         uiScope.launch(Dispatchers.IO) {

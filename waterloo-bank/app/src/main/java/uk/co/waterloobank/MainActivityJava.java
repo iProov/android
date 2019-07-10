@@ -1,7 +1,6 @@
 package uk.co.waterloobank;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -80,10 +79,10 @@ public class MainActivityJava extends AppCompatActivity {
 
         ApiClientJavaRetrofit apiClient = new ApiClientJavaRetrofit(
                 this,
-                "https://eu.rp.secure.iproov.me/api/v2/",
+                Constants.BASE_URL,
                 HttpLoggingInterceptor.Level.BODY,
-                "0b7f668c0c3295056e574fcb973a58a2e68fe196",
-                "ac3057d5f5f6cde818a11c50633c416ad8488ae9");
+                Constants.API_KEY,
+                Constants.SECRET);
 
         apiClient.getToken(
                 ClaimType.VERIFY,
@@ -102,10 +101,10 @@ public class MainActivityJava extends AppCompatActivity {
 
         ApiClientJavaRetrofit apiClient = new ApiClientJavaRetrofit(
                 this,
-                "https://eu.rp.secure.iproov.me/api/v2/",
+                Constants.BASE_URL,
                 HttpLoggingInterceptor.Level.BODY,
-                "0b7f668c0c3295056e574fcb973a58a2e68fe196",
-                "ac3057d5f5f6cde818a11c50633c416ad8488ae9");
+                Constants.API_KEY,
+                Constants.SECRET);
 
         apiClient.getToken(
                 ClaimType.ENROL,
