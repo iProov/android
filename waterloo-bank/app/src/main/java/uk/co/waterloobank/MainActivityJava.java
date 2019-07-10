@@ -1,6 +1,7 @@
 package uk.co.waterloobank;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,10 +12,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.iproov.androidapiclient.kotlinfuel.ApiClientFuel;
+import com.iproov.androidapiclient.javaretrofit.ApiClientJavaRetrofit;
+import com.iproov.androidapiclient.javaretrofit.ClaimType;
 import com.iproov.sdk.IProov;
 import com.iproov.sdk.IProovException;
 import com.iproov.sdk.model.Claim;
+
+import okhttp3.logging.HttpLoggingInterceptor;
 
 public class MainActivityJava extends AppCompatActivity {
 
@@ -71,87 +75,107 @@ public class MainActivityJava extends AppCompatActivity {
     }
 
     private void login(final String userID) {
-//        hideButtons();
-//        showLoadingViews();
-//
-//        ApiClientFuel apiClientFuel = new ApiClientFuel(
-//                this,
-//                "https://eu.rp.secure.iproov.me/api/v2/",
-//                "0b7f668c0c3295056e574fcb973a58a2e68fe196",
-//                "ac3057d5f5f6cde818a11c50633c416ad8488ae9"
-//        );
-//
-//        final String token = apiClientFuel.getToken();
-//
-//        connection.launch(createOptions(), token, new IProov.IProovCaptureListener() {
-//
-//            @Override
-//            public void onSuccess(String token) {
-//                onResult("Success", "Successfully iProoved.\nToken:" + token);
-//            }
-//
-//            @Override
-//            public void onFailure(String reason, String feedback) {
-//                onResult("Failed", "Failed to iProov\nreason: " + reason + "feedback: " + feedback);
-//            }
-//
-//            @Override
-//            public void onProgressUpdate(String message, double progress) {
-//                onProgress(message, (int) progress);
-//            }
-//
-//            @Override
-//            public void onError(IProovException e) {
-//                onResult("Error", "Error: " + e.getLocalizedMessage());
-//            }
-//
-//            @Override
-//            public void log(String title, String message) {
-//                //You can add logging here
-//            }
-//        });
+        hideButtons();
+        showLoadingViews();
+
+        ApiClientJavaRetrofit apiClient = new ApiClientJavaRetrofit(
+                this,
+                "https://eu.rp.secure.iproov.me/api/v2/",
+                HttpLoggingInterceptor.Level.BODY,
+                "0b7f668c0c3295056e574fcb973a58a2e68fe196",
+                "ac3057d5f5f6cde818a11c50633c416ad8488ae9");
+
+        apiClient.getToken(
+                ClaimType.VERIFY,
+                userID,
+                (call, response) -> {
+                    startIproovForVerifyClaim(response.body().getToken(), Claim.ClaimType.VERIFY);
+                },
+                throwable -> {
+                    onResult("Filed", "Failed to get token.");
+                });
     }
 
     private void register(final String userID) {
-//        hideButtons();
-//        showLoadingViews();
-//
-//        ApiClientFuel apiClientFuel = new ApiClientFuel(
-//                this,
-//                "https://eu.rp.secure.iproov.me/api/v2/",
-//                "0b7f668c0c3295056e574fcb973a58a2e68fe196",
-//                "ac3057d5f5f6cde818a11c50633c416ad8488ae9"
-//        );
-//
-//        final String token = apiClientFuel.getToken();
-//
-//        connection.launch(createOptions(), token, new IProov.IProovCaptureListener() {
-//
-//            @Override
-//            public void onSuccess(String token) {
-//                onResult("Success", "Successfully registered.\nToken:" + token);
-//            }
-//
-//            @Override
-//            public void onFailure(String reason, String feedback) {
-//                onResult("Failed", "Failed to register\nreason: " + reason + "feedback: " + feedback);
-//            }
-//
-//            @Override
-//            public void onProgressUpdate(String message, double progress) {
-//                onProgress(message, (int) progress);
-//            }
-//
-//            @Override
-//            public void onError(IProovException e) {
-//                onResult("Error", "Error: " + e.getLocalizedMessage());
-//            }
-//
-//            @Override
-//            public void log(String title, String message) {
-//                //You can add logging here
-//            }
-//        });
+        hideButtons();
+        showLoadingViews();
+
+        ApiClientJavaRetrofit apiClient = new ApiClientJavaRetrofit(
+                this,
+                "https://eu.rp.secure.iproov.me/api/v2/",
+                HttpLoggingInterceptor.Level.BODY,
+                "0b7f668c0c3295056e574fcb973a58a2e68fe196",
+                "ac3057d5f5f6cde818a11c50633c416ad8488ae9");
+
+        apiClient.getToken(
+                ClaimType.ENROL,
+                userID,
+                (call, response) -> {
+                    startIproovForEnrollrClaim(response.body().getToken(), Claim.ClaimType.ENROL);
+                },
+                throwable -> {
+                    onResult("Filed", "Failed to get token.");
+                });
+    }
+
+    private void startIproovForEnrollrClaim(final String token, final Claim.ClaimType claimType) {
+        connection.launch(createOptions(), token, new IProov.IProovCaptureListener() {
+
+            @Override
+            public void onSuccess(String token) {
+                onResult("Success", "Successfully registered.\nToken:" + token);
+            }
+
+            @Override
+            public void onFailure(String reason, String feedback) {
+                onResult("Failed", "Failed to register\nreason: " + reason + "feedback: " + feedback);
+            }
+
+            @Override
+            public void onProgressUpdate(String message, double progress) {
+                onProgress(message, (int) progress);
+            }
+
+            @Override
+            public void onError(IProovException e) {
+                onResult("Error", "Error: " + e.getLocalizedMessage());
+            }
+
+            @Override
+            public void log(String title, String message) {
+                //You can add logging here
+            }
+        });
+    }
+
+    private void startIproovForVerifyClaim(final String token, final Claim.ClaimType claimType) {
+        connection.launch(createOptions(), token, new IProov.IProovCaptureListener() {
+
+            @Override
+            public void onSuccess(String token) {
+                onResult("Success", "Successfully iProoved.\nToken:" + token);
+            }
+
+            @Override
+            public void onFailure(String reason, String feedback) {
+                onResult("Failed", "Failed to iProov\nreason: " + reason + "feedback: " + feedback);
+            }
+
+            @Override
+            public void onProgressUpdate(String message, double progress) {
+                onProgress(message, (int) progress);
+            }
+
+            @Override
+            public void onError(IProovException e) {
+                onResult("Error", "Error: " + e.getLocalizedMessage());
+            }
+
+            @Override
+            public void log(String title, String message) {
+                //You can add logging here
+            }
+        });
     }
 
     private void onResult(final String title, final String resultMessage) {
@@ -173,7 +197,7 @@ public class MainActivityJava extends AppCompatActivity {
     private IProov.Options createOptions() {
         final IProov.Options options = new IProov.Options();
         options.setAutostart(true);
-        options.setLogoImage( R.mipmap.ic_launcher);
+        options.setLogoImage(R.mipmap.ic_launcher);
         options.setBoldFont("Merriweather-Bold.ttf");
         return options;
     }
