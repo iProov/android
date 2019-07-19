@@ -7,10 +7,10 @@ android {
 
     defaultConfig {
         applicationId "uk.co.waterloobank"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
-        versionName "4.4.0"
+        versionName "5.0.0"
     }
     buildTypes {
         release {
@@ -27,15 +27,26 @@ android {
 }
 
 repositories {
-//    maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
-    maven {
-        credentials(HttpHeaderCredentials.class) {
-            name "Authorization"
-            value "Bearer $GITHUB_BEARER_ACCESS_TOKEN"
+    // This allows RELEASE builds of iProov lib to be used for external projects
+    maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
 
-            authentication {
-                register("header", HttpHeaderAuthentication.class)
-                url "https://raw.githubusercontent.com/iProov/maven-repo/master/maven/"
+    // This allows SNAPSHOT builds of iProov lib to be used for internal projects
+    // Requires authorization bearer access token, GITHUB_BEARER_ACCESS_TOKEN,
+    // which can be provided by system environment variable (for Bitrise)
+    // or locally in ~/.gradle/gradle.properties
+    def token = System.getenv('GITHUB_BEARER_ACCESS_TOKEN') ?: project.properties['GITHUB_BEARER_ACCESS_TOKEN']
+    println("pre token")
+    if (token != null) {
+        println("post token")
+        maven {
+            credentials(HttpHeaderCredentials.class) {
+                name "Authorization"
+                value "Bearer $token"
+
+                authentication {
+                    register("header", HttpHeaderAuthentication.class)
+                    url "https://raw.githubusercontent.com/iProov/maven-repo/master/maven/"
+                }
             }
         }
     }
@@ -44,9 +55,9 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.aar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.40"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.41"
     implementation 'androidx.appcompat:appcompat:1.0.2'
-//    implementation('com.iproov.sdk:iproov:4.4.0@aar') {
+//    implementation('com.iproov.sdk:iproov:5.0.0@aar') {
 //        transitive = true
 //    }
     implementation "androidx.core:core-ktx:1.0.2"
