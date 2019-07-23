@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.iproov.androidapiclient.DemonstrationPurposesOnly
 import com.iproov.androidapiclient.kotlinfuel.ApiClientFuel
 import com.iproov.sdk.IProov
 import com.iproov.sdk.IProovException
@@ -20,6 +21,7 @@ class MainActivityKotlin : AppCompatActivity() {
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
 
+    @DemonstrationPurposesOnly
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -61,7 +63,7 @@ class MainActivityKotlin : AppCompatActivity() {
         registerButton.visibility = View.VISIBLE
     }
 
-
+    @DemonstrationPurposesOnly
     private fun login(userID: String) {
         hideButtons()
         showLoadingViews()
@@ -93,13 +95,14 @@ class MainActivityKotlin : AppCompatActivity() {
                     onResult("Error", "Error: ${e.localizedMessage}")
                 }
 
-                override fun log(title: String?, message: String?) {
-                    //You can add logging here
+                override fun onCanceled() {
+                    onResult("Canceled", "User action: canceled")
                 }
             })
         }
     }
 
+    @DemonstrationPurposesOnly
     private fun register(userID: String) {
 
         hideButtons()
@@ -131,8 +134,8 @@ class MainActivityKotlin : AppCompatActivity() {
                     onResult("Error", "Error: ${e.localizedMessage}")
                 }
 
-                override fun log(title: String?, message: String?) {
-                    //You can add logging here
+                override fun onCanceled() {
+                    onResult("Canceled", "User action: canceled")
                 }
             })
         }
@@ -144,7 +147,7 @@ class MainActivityKotlin : AppCompatActivity() {
                 .setIcon(R.mipmap.ic_launcher)
                 .setTitle(title)
                 .setMessage(resultMessage)
-                .setPositiveButton("OK") { dialog, which ->
+                .setPositiveButton("OK") { _, _ ->
                     showButtons()
                 }
                 .setCancelable(false)
@@ -159,9 +162,9 @@ class MainActivityKotlin : AppCompatActivity() {
     private fun createOptions(): IProov.Options {
         return IProov.Options()
                 .apply {
-                    autostart = true
-                    boldFont = "Merriweather-Bold.ttf"
-                    logoImage = R.mipmap.ic_launcher
+                    ui.autostartDisabled = false
+                    ui.boldFont = "Merriweather-Bold.ttf"
+                    ui.logoImage = R.mipmap.ic_launcher
                 }
     }
 }
