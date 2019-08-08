@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
   <groupId>com.iproov.sdk</groupId>
-  <artifactId>iproov</artifactId>
+  <artifactId>iproovfirebase</artifactId>
   <versioning>
     <release>5.0.0-beta1</release>
     <versions>
       <version>5.0.0-beta1</version>
     </versions>
-    <lastUpdated>20190808074426</lastUpdated>
+    <lastUpdated>20190808074432</lastUpdated>
   </versioning>
 </metadata>
