@@ -10,7 +10,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
-        versionName "5.0.0-beta1"
+        versionName "5.0.0-beta2"
     }
     buildTypes {
         release {
@@ -36,20 +36,20 @@ apply from: '../repos.gradle'
 
 dependencies {
 //    implementation fileTree(dir: 'libs', include: ['*.aar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.41"
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation "androidx.core:core-ktx:1.0.2"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.50"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation "androidx.core:core-ktx:1.1.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
-    implementation group: "com.iproov.sdk", name: "iproov", version: "5.0.0-beta1", changing: true
+    implementation group: "com.iproov.sdk", name: "iproov", version: "5.0.0-beta2", changing: true
 
-    implementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "1.0.0-beta1", changing: true
-    implementation group: "com.iproov.android-api-client", name: "java-retrofit", version: "1.0.0-beta1", changing: true
-    implementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "1.0.0-beta1", changing: true
+    implementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "1.0.0", changing: true
+    implementation group: "com.iproov.android-api-client", name: "java-retrofit", version: "1.0.0", changing: true
+    implementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "1.0.0", changing: true
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.2.1"
 
 
