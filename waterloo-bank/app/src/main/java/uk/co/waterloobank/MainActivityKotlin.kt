@@ -81,7 +81,7 @@ class MainActivityKotlin : AppCompatActivity() {
                         onResult("Success", "Successfully iProoved.\nToken:$token")
                     }
 
-                    override fun onFailure(reason: String, feedback: String) {
+                    override fun onFailure(reason: String?, feedback: String?) {
                         onResult("Failed", "Failed to iProov\nreason: $reason feedback:$feedback")
                     }
 
@@ -93,8 +93,8 @@ class MainActivityKotlin : AppCompatActivity() {
                         onResult("Error", "Error: ${e.localizedMessage}")
                     }
 
-                    override fun onCanceled() {
-                        onResult("Canceled", "User action: canceled")
+                    override fun onCancelled() {
+                        onResult("Cancelled", "User action: cancelled")
                     }
                 })
             } catch (ex: Exception) {
@@ -126,7 +126,7 @@ class MainActivityKotlin : AppCompatActivity() {
                         onResult("Success", "Successfully registered.\nToken:$token")
                     }
 
-                    override fun onFailure(reason: String, feedback: String) {
+                    override fun onFailure(reason: String?, feedback: String?) {
                         onResult("Failed", "Failed to register\nreason: $reason feedback:$feedback")
                     }
 
@@ -138,8 +138,8 @@ class MainActivityKotlin : AppCompatActivity() {
                         onResult("Error", "Error: ${e.localizedMessage}")
                     }
 
-                    override fun onCanceled() {
-                        onResult("Canceled", "User action: canceled")
+                    override fun onCancelled() {
+                        onResult("Cancelled", "User action: cancelled")
                     }
                 })
             } catch (ex: Exception) {
@@ -171,7 +171,7 @@ class MainActivityKotlin : AppCompatActivity() {
     private fun createOptions(): IProov.Options {
         return IProov.Options()
                 .apply {
-                    ui.autostartDisabled = false
+                    ui.autoStartDisabled = false
                     ui.boldFont = "Merriweather-Bold.ttf"
                     ui.logoImage = R.mipmap.ic_launcher
                 }

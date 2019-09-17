@@ -141,8 +141,8 @@ public class MainActivityJava extends AppCompatActivity {
             }
 
             @Override
-            public void onCanceled() {
-                onResult("Canceled", "User action: canceled");
+            public void onCancelled() {
+                onResult("Cancelled", "User action: cancelled");
             }
         });
     }
@@ -171,8 +171,8 @@ public class MainActivityJava extends AppCompatActivity {
             }
 
             @Override
-            public void onCanceled() {
-                onResult("Canceled", "User action: canceled");
+            public void onCancelled() {
+                onResult("Cancelled", "User action: cancelled");
             }
         });
     }
@@ -195,7 +195,7 @@ public class MainActivityJava extends AppCompatActivity {
 
     private IProov.Options createOptions() {
         return new IProov.Options()
-                .ui.setAutostartDisabled(false)
+                .ui.setAutoStartDisabled(false)
                 .ui.setLogoImage(R.mipmap.ic_launcher)
                 .ui.setBoldFont("Merriweather-Bold.ttf");
     }
