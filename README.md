@@ -1,4 +1,4 @@
-# iProov Android SDK (v5.0.0-beta1)
+# iProov Android SDK (v5.0.0-beta2)
 
 ## 🤖 Introduction
 
@@ -42,12 +42,23 @@ repositories {
 
 ```gradle
 dependencies {
-    implementation('com.iproov.sdk:iproov:5.0.0-beta1@aar') {
+    implementation('com.iproov.sdk:iproov:5.0.0-beta2@aar') {
         transitive=true
     }
 }
 ```
+
 > **⬆️ UPGRADING NOTICE:** Take note of the new dependencies & versions!
+
+4. **OPTIONAL:** If you wish to include [support for Firebase](#-firebase-support) in your app, add the following dependency:
+
+```gradle
+dependencies {
+    implementation('com.iproov.sdk:iproov-firebase:5.0.0-beta2@aar') {
+        transitive=true
+    }
+}
+``` 
 
 You may now build your project!
 
@@ -68,11 +79,11 @@ IProov.getIProovConnection(activity).launch(
         @Override public void onSuccess(String token) {
             // Successfully registered (enrol) or iProoved (verify)
         }
-        @Override public void onFailure(String reason, String feedback) {
+        @Override public void onFailure(@Nullable String reason, @Nullable String feedback) {
             // Failed to registered (enrol) or iProoved (verify)
             // This is usually due to lighting conditions or face movement
         }
-        @Override public void onCanceled() {
+        @Override public void onCancelled() {
             // The user hit back or home and cancelled the scan
         }
         @Override public void onProgressUpdate(String message, double progress) {
@@ -85,6 +96,10 @@ IProov.getIProovConnection(activity).launch(
 );
 
 ```
+> **⬆️ UPGRADING NOTICE:** onCanceled() has been renamed onCancelled() and .ui.setAutostartDisabled() has been renamed to .ui.setAutoStartDisabled() in 5.0.0-beta2
+
+---
+
 > **⬆️ UPGRADING NOTICE:** Just a call and a listener, with a series of callbacks.
 
 ---
@@ -131,9 +146,9 @@ The iProov process has completed and iProov has failed to verify or enrol the us
 | **motion_too_much_movement**          | Please keep still                                     |
 | **motion_too_much_mouth_movement**    | Please do not talk while iProoving                    |
 
-#### `void onCanceled()`
+#### `void onCancelled()`
 
-The iProov process was halted and canceled by user action.
+The iProov process was halted and cancelled by user action.
 
 #### `void onError(IProovException exception)`
 
@@ -145,11 +160,12 @@ public enum Reason {
     GENERAL_ERROR,
     NETWORK_ERROR,
     STREAMING_ERROR,
-    USER_PRESSED_BACK, // comes through as onCanceled instead of onError
+    USER_PRESSED_BACK, // comes through as onCancelled instead of onError
     UNSUPPORTED_DEVICE,
     CAMERA_PERMISSION_DENIED,
     SSL_EXCEPTION,
-    SERVER_ABORT;
+    SERVER_ABORT,
+    MULTI_WINDOW_MODE_UNSUPPORTED;
  }
 ```
 
@@ -163,14 +179,15 @@ A description of these errors are as follows:
 - **CAMERA_PERMISSION_DENIED** - The user disallowed access to the camera when prompted.
 - **SSL_EXCEPTION** - Certificates provided for pinning were corrupted or otherwise unable to be processed.
 - **SERVER_ABORT** - The token was invalidated server-side.
+- **MULTI_WINDOW_MODE_UNSUPPORTED** - The user attempted to iProov in split-screen/multi-screen mode,which is not supported.
 
 ## ⚙ Configuration Options
 
 Various customization options are available to pass as arguments to the IProov intent. To use these, create an instance of `IProov.IProovConfig`, set required parameters, and pass it via `.setIProovConfig` to your `NativeClaim.Builder`. A list of available parameters for customization is below:
 
 ```java
-IProov.IProovConfig config = new IProov.IProovConfig()
-    .ui.setAutostartDisabled(true)             // With autostart, instead of requiring a user tap, there is an auto-countdown from 3 when face is detected. Default false
+IProov.Options options = new IProov.Options()
+    .ui.setAutoStartDisabled(true)             // With autostart, instead of requiring a user tap, there is an auto-countdown from 3 when face is detected. Default false
     .ui.setLocale("")                          // When set, overrides the device locale setting for the iProov SDK. Must be a 2-letter ISO 639-1 code: http://www.loc.gov/standards/iso639-2/php/code_list.php. Currently only supports "en" and "nl".
     .ui.setTitle(title)                        // The message shown during canny preview. Default is provided by the system when this value is null.
 
@@ -192,16 +209,27 @@ IProov.IProovConfig config = new IProov.IProovConfig()
     .ui.setNotificationTitle()                 // foreground service notification title
 
     .ui.setScanLineDisabled(true)              // to allow removal the scan line graphic. Default false
+    .ui.setFilter(filter)                      // to change the way the canny shader appears: enum Filter (CLASSIC, SHADED, VIBRANT)
 
-    .capture.setMaxPitchAngle(0.25)                 // Pose control - max face pitch angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
-    .capture.setMaxYawAngle(0.25)                   // Pose control - max face yaw angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
-    .capture.setMaxRollAngle(0.25)                  // Pose control - max face roll angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
+    .capture.setMaxPitchAngle(0.25)            // Pose control - max face pitch angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
+    .capture.setMaxYawAngle(0.25)              // Pose control - max face yaw angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
+    .capture.setMaxRollAngle(0.25)             // Pose control - max face roll angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
 
     .network.setCertificates(new int[]{R.raw.custom})  //optionally supply an array of paths of certificates to be used for pinning. Useful when using your own baseURL or for overriding the built-in certificate pinning for some other reason.
     //certificates should be generated in DER-encoded X.509 certificate format, eg. with the command $ openssl x509 -in cert.crt -outform der -out cert.der
     .network.setDisableCertificatePinning(false);   // when true (not recommended), disables certificate pinning to the server. Default false
 ```
 > **⬆️ UPGRADING NOTICE:** Take note of the many changes here!
+
+## 🔥 Firebase support
+
+By default, the SDK leverages the [Android built-in face detector](https://developer.android.com/reference/android/media/FaceDetector). This is a simple face detector and is ubiquitous in Android phones, however it is not regularly updated.
+
+Google now direct their efforts into maintaining the [Firebase face detector, part of ML Kit](https://firebase.google.com/docs/ml-kit/detect-faces). The advantage of the Firebase face detector is that it provides more advanced features such as facial landmarks, which allows us to offer detection of the user's pose.
+
+You can therefore opt-into the Firebase functionality by adding the `iproov-firebase` module to your build.gradle (see the Installation instructions).
+
+Please note that adding Firebase support will increase your app size (as it will include the Firebase dependencies) and will also result in poorer performance on low-end devices, since Firebase is more computationally intensive.
 
 ## 🌎 String localization & customization
 
