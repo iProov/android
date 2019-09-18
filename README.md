@@ -30,15 +30,15 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 1. Open the build.gradle file corresponding to your new or existing Android Studio project with which you wish to integrate (commonly, this is the build.gradle file for the `app` module).
 
-2. Add the repositories section at the top level of your build file:
+2. Add the repositories section to your build.gradle file:
 
 ```gradle
 repositories {
-    maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
+    maven { url 'https://raw.githubusercontent.com/iProov/android/nextgen/maven/' }
 }
 ```
 
-3. Add the dependencies section at the top level of your build file:
+3. Add the dependencies section to your app build.gradle file:
 
 ```gradle
 dependencies {
@@ -50,7 +50,17 @@ dependencies {
 
 > **⬆️ UPGRADING NOTICE:** Take note of the new dependencies & versions!
 
-4. **OPTIONAL:** If you wish to include [support for Firebase](#-firebase-support) in your app, add the following dependency:
+4. Add support for Java 8 to your app build.gradle file:
+```gradle
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+```
+
+5. **OPTIONAL:** If you wish to include [support for Firebase](#-firebase-support) in your app, add the following dependency:
 
 ```gradle
 dependencies {
