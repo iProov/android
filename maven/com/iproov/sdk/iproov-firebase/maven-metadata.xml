@@ -3,10 +3,10 @@
   <groupId>com.iproov.sdk</groupId>
   <artifactId>iproov-firebase</artifactId>
   <versioning>
-    <release>5.0.0-beta2</release>
+    <release>5.0.0-beta3</release>
     <versions>
-      <version>5.0.0-beta2</version>
+      <version>5.0.0-beta3</version>
     </versions>
-    <lastUpdated>20190917140352</lastUpdated>
+    <lastUpdated>20191010141553</lastUpdated>
   </versioning>
 </metadata>
