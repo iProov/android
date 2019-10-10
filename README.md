@@ -1,4 +1,4 @@
-# iProov Android SDK (v5.0.0-beta2)
+# iProov Android SDK (v5.0.0-beta3)
 
 ## 🤖 Introduction
 
@@ -33,41 +33,41 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 2. Add the repositories section to your build.gradle file:
 
 ```gradle
-repositories {
-    maven { url 'https://raw.githubusercontent.com/iProov/android/nextgen/maven/' }
-}
+    repositories {
+        maven { url 'https://raw.githubusercontent.com/iProov/android/nextgen/maven/' }
+    }
 ```
 
 3. Add the dependencies section to your app build.gradle file:
 
 ```gradle
-dependencies {
-    implementation('com.iproov.sdk:iproov:5.0.0-beta2@aar') {
-        transitive=true
+    dependencies {
+        implementation('com.iproov.sdk:iproov:5.0.0-beta3@aar') {
+            transitive=true
+        }
     }
-}
 ```
 
 > **⬆️ UPGRADING NOTICE:** Take note of the new dependencies & versions!
 
 4. Add support for Java 8 to your app build.gradle file:
 ```gradle
-android {
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    android {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
     }
-}
 ```
 
 5. **OPTIONAL:** If you wish to include [support for Firebase](#-firebase-support) in your app, add the following dependency:
 
 ```gradle
-dependencies {
-    implementation('com.iproov.sdk:iproov-firebase:5.0.0-beta2@aar') {
-        transitive=true
+    dependencies {
+        implementation('com.iproov.sdk:iproov-firebase:5.0.0-beta3@aar') {
+            transitive=true
+        }
     }
-}
 ``` 
 
 You may now build your project!
@@ -77,36 +77,36 @@ You may now build your project!
 Using iProov couldn't be simpler. Notice the need for a token.
 
 ```java
-IProov.Options options = new IProov.Options()
-    .ui.setLogoImage(R.mipmap.ic_launcher);
-    .ui.setBoldFont("Merriweather-Bold.ttf");
-
-IProov.getIProovConnection(activity).launch(
-    "https://eu.rp.secure.iproov.me", // This is optional, showing the default if omitted
-    options, 
-    token, 
-    new IProov.IProovCaptureListener() {
-        @Override public void onSuccess(String token) {
-            // Successfully registered (enrol) or iProoved (verify)
+    IProov.Options options = new IProov.Options()
+        .ui.setLogoImage(R.mipmap.ic_launcher);
+        .ui.setFontAsset("Merriweather-Bold.ttf");
+    
+    IProov.getIProovConnection(activity).launch(
+        "https://eu.rp.secure.iproov.me", // This is optional, showing the default if omitted or null. It can alternatively be set in Options
+        options, 
+        token, 
+        new IProov.IProovCaptureListener() {
+            @Override public void onSuccess(String token) {
+                // Successfully registered (enrol) or iProoved (verify)
+            }
+            @Override public void onFailure(@Nullable String reason, @Nullable String feedbackCode) {
+                // Failed to registered (enrol) or iProoved (verify)
+                // This is usually due to lighting conditions or face movement
+            }
+            @Override public void onCancelled() {
+                // The user hit back or home and cancelled the scan
+            }
+            @Override public void onProgressUpdate(String message, double progress) {
+                // Scanning is in progress, providing a message/prompt/title for the user and a value 0.0 to 1.0 indicating how far through the process we are
+            }
+            @Override public void onError(IProovException e) {
+                // An unrecoverable error occurred e.g. network problems. See IProovException.Reason.
+            }
         }
-        @Override public void onFailure(@Nullable String reason, @Nullable String feedback) {
-            // Failed to registered (enrol) or iProoved (verify)
-            // This is usually due to lighting conditions or face movement
-        }
-        @Override public void onCancelled() {
-            // The user hit back or home and cancelled the scan
-        }
-        @Override public void onProgressUpdate(String message, double progress) {
-            // Scanning is in progress, providing a message/prompt/title for the user and a value 0.0 to 1.0 indicating how far through the process we are
-        }
-        @Override public void onError(IProovException e) {
-            // An unrecoverable error occurred e.g. network problems. See IProovException.Reason.
-        }
-    }
-);
+    );
 
 ```
-> **⬆️ UPGRADING NOTICE:** onCanceled() has been renamed onCancelled() and .ui.setAutostartDisabled() has been renamed to .ui.setAutoStartDisabled() in 5.0.0-beta2
+> **⬆️ UPGRADING NOTICE:** onCanceled() has been renamed onCancelled() and .ui.setAutostartDisabled() has been renamed to .ui.setAutoStartDisabled() in 5.0.0-beta3
 
 ---
 
@@ -144,7 +144,7 @@ The iProov session has completed and iProov has successfully verified or enrolle
 
 The iProov process has completed and iProov has failed to verify or enrol the user. The reason indicates why the authentication could not be confirmed. This could be a generic message, or could provide tips to the user to improve their chance of iProoving successfully (e.g. “lighting too dark”, etc.). There may also be a `feedback` which provides additional info.
 
-| Feedback                              | Reason                                                |
+| Feedback Code                         | Reason                                                |
 | ------------------------------------- | ----------------------------------------------------- |
 | **ambiguous_outcome**                 | Sorry, ambiguous outcome                              |
 | **network_problem**                   | Sorry, network problem                                |
@@ -156,6 +156,10 @@ The iProov process has completed and iProov has failed to verify or enrol the us
 | **motion_too_much_movement**          | Please keep still                                     |
 | **motion_too_much_mouth_movement**    | Please do not talk while iProoving                    |
 
+##### `Translations`
+
+Note that string resources of the form `R.string.iproov__failure_<feedback code>` e.g. `iproov__failure_ambiguous_outcome` exist and will be used for `reason`, allowing it to provide localised translations.
+
 #### `void onCancelled()`
 
 The iProov process was halted and cancelled by user action.
@@ -166,17 +170,17 @@ The iProov process failed entirely (i.e. iProov was unable to verify or enrol th
 You may wish to display the `localizedMessage` to the user. You can get one of the following reasons using `exception.getReason()`:
 
 ```java
-public enum Reason {
-    GENERAL_ERROR,
-    NETWORK_ERROR,
-    STREAMING_ERROR,
-    USER_PRESSED_BACK, // comes through as onCancelled instead of onError
-    UNSUPPORTED_DEVICE,
-    CAMERA_PERMISSION_DENIED,
-    SSL_EXCEPTION,
-    SERVER_ABORT,
-    MULTI_WINDOW_MODE_UNSUPPORTED;
- }
+    public enum Reason {
+        GENERAL_ERROR,
+        NETWORK_ERROR,
+        STREAMING_ERROR,
+        USER_PRESSED_BACK, // comes through as onCancelled instead of onError
+        UNSUPPORTED_DEVICE,
+        CAMERA_PERMISSION_DENIED,
+        SSL_EXCEPTION,
+        SERVER_ABORT,
+        MULTI_WINDOW_MODE_UNSUPPORTED;
+     }
 ```
 
 A description of these errors are as follows:
@@ -196,40 +200,48 @@ A description of these errors are as follows:
 Various customization options are available to pass as arguments to the IProov intent. To use these, create an instance of `IProov.IProovConfig`, set required parameters, and pass it via `.setIProovConfig` to your `NativeClaim.Builder`. A list of available parameters for customization is below:
 
 ```java
-IProov.Options options = new IProov.Options()
-    .ui.setAutoStartDisabled(true)             // With autostart, instead of requiring a user tap, there is an auto-countdown from 3 when face is detected. Default false
-    .ui.setLocale("")                          // When set, overrides the device locale setting for the iProov SDK. Must be a 2-letter ISO 639-1 code: http://www.loc.gov/standards/iso639-2/php/code_list.php. Currently only supports "en" and "nl".
-    .ui.setTitle(title)                        // The message shown during canny preview. Default is provided by the system when this value is null.
-
-    .ui.setBackgroundColor(Color.BLACK)        // background colour shown after the flashing stops. Default Color.BLACK
-    .ui.setLineColor(Color.BLACK)              // face outline colour
-    .ui.setEnableScreenshots(true)             // for added security, screenshotting is disabled during IProoving; re-enable this here. Default false
-
-    // You can also set the colour of the oval (which also sets the accompanying text color):
-    .ui.setLoadingTintColor(Color.RED)         // The app is connecting to the server. Default: grey (#5c5c5c)
-    .ui.setNotReadyTintColor(Color.BLUE)       // Cannot start iProoving until the user takes action (e.g. move closer, etc). Default: orange (#f5a623)
-    .ui.setReadyTintColor(Color.GREEN)         // Ready to start iProoving. Default: green (#01bf46)
+    IProov.Options options = new IProov.Options()
+        .ui.setAutoStartDisabled(true)               // With autostart, instead of requiring a user tap, there is an auto-countdown from 3 when face is detected. Default false
+        .ui.setTitle(title)                          // The message shown during canny preview. Default is provided by the system when this value is null.
     
-    //fonts are identified by filename and must be included in the "assets" directory of the host project
-    .ui.setRegularFont("SomeFont.ttf")         // change the default font used within the SDK 
-    .ui.setBoldFont("SomeFont-Bold.ttf")       // boldFont is used for feedback messages and the countdown timer
-
-    .ui.setLogo(resourceId)                    // logo to be included in the title - defaults to iProov logo
-    .ui.setNotificationImage()                 // foreground service notification image
-    .ui.setNotificationTitle()                 // foreground service notification title
-
-    .ui.setScanLineDisabled(true)              // to allow removal the scan line graphic. Default false
-    .ui.setFilter(filter)                      // to change the way the canny shader appears: enum Filter (CLASSIC, SHADED, VIBRANT)
-
-    .capture.setMaxPitchAngle(0.25)            // Pose control - max face pitch angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
-    .capture.setMaxYawAngle(0.25)              // Pose control - max face yaw angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
-    .capture.setMaxRollAngle(0.25)             // Pose control - max face roll angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
-
-    .network.setCertificates(new int[]{R.raw.custom})  //optionally supply an array of paths of certificates to be used for pinning. Useful when using your own baseURL or for overriding the built-in certificate pinning for some other reason.
-    //certificates should be generated in DER-encoded X.509 certificate format, eg. with the command $ openssl x509 -in cert.crt -outform der -out cert.der
-    .network.setDisableCertificatePinning(false);   // when true (not recommended), disables certificate pinning to the server. Default false
+        .ui.setBackgroundColor(Color.BLACK)          // background colour shown before the flashing starts
+        .ui.setLineColor(Color.CYAN)                 // face outline colour
+        .ui.setEnableScreenshots(true)               // for added security, screenshotting is disabled during IProoving; re-enable this here. Default false
+    
+        .ui.setLoadingTintColor(Color.RED)           // The app is connecting to the server. Default: grey (#5c5c5c)
+        .ui.setNotReadyTintColor(Color.BLUE)         // Cannot start iProoving until the user takes action (e.g. move closer, etc). Default: orange (#f5a623)
+        .ui.setReadyTintColor(Color.GREEN)           // Ready to start iProoving. Default: green (#01bf46)
+        
+        .ui.setFontAsset("SomeFont.ttf")             // change the default font used within the SDK - from assets directory
+        .ui.setFontResource(R.font.some_font)        // change the default font used within the SDK - from font resources
+    
+        .ui.setLogo(resourceId)                      // logo to be included in the title - defaults to iProov logo
+        .ui.setNotificationImage()                   // foreground service notification image
+        .ui.setNotificationTitle()                   // foreground service notification title
+    
+        .ui.setScanLineDisabled(true)                // to allow removal the scan line graphic. Default false
+        .ui.setFilter(filter)                        // to change the way the canny shader appears: enum Filter (CLASSIC, SHADED, VIBRANT)
+    
+        .capture.setMaxPitchAngle(0.25)              // Pose control - max face pitch angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
+        .capture.setMaxYawAngle(0.25)                // Pose control - max face yaw angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
+        .capture.setMaxRollAngle(0.25)               // Pose control - max face roll angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
+    
+        .network.setBaseURL("https://eu.rp.secure.iproov.me")
+                                                     // The base networking URL (can also be set in launch method)
+        .network.setCertificates(new ArrayList<>(Collections.singletonList(R.raw.iproov__certificate)))  
+                                                     // optionally supply an list of resourceIDs of certificates files to be used for pinning.
+                                                     // Useful when using your own baseURL or for overriding the built-in certificate pinning for some other reason.
+                                                     // certificates should be generated in DER-encoded X.509 certificate format, eg. with the command $ openssl x509 -in cert.crt -outform der -out cert.der
+        .network.setDisableCertificatePinning(false) // when true (not recommended), disables certificate pinning to the server. Default false
+        .network.setStreamingTransport(transport)    // The streaming transport protocol to use: enum StreamingTransport (WEB_SOCKET, POLLING, AUTO)
+        .network.setStreamingTimeoutSecs(duration)   // The streaming timeout in seconds - setting to 0 disables timeout
+        .network.setStreamingPath(path)              // The path to use when streaming, defaults to /socket.io/v2/. You should not need to change this unless directed to do so by iProov.
 ```
 > **⬆️ UPGRADING NOTICE:** Take note of the many changes here!
+
+> **⬆️ UPGRADING NOTICE:** As of 5.0.0-beta3, all Option parameters no longer have primitive types and can be set to null to reset them. When a parameter is null then the SDK might use a built-in default value. A special set of getters exists to indicate the value that the SDK will use (Options or default) and they take the form getResolved<parameter-name>().
+
+> **⬆️ UPGRADING NOTICE:** As of 5.0.0-beta3, setLocale, setRegularFont, setBoldFont have been removed. setFontAsset and setFontResource have been added. 
 
 ## 🔥 Firebase support
 
@@ -243,17 +255,9 @@ Please note that adding Firebase support will increase your app size (as it will
 
 ## 🌎 String localization & customization
 
-The SDK ships with localized strings for the following locales:
+> **⬆️ UPGRADING NOTICE:** As of 5.0.0-beta3, the SDK no longer ships with localized strings for languages other than English.
 
-- English
-- Norwegian Bokmål
-- Norwegian Nynosk
-- Dutch
-- Turkish
-
-If the user's device language is set to one of the above, the SDK will be localized accordingingly unless `options.ui.localeOverride` is set, in which case this setting will override the default locale.
-
-It is also possible to manually customize any of the strings in the app, regardless of locale.
+Developers can add their own translations or string overrides to suit. 
 
 > **💠 PRE-RELEASE SOFTWARE:** More information on string customization coming soon.
 
