@@ -172,7 +172,7 @@ class MainActivityKotlin : AppCompatActivity() {
         return IProov.Options()
                 .apply {
                     ui.autoStartDisabled = false
-                    ui.boldFont = "Merriweather-Bold.ttf"
+                    ui.fontAsset = "Merriweather-Bold.ttf"
                     ui.logoImage = R.mipmap.ic_launcher
                 }
     }
