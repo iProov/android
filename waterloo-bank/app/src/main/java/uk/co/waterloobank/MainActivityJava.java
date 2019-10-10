@@ -197,6 +197,6 @@ public class MainActivityJava extends AppCompatActivity {
         return new IProov.Options()
                 .ui.setAutoStartDisabled(false)
                 .ui.setLogoImage(R.mipmap.ic_launcher)
-                .ui.setBoldFont("Merriweather-Bold.ttf");
+                .ui.setFontAsset("Merriweather-Bold.ttf");
     }
 }
