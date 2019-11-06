@@ -1,4 +1,4 @@
-# iProov Android SDK (v5.0.0-beta3)
+# iProov Android SDK (v5.0.0-beta4)
 
 ## 🤖 Introduction
 
@@ -42,7 +42,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 ```gradle
     dependencies {
-        implementation('com.iproov.sdk:iproov:5.0.0-beta3@aar') {
+        implementation('com.iproov.sdk:iproov:5.0.0-beta4@aar') {
             transitive=true
         }
     }
@@ -64,7 +64,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 ```gradle
     dependencies {
-        implementation('com.iproov.sdk:iproov-firebase:5.0.0-beta3@aar') {
+        implementation('com.iproov.sdk:iproov-firebase:5.0.0-beta4@aar') {
             transitive=true
         }
     }
@@ -124,9 +124,9 @@ Using iProov couldn't be simpler. Notice the need for a token.
 
 We provide an API with endpoints that support logging in, enrolment and validation using tokens.
 
-An example of this, and calling the above launch method, is provided in the ["Waterloo Bank" sample app](https://github.com/iProov/android/tree/master/waterloo-bank), which demonstrates both Java and Kotlin for you to compare and contrast.
+An example of this, and calling the above launch method, is provided in the ["Waterloo Bank" sample app](https://github.com/iProov/android/tree/nextgen/waterloo-bank), which demonstrates both Java and Kotlin for you to compare and contrast.
 
-This also uses the [sample client api code](https://github.com/iProov/android/tree/master/maven/com/iproov/android-api-client) that we provide to assist both in such simple samples and for you to test out your own apps quickly. However, this code is NOT expected to be used in production code. The code requires an apiKey and secret, which should NEVER be distributed inside an app, for security reasons. For a proper implementation, you are expected to secure your apiKey and secret on your own API servers behind suitable end points, where your servers will call our API when called upon by your app.
+This also uses the [sample client api code](https://github.com/iProov/android/tree/master/nextgen/com/iproov/android-api-client) that we provide to assist both in such simple samples and for you to test out your own apps quickly. However, this code is NOT expected to be used in production code. The code requires an apiKey and secret, which should NEVER be distributed inside an app, for security reasons. For a proper implementation, you are expected to secure your apiKey and secret on your own API servers behind suitable end points, where your servers will call our API when called upon by your app.
 
 ### 🎯 IProovCaptureListener
 
@@ -179,7 +179,8 @@ You may wish to display the `localizedMessage` to the user. You can get one of t
         CAMERA_PERMISSION_DENIED,
         SSL_EXCEPTION,
         SERVER_ABORT,
-        MULTI_WINDOW_MODE_UNSUPPORTED;
+        MULTI_WINDOW_MODE_UNSUPPORTED,
+        CAMERA_UNAVAILABLE;
      }
 ```
 
@@ -194,6 +195,7 @@ A description of these errors are as follows:
 - **SSL_EXCEPTION** - Certificates provided for pinning were corrupted or otherwise unable to be processed.
 - **SERVER_ABORT** - The token was invalidated server-side.
 - **MULTI_WINDOW_MODE_UNSUPPORTED** - The user attempted to iProov in split-screen/multi-screen mode,which is not supported.
+- **CAMERA_UNAVAILABLE** - This could happen when a non-phone is used with/without an external/usb camera. See Options.capture.setCameraLensFacing().
 
 ## ⚙ Configuration Options
 
@@ -221,10 +223,15 @@ Various customization options are available to pass as arguments to the IProov i
     
         .ui.setScanLineDisabled(true)                // to allow removal the scan line graphic. Default false
         .ui.setFilter(filter)                        // to change the way the canny shader appears: enum Filter (CLASSIC, SHADED, VIBRANT)
+        .ui.setOrientation(orientation)              // set the orientation of the iProov activity: enum Orientation (PORTRAIT, REVERSE_PORTRAIT, LANDSCAPE, REVERSE_LANDSCAPE)
     
         .capture.setMaxPitchAngle(0.25)              // Pose control - max face pitch angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
         .capture.setMaxYawAngle(0.25)                // Pose control - max face yaw angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
         .capture.setMaxRollAngle(0.25)               // Pose control - max face roll angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
+        .capture.setCameraLensFacing(CameraLensFacing.EXTERNAL)
+                                                     // Allow for an alternate camera to be used. When null, default of FRONT is used except for a small set of known devices.
+                                                     // When provided, this overrides selection of camera on all devices
+                                                     // Usb cameras will plug n play into Android and register as either EXTERNAL or BACK
     
         .network.setBaseURL("https://eu.rp.secure.iproov.me")
                                                      // The base networking URL (can also be set in launch method)
@@ -237,11 +244,7 @@ Various customization options are available to pass as arguments to the IProov i
         .network.setStreamingTimeoutSecs(duration)   // The streaming timeout in seconds - setting to 0 disables timeout
         .network.setStreamingPath(path)              // The path to use when streaming, defaults to /socket.io/v2/. You should not need to change this unless directed to do so by iProov.
 ```
-> **⬆️ UPGRADING NOTICE:** Take note of the many changes here!
-
-> **⬆️ UPGRADING NOTICE:** As of 5.0.0-beta3, all Option parameters no longer have primitive types and can be set to null to reset them. When a parameter is null then the SDK might use a built-in default value. A special set of getters exists to indicate the value that the SDK will use (Options or default) and they take the form getResolved<parameter-name>().
-
-> **⬆️ UPGRADING NOTICE:** As of 5.0.0-beta3, setLocale, setRegularFont, setBoldFont have been removed. setFontAsset and setFontResource have been added. 
+> **⬆️ UPGRADING NOTICE:** Take note of the many changes here! All Option parameters no longer have primitive types and can be set to null to reset them. When a parameter is null then the SDK might use a built-in default value. A special set of getters exists to indicate the value that the SDK will use (Options or default) and they take the form getResolved<parameter-name>(). Note: setLocale, setRegularFont, setBoldFont have been removed. setFontAsset and setFontResource have been added. setCameraLensFacing provides ability to work with usb/external cameras. New reason added CAMERA_UNAVAILABLE.
 
 ## 🔥 Firebase support
 
@@ -255,9 +258,9 @@ Please note that adding Firebase support will increase your app size (as it will
 
 ## 🌎 String localization & customization
 
-> **⬆️ UPGRADING NOTICE:** As of 5.0.0-beta3, the SDK no longer ships with localized strings for languages other than English.
+> **⬆️ UPGRADING NOTICE:** The SDK no longer ships with localized strings for languages other than English.
 
-Developers can add their own translations or string overrides to suit. 
+Developers can add their own translations or string overrides to suit. For your convenience, the SDK's [strings.xml](https://raw.githubusercontent.com/iProov/android/nextgen/resources/strings.xml) has been copied to the root of this repository.
 
 > **💠 PRE-RELEASE SOFTWARE:** More information on string customization coming soon.
 
