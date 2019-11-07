@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -38,10 +39,26 @@ public class MainActivityJava extends AppCompatActivity {
         captureStatus = findViewById(R.id.captureStatus);
 
         loginButton = findViewById(R.id.loginButton);
-        loginButton.setOnClickListener(v -> login(userNameEditText.getText().toString()));
+        loginButton.setOnClickListener(v -> {
+            String userId = userNameEditText.getText().toString();
+            if (userId.isEmpty()) {
+                Toast.makeText(this, "User ID can't be empty", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            login(userId);
+        });
 
         registerButton = findViewById(R.id.registerButton);
-        registerButton.setOnClickListener(v -> register(userNameEditText.getText().toString()));
+        registerButton.setOnClickListener(v -> {
+            String userId = userNameEditText.getText().toString();
+            if (userId.isEmpty()) {
+                Toast.makeText(this, "User ID can't be empty", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            register(userNameEditText.getText().toString());
+        });
 
         connection = IProov.getIProovConnection(this);
     }
@@ -132,7 +149,7 @@ public class MainActivityJava extends AppCompatActivity {
 
             @Override
             public void onProgressUpdate(String message, double progress) {
-                onProgress(message, (int) progress);
+                onProgress(message, (int) progress * 100);
             }
 
             @Override
@@ -162,7 +179,7 @@ public class MainActivityJava extends AppCompatActivity {
 
             @Override
             public void onProgressUpdate(String message, double progress) {
-                onProgress(message, (int) progress);
+                onProgress(message, (int) progress * 100);
             }
 
             @Override

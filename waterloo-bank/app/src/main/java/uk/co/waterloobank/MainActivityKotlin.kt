@@ -3,6 +3,7 @@ package uk.co.waterloobank
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.iproov.androidapiclient.DemonstrationPurposesOnly
 import com.iproov.androidapiclient.kotlinfuel.ApiClientFuel
@@ -24,11 +25,25 @@ class MainActivityKotlin : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         loginButton.setOnClickListener {
-            login(usernameEditText.text.toString())
+            usernameEditText.text.toString().let {
+                if(it.isEmpty()) {
+                    Toast.makeText(this, "User ID can't be empty", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                login(it)
+             }
         }
 
         registerButton.setOnClickListener {
-            register(usernameEditText.text.toString())
+            usernameEditText.text.toString().let {
+                if(it.isEmpty()) {
+                    Toast.makeText(this, "User ID can't be empty", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                register(it)
+            }
         }
 
         connection = IProov.getIProovConnection(this)
@@ -86,7 +101,7 @@ class MainActivityKotlin : AppCompatActivity() {
                     }
 
                     override fun onProgressUpdate(message: String, progress: Double) {
-                        onProgress(message, progress.toInt())
+                        onProgress(message, progress.times(100).toInt())
                     }
 
                     override fun onError(e: IProovException) {
@@ -131,7 +146,7 @@ class MainActivityKotlin : AppCompatActivity() {
                     }
 
                     override fun onProgressUpdate(message: String, progress: Double) {
-                        onProgress(message, progress.toInt())
+                        onProgress(message, progress.times(100).toInt())
                     }
 
                     override fun onError(e: IProovException) {
@@ -168,12 +183,11 @@ class MainActivityKotlin : AppCompatActivity() {
         progressBar.progress = progressValue
     }
 
-    private fun createOptions(): IProov.Options {
-        return IProov.Options()
+    private fun createOptions(): IProov.Options
+        = IProov.Options()
                 .apply {
                     ui.autoStartDisabled = false
                     ui.fontAsset = "Merriweather-Bold.ttf"
                     ui.logoImage = R.mipmap.ic_launcher
                 }
-    }
 }
