@@ -14,10 +14,8 @@ import kotlinx.coroutines.*
 
 class MainActivityKotlin : AppCompatActivity() {
 
-    lateinit var connection: IProov.IProovConnection
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
-
 
     @DemonstrationPurposesOnly
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +28,6 @@ class MainActivityKotlin : AppCompatActivity() {
                     Toast.makeText(this, "User ID can't be empty", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-
                 login(it)
              }
         }
@@ -41,17 +38,9 @@ class MainActivityKotlin : AppCompatActivity() {
                     Toast.makeText(this, "User ID can't be empty", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-
                 register(it)
             }
         }
-
-        connection = IProov.getIProovConnection(this)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        connection.stop()
     }
 
     private fun hideLoadingViews() {
@@ -88,29 +77,19 @@ class MainActivityKotlin : AppCompatActivity() {
         )
 
         uiScope.launch(Dispatchers.IO) {
-
             try {
                 val token = apiClientFuel.getToken(com.iproov.androidapiclient.ClaimType.VERIFY, userID)
-                connection.launch(createOptions(), token, object : IProov.IProovCaptureListener {
-                    override fun onSuccess(token: String) {
-                        onResult("Success", "Successfully iProoved.\nToken:$token")
-                    }
-
-                    override fun onFailure(reason: String?, feedback: String?) {
-                        onResult("Failed", "Failed to iProov\nreason: $reason feedback:$feedback")
-                    }
-
-                    override fun onProgressUpdate(message: String, progress: Double) {
-                        onProgress(message, progress.times(100).toInt())
-                    }
-
-                    override fun onError(e: IProovException) {
-                        onResult("Error", "Error: ${e.localizedMessage}")
-                    }
-
-                    override fun onCancelled() {
-                        onResult("Cancelled", "User action: cancelled")
-                    }
+                IProov.launch(this@MainActivityKotlin, token, createOptions(), object : IProov.Listener {
+                    override fun onSuccess(token: String) =
+                            onResult("Success", "Successfully iProoved.\nToken:$token")
+                    override fun onFailure(reason: String?, feedback: String?) =
+                            onResult("Failed", "Failed to iProov\nreason: $reason feedback:$feedback")
+                    override fun onProcessing(progress: Double, message: String) =
+                        onProcessing(message, progress.times(100).toInt())
+                    override fun onError(e: IProovException) =
+                            onResult("Error", "Error: ${e.localizedMessage}")
+                    override fun onCancelled() =
+                            onResult("Cancelled", "User action: cancelled")
                 })
             } catch (ex: Exception) {
                 withContext(Dispatchers.Main) {
@@ -136,26 +115,17 @@ class MainActivityKotlin : AppCompatActivity() {
         uiScope.launch(Dispatchers.IO) {
             try {
                 val token = apiClientFuel.getToken(com.iproov.androidapiclient.ClaimType.ENROL, userID)
-                connection.launch(createOptions(), token, object : IProov.IProovCaptureListener {
-                    override fun onSuccess(token: String) {
-                        onResult("Success", "Successfully registered.\nToken:$token")
-                    }
-
-                    override fun onFailure(reason: String?, feedback: String?) {
-                        onResult("Failed", "Failed to register\nreason: $reason feedback:$feedback")
-                    }
-
-                    override fun onProgressUpdate(message: String, progress: Double) {
-                        onProgress(message, progress.times(100).toInt())
-                    }
-
-                    override fun onError(e: IProovException) {
-                        onResult("Error", "Error: ${e.localizedMessage}")
-                    }
-
-                    override fun onCancelled() {
-                        onResult("Cancelled", "User action: cancelled")
-                    }
+                IProov.launch(this@MainActivityKotlin, token, createOptions(), object : IProov.Listener {
+                    override fun onSuccess(token: String) =
+                            onResult("Success", "Successfully registered.\nToken:$token")
+                    override fun onFailure(reason: String?, feedback: String?) =
+                            onResult("Failed", "Failed to register\nreason: $reason feedback:$feedback")
+                    override fun onProcessing(progress: Double, message: String) =
+                        onProcessing(message, progress.times(100).toInt())
+                    override fun onError(e: IProovException) =
+                            onResult("Error", "Error: ${e.localizedMessage}")
+                    override fun onCancelled() =
+                            onResult("Cancelled", "User action: cancelled")
                 })
             } catch (ex: Exception) {
                 withContext(Dispatchers.Main) {
@@ -171,14 +141,12 @@ class MainActivityKotlin : AppCompatActivity() {
                 .setIcon(R.mipmap.ic_launcher)
                 .setTitle(title)
                 .setMessage(resultMessage)
-                .setPositiveButton("OK") { _, _ ->
-                    showButtons()
-                }
+                .setPositiveButton("OK") { _, _ -> showButtons() }
                 .setCancelable(false)
                 .show()
     }
 
-    private fun onProgress(status: String, progressValue: Int) {
+    private fun onProcessing(status: String, progressValue: Int) {
         captureStatus.text = status
         progressBar.progress = progressValue
     }
@@ -187,7 +155,7 @@ class MainActivityKotlin : AppCompatActivity() {
         = IProov.Options()
                 .apply {
                     ui.autoStartDisabled = false
-                    ui.fontAsset = "Merriweather-Bold.ttf"
+                    ui.fontPath = "Merriweather-Bold.ttf"
                     ui.logoImage = R.mipmap.ic_launcher
                 }
 }

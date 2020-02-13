@@ -16,13 +16,11 @@ import com.iproov.androidapiclient.javaretrofit.ApiClientJavaRetrofit;
 import com.iproov.androidapiclient.javaretrofit.ClaimType;
 import com.iproov.sdk.IProov;
 import com.iproov.sdk.IProovException;
-import com.iproov.sdk.model.Claim;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public class MainActivityJava extends AppCompatActivity {
 
-    private IProov.IProovConnection connection;
     private Button loginButton;
     private Button registerButton;
     private EditText userNameEditText;
@@ -59,14 +57,6 @@ public class MainActivityJava extends AppCompatActivity {
 
             register(userNameEditText.getText().toString());
         });
-
-        connection = IProov.getIProovConnection(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        connection.stop();
     }
 
     private void hideLoadingViews() {
@@ -105,7 +95,7 @@ public class MainActivityJava extends AppCompatActivity {
                 ClaimType.VERIFY,
                 userID,
                 (call, response) -> {
-                    startIproovForVerifyClaim(response.body().getToken(), Claim.ClaimType.VERIFY);
+                    startIproovForVerifyClaim(response.body().getToken(), ClaimType.VERIFY);
                 },
                 throwable -> {
                     onResult("Filed", "Failed to get token.");
@@ -127,15 +117,15 @@ public class MainActivityJava extends AppCompatActivity {
                 ClaimType.ENROL,
                 userID,
                 (call, response) -> {
-                    startIproovForEnrollrClaim(response.body().getToken(), Claim.ClaimType.ENROL);
+                    startIproovForEnrollrClaim(response.body().getToken(), ClaimType.ENROL);
                 },
                 throwable -> {
-                    onResult("Filed", "Failed to get token.");
+                    onResult("Failed", "Failed to get token.");
                 });
     }
 
-    private void startIproovForEnrollrClaim(final String token, final Claim.ClaimType claimType) {
-        connection.launch(createOptions(), token, new IProov.IProovCaptureListener() {
+    private void startIproovForEnrollrClaim(final String token, final ClaimType claimType) {
+        IProov.launch(this, token, createOptions(), new IProov.Listener() {
 
             @Override
             public void onSuccess(String token) {
@@ -148,8 +138,8 @@ public class MainActivityJava extends AppCompatActivity {
             }
 
             @Override
-            public void onProgressUpdate(String message, double progress) {
-                onProgress(message, (int) progress * 100);
+            public void onProcessing( double progress, String message) {
+                onProcessingUpdate(message, (int) progress * 100);
             }
 
             @Override
@@ -164,8 +154,8 @@ public class MainActivityJava extends AppCompatActivity {
         });
     }
 
-    private void startIproovForVerifyClaim(final String token, final Claim.ClaimType claimType) {
-        connection.launch(createOptions(), token, new IProov.IProovCaptureListener() {
+    private void startIproovForVerifyClaim(final String token, final ClaimType claimType) {
+        IProov.launch(this, token, createOptions(), new IProov.Listener() {
 
             @Override
             public void onSuccess(String token) {
@@ -178,8 +168,8 @@ public class MainActivityJava extends AppCompatActivity {
             }
 
             @Override
-            public void onProgressUpdate(String message, double progress) {
-                onProgress(message, (int) progress * 100);
+            public void onProcessing(double progress, String message) {
+                onProcessingUpdate(message, (int) progress * 100);
             }
 
             @Override
@@ -205,15 +195,16 @@ public class MainActivityJava extends AppCompatActivity {
                 .show();
     }
 
-    private void onProgress(final String status, final int progressValue) {
+    private void onProcessingUpdate(final String status, final int progressValue) {
         captureStatus.setText(status);
         progressBar.setProgress(progressValue);
     }
 
     private IProov.Options createOptions() {
-        return new IProov.Options()
-                .ui.setAutoStartDisabled(false)
-                .ui.setLogoImage(R.mipmap.ic_launcher)
-                .ui.setFontAsset("Merriweather-Bold.ttf");
+        IProov.Options options = new IProov.Options();
+        options.ui.autoStartDisabled = false;
+        options.ui.logoImage = R.mipmap.ic_launcher;
+        options.ui.fontPath = "Merriweather-Bold.ttf";
+        return options;
     }
 }
