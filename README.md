@@ -1,24 +1,34 @@
-# iProov Android SDK (v5.0.0-beta5)
+# iProov Android SDK (v5.0.0-beta6)
 
-## 🤖 Introduction
+## 🤳 Introduction
 
-iProov is an SDK providing a programmatic interface for embedding the iProov technology within a 3rd party application.
+The iProov Android SDK enables you to integrate iProov into your Android app. We also have an [iOS SDK](https://github.com/iproov/ios) and [HTML5 client](https://github.com/iProov/html5).
 
-> **💠 PRE-RELEASE SOFTWARE:** This version is currently in beta and not all features of the SDK are enabled. Please note that the lighting model/face distance logic is disabled in this version.
+### Requirements
 
-iProov has been developed as an Android AAR Library distributed through our Maven repository, and it supports Android API Level 21 (Lollipop 5.0) and above. If you require support for Android API Level 16-19, then you will need to use the previous version of this library (4.4.0).
+- Android Studio
+- API Level 19 (4.4 KitKat) and above
+- Compilation target, build tools and Android compatibility libraries must be 27+
 
 Within this repository you can find the fictitious "Waterloo Bank" sample Android app, which illustrates an example iProov integration.
 
-## ❗ Android Studio Version Compatibility
+## 📖 Contents
 
-Due to breaking changes in Gradle 3.x (bundled in Android Studio 3), the iProov SDK requires compilation target, build tools and android compatibility library versions to be 27 or above in the host project.
+The framework package is provided via this repository, which contains the following:
 
-## ⬆️ Upgrade Guide
+* **README.md** - This document
+* **maven** - Maven repository for the SDK
+* **waterloo-bank** - A sample project of iProov for the fictitious _Waterloo Bank_.
+* **resources** - Directory containing additional development resources you may find helpful.
 
-Welcome to the next generation of the iProov SDK! v5 is a substantial overhaul to the SDK and added many new features, and as a result SDK v5 is a major update and includes breaking changes!
+
+## ⬆️ Upgrading from earlier versions
+
+Welcome to the next generation of the iProov SDK! v5 is a substantial overhaul to the SDK and added many new features, and as a result SDK v5 is a major update and includes breaking changes, so please read this document carefully.
 
 Please consult the [Upgrade Guide](https://github.com/iProov/android/wiki/Upgrade-Guide) for detailed information about how to upgrade your app, and look out for the ⬆️ symbol in this README.
+
+If you are upgrading from earlier betas of SDK v5, please read the integration documentation carefully as the APIs have changed significantly.
 
 ## ✍️ Registration
 
@@ -26,114 +36,162 @@ You can obtain API credentials by registering on the [iProov Partner Portal](htt
 
 ## 📲 Installation
 
-The Android SDK is provided in AAR format (Android Library Project) as a Maven dependency. The installation guide assumes use of Android Studio.
+The Android SDK is provided in AAR format (Android Library Project) as a Maven dependency.
 
 1. Open the build.gradle file corresponding to your new or existing Android Studio project with which you wish to integrate (commonly, this is the build.gradle file for the `app` module).
 
 2. Add the repositories section to your build.gradle file:
 
-```gradle
-    repositories {
-        maven { url 'https://raw.githubusercontent.com/iProov/android/nextgen/maven/' }
-    }
-```
+	```groovy
+	repositories {
+	    maven { url 'https://raw.githubusercontent.com/iProov/android/nextgen/maven/' }
+	}
+	```
 
 3. Add the dependencies section to your app build.gradle file:
 
-```gradle
-    dependencies {
-        implementation('com.iproov.sdk:iproov:5.0.0-beta4@aar') {
-            transitive=true
-        }
-    }
-```
+	```groovy
+	dependencies {
+	    implementation('com.iproov.sdk:iproov:5.0.0-beta6@aar') {
+	        transitive=true
+	    }
+	}
+	```
 
-> **⬆️ UPGRADING NOTICE:** Take note of the new dependencies & versions!
+	> **⬆️ UPGRADING NOTICE:** Take note of the new dependencies & versions!
 
-4. Add support for Java 8 to your app build.gradle file:
-```gradle
-    android {
-        compileOptions {
-            sourceCompatibility JavaVersion.VERSION_1_8
-            targetCompatibility JavaVersion.VERSION_1_8
-        }
-    }
-```
+4. Add support for Java 8 to your app build.gradle file (you can skip this step if you already have Java 8 enabled):
+
+	```groovy
+	android {
+	    compileOptions {
+	        sourceCompatibility JavaVersion.VERSION_1_8
+	        targetCompatibility JavaVersion.VERSION_1_8
+	    }
+	}
+	```
 
 5. **OPTIONAL:** If you wish to include [support for Firebase](#-firebase-support) in your app, add the following dependency:
 
-```gradle
-    dependencies {
-        implementation('com.iproov.sdk:iproov-firebase:5.0.0-beta4@aar') {
-            transitive=true
-        }
-    }
-``` 
+	```groovy
+	dependencies {
+	    implementation('com.iproov.sdk:iproov-firebase:5.0.0-beta6@aar') {
+	        transitive=true
+	    }
+	}
+	``` 
 
 You may now build your project!
 
-## 🚀 Launch iProov
+## 🚀 Get started
 
-Using iProov couldn't be simpler. Notice the need for a token.
+> **⬆️ UPGRADING NOTICE:** Take notice! The API has been changed significantly in v5.0.0-beta6 compared with earlier betas.
+
+Before being able to launch iProov, you need to get a token to iProov against. There are 3 different token types:
+
+* A **verify** token - for logging in an existing user
+* An **enrol** token - for registering a new user
+* An **ID match** token - for matching a user against a scanned ID document image.
+
+In a production app, you normally would want to obtain the token via a server-to-server back-end call. For the purposes of on-device demos/testing, we provide Kotlin/Java sample code for obtaining tokens via [iProov API v2](https://eu.rp.secure.iproov.me/docs.html) with our open-source [Android API Client](https://github.com/iProov/android-api-client).
+
+Once you have obtained the token, you can simply call `IProov.launch()`:
+
+##### Kotlin
+
+```kotlin
+val options = IProov.Options()
+// ...customise any iProov options...
+
+IProov.launch(this, // Reference to current activity
+	"https://eu.rp.secure.iproov.me", // Streaming URL (optional)
+	options, // Optional
+	"{{ token }}", // iProov token
+	object : IProov.Listener {
+	
+	    override fun onProcessing(progress: Double, message: String) {
+			// The SDK will update your app with the progress of streaming to the server and authenticating
+			// the user. This will be called multiple time as the progress updates.
+	    }
+	
+	    override fun onSuccess(token: String) {
+		    // The user was successfully verified/enrolled and the token has been validated.
+		    // The token passed back will be the same as the one passed in to the original call.
+	    }
+	    
+	    override fun onFailure(reason: String?, feedback: String?) {
+			// The user was not successfully verified/enrolled, as their identity could not be verified,
+			// or there was another issue with their verification/enrollment. A reason (as a string)
+			// is provided as to why the claim failed, along with a feedback code from the back-end.
+	    }
+	    
+	    override fun onCancelled() {
+	   		// The user cancelled iProov, either by pressing the close button at the top right, or pressing
+	   		// the home button.
+	    }
+
+	    override fun onError(e: IProovException) {
+	    	// The user was not successfully verified/enrolled due to an error (e.g. lost internet connection)
+	    	// You can obtain the reason from the reason property.
+	    	// It will be called once, or never.
+		
+	    }
+	    
+})
+```
 
 ##### Java
+
 ```java
-    IProov.Options options = new IProov.Options();
+IProov.Options options = new IProov.Options();
+// ...customise any iProov options...
     
-    IProov.getIProovConnection(activity).launch(
-        "https://eu.rp.secure.iproov.me", // This is optional, showing the default if omitted or null. It can alternatively be set in Options
-        options, 
-        token, 
-        new IProov.IProovCaptureListener() {
-            @Override public void onSuccess(String token) {
-                // Successfully registered (enrol) or iProoved (verify)
-            }
-            @Override public void onFailure(@Nullable String reason, @Nullable String feedbackCode) {
-                // Failed to registered (enrol) or iProoved (verify)
-                // This is usually due to lighting conditions or face movement
-            }
-            @Override public void onCancelled() {
-                // The user hit back or home and cancelled the scan
-            }
-            @Override public void onProgressUpdate(String message, double progress) {
-                // Scanning is in progress, providing a message/prompt/title for the user and a value 0.0 to 1.0 indicating how far through the process we are
-            }
-            @Override public void onError(IProovException e) {
-                // An unrecoverable error occurred e.g. network problems. See IProovException.Reason.
-            }
+IProov.launch(this, // Reference to current activity
+    "https://eu.rp.secure.iproov.me", // Streaming URL (optional)
+    options, // Optional
+    "{{ token }}", // iProov token
+    new IProov.Listener() {
+    
+        @Override
+        public void onProcessing(double progress, String message) {
+			// The SDK will update your app with the progress of streaming to the server and authenticating
+			// the user. This will be called multiple time as the progress updates.
         }
-    );
+    
+        @Override
+        public void onSuccess(String token) {
+		 	// The user was successfully verified/enrolled and the token has been validated.
+		 	// The token passed back will be the same as the one passed in to the original call.
+        }
+        
+        @Override
+        public void onFailure(@Nullable String reason, @Nullable String feedbackCode) {
+			// The user was not successfully verified/enrolled, as their identity could not be verified,
+			// or there was another issue with their verification/enrollment. A reason (as a string)
+			// is provided as to why the claim failed, along with a feedback code from the back-end.
+        }
+        
+        @Override
+        public void onCancelled() {
+	   		// The user cancelled iProov, either by pressing the close button at the top right, or pressing
+	   		// the home button.
+        }
+                
+        @Override
+        public void onError(IProovException e) {
+        	// The user was not successfully verified/enrolled due to an error (e.g. lost internet connection)
+	    	// You can obtain the reason by calling getReason().
+			// It will be called once, or never.
+        }
+        
+    }
+);
 
 ```
-##### Kotlin
-```kotlin
-        val options = IProov.Options()
 
-        IProov.getIProovConnection(activity).launch(options, tokenValue, object : IProov.IProovCaptureListener {
-            override fun onSuccess(token: String) {
-                // Successfully registered (enrol) or iProoved (verify)
-            }
-            override fun onFailure(reason: String?, feedback: String?) {
-                // Failed to registered (enrol) or iProoved (verify)
-                // This is usually due to lighting conditions or face movement
-            }
-            override fun onCancelled() {
-                // The user hit back or home and cancelled the scan
-            }
-            override fun onProgressUpdate(message: String, progress: Double) {
-                // Scanning is in progress, providing a message/prompt/title for the user and a value 0.0 to 1.0 indicating how far through the process we are
-            }
-            override fun onError(e: IProovException) {
-                // An unrecoverable error occurred e.g. network problems. See IProovException.Reason.
-            }
-        })
-```
+By default, iProov will stream to our EU back-end platform. If you wish to stream to a different back-end, you can pass a `streamingURL` as the first parameter to `IProov.launch()` with the base URL of the back-end to stream to.
 
-> **⬆️ UPGRADING NOTICE:** onCanceled() has been renamed onCancelled() and .ui.setAutostartDisabled() has been renamed to .ui.setAutoStartDisabled() in 5.0.0-beta3
-
----
-
-> **⬆️ UPGRADING NOTICE:** Just a call and a listener, with a series of callbacks.
+> **⚠️ SECURITY NOTICE:** You should never use iProov as a local authentication method. You cannot rely on the fact that the success result was returned to prove that the user was authenticated or enrolled successfully (it is possible the iProov process could be manipulated locally by a malicious user). You can treat the success callback as a hint to your app to update the UI, etc. but you must always independently validate the token server-side (using the validate API call) before performing any authenticated user actions.
 
 ---
 
@@ -143,53 +201,94 @@ Using iProov couldn't be simpler. Notice the need for a token.
 
 > **⬆️ UPGRADING NOTICE:** Previously, after launching iProov, the SDK would handle the entire user experience end-to-end, from getting a token all the way through to the streaming UI and would then pass back a pass/fail/error result to your app. In v5, the SDK flashes the screen and then hands back control to your app, whilst the capture is streamed in the background. This means that you can now control the UI to display your own streaming UI, or allow the user to continue with another activity whilst the iProov capture streams in the background.
 
-### Tokens
+## ⚙ Options
 
-We provide an API with endpoints that support logging in, enrolment and validation using tokens.
+Various customization options are available to pass as arguments to the IProov intent. To use these, create an instance of `IProov.Options` and set the parameters of your choice. A list of available parameters for customization is below:
 
-An example of this, and calling the above launch method, is provided in the ["Waterloo Bank" sample app](https://github.com/iProov/android/tree/nextgen/waterloo-bank), which demonstrates both Java and Kotlin for you to compare and contrast.
+```kotlin
+val options = IProov.Options()
 
-This also uses the [sample client api code](https://github.com/iProov/android-api-client) that we provide to assist both in such simple samples and for you to test out your own apps quickly. However, this code is NOT expected to be used in production code. The code requires an apiKey and secret, which should NEVER be distributed inside an app, for security reasons. For a proper implementation, you are expected to secure your apiKey and secret on your own API servers behind suitable end points, where your servers will call our API when called upon by your app.
+/*
+    options.ui
+    Configure options relating to the user interface
+*/
 
-### 🎯 IProovCaptureListener
+options.ui.autoStartDisabled = true; // With autostart, instead of requiring a user tap, there is an auto-countdown a face is detected. Default false.
+options.ui.title = "Authenticating to ACME Bank" // The message shown during canny preview. Default null.
 
-#### `void onProgressUpdate(String message, double progress)`
+// Adjust various colors for the camera preview:
+options.ui.backgroundColor = Color.BLACK
+options.ui.lineColor = Color.CYAN
+options.ui.loadingTintColor = Color.RED
+options.ui.notReadyTintColor = Color.BLUE
+options.ui.readyTintColor = Color.GREEN
 
-The iProov progress can be monitored from this event. `progress` ranges from `0.0` to `1.0`.
+options.ui.enableScreenshots = true // For added security, screenshotting is disabled during IProoving; re-enable this here. Default: false.
+options.ui.fontAsset = "SomeFont.ttf" // Set the default font from assets directory.
+options.ui.fontResource = R.font.some_font // Set the default font from font resources.
+options.ui.logoImage = resourceId // Logo to be included in the title. Defaults to iProov logo.
+options.ui.scanLineDisabled = true // Disable the scan-line whilst scanning the face. Default: false.
+options.ui.filter = filter // Adjust the filter used for the face preview this can be CLASSIC (as in pre-v5), SHADED or VIBRANT. Default: SHADED.
+options.ui.orientation = orientation // Set the orientation of the iProov activity: enum Orientation (PORTRAIT, REVERSE_PORTRAIT, LANDSCAPE, REVERSE_LANDSCAPE). Note that this rotates the UI and does not rotate the camera; this is because it is intended to support USB cameras on a LANDSCAPE display, where the camera is oriented normally.
 
-#### `void onSuccess(String token)`
+/*
+    options.network
+    Configure options relating to networking & security
+*/
 
-The iProov session has completed and iProov has successfully verified or enrolled the user. The token is provided so it can be used for verification on the API.
+options.network.disableCertificatePinning = false // When true (not recommended), disables certificate pinning to the server. Default false
+options.network.certificates = arrayOf(R.raw.iproov__certificate) // Optionally supply an list of resourceIDs of certificates files to be used for pinning. Useful when using your own baseURL or for overriding the built-in certificate pinning for some other reason. Certificates should be generated in DER-encoded X.509 certificate format, eg. with the command $ openssl x509 -in cert.crt -outform der -out cert.der
+options.network.timeoutSecs = duration // The streaming timeout in seconds - setting to 0 disables timeout (default 10)
+options.network.path = path // The path to use when streaming, defaults to "/socket.io/v2/". You should not need to change this unless directed to do so by iProov.
 
-> ⚠️ SECURITY WARNING: Never use iProov as a local authentication method. You cannot rely on the fact that a result was received to prove that the user was authenticated successfully (it is possible the iProov process could be manipulated locally by a malicious app). You can treat the verified result as a hint to your app to update the UI, etc. but must always independently validate the token server-side (using the validate API call) before performing any authenticated user actions.
+/*
+    options.capture
+    Configure options relating to the capture functionality
+*/
 
-#### `void onFailure(String reason, String feedback)`
+// Allow for an alternate camera to be used. Provide an ordered set of the following to use in priority order when IProov searches for a camera to use: FRONT, BACK, EXTERNAL. When empty, default of FRONT is used except for a small set of known devices. In cases of USB cameras, {CameraLensFacing.EXTERNAL, CameraLensFacing.BACK} (Java) or arrayOf(CameraLensFacing.EXTERNAL, CameraLensFacing.BACK) (Kotlin) might be used since such cameras can be registered either way - hence this is an array and not a single value.
+options.capture.cameraLensFacing = arrayOf(CameraLensFacing.EXTERNAL)
 
-The iProov process has completed and iProov has failed to verify or enrol the user. The reason indicates why the authentication could not be confirmed. This could be a generic message, or could provide tips to the user to improve their chance of iProoving successfully (e.g. “lighting too dark”, etc.). There may also be a `feedback` which provides additional info.
+// You can specify max yaw/roll/pitch deviation of the user's face to ensure a given pose. Values are provided in normalised units.
+// These options should not be set for general use. Please contact iProov for further information if you would like to use this feature.
+options.capture.maxPitch = 0.25
+options.capture.maxYaw = 0.25
+options.capture.maxRoll = 0.25
+```
+> **⬆️ UPGRADING NOTICE:** Take note of the many changes here!
+ 
+## 🌎 String localization & customization
 
-| Feedback Code                         | Reason                                                |
-| ------------------------------------- | ----------------------------------------------------- |
-| **ambiguous_outcome**                 | Sorry, ambiguous outcome                              |
-| **network_problem**                   | Sorry, network problem                                |
-| **user_timeout**                      | Sorry, your session has timed out                     |
-| **lighting_flash_reflection_too_low** | Ambient light too strong or screen brightness too low |
-| **lighting_backlit**                  | Strong light source detected behind you               |
-| **lighting_too_dark**                 | Your environment appears too dark                     |
-| **lighting_face_too_bright**          | Too much light detected on your face                  |
-| **motion_too_much_movement**          | Please keep still                                     |
-| **motion_too_much_mouth_movement**    | Please do not talk while iProoving                    |
+The SDK only ships with English language strings. You are free to localise/customise these strings in your app, if you choose to do so.
 
-##### `Translations`
+All iProov strings are prefixed with `iproov__` and can be overriden by your app's strings.xml file. A copy of the iProov strings.xml file can be found in the resources directory.
 
-Note that string resources of the form `R.string.iproov__failure_<feedback code>` e.g. `iproov__failure_ambiguous_outcome` exist and will be used for `reason`, allowing it to provide localised translations.
+Strings for failure reasons are handled in a special way, in the form `R.string.iproov__failure_<feedback code>` e.g. `iproov__failure_ambiguous_outcome` exist and will be used for `reason`, allowing it to provide localised translations for all current and future failure codes.
 
-#### `void onCancelled()`
+## 💥 Handling failures & errors
 
-The iProov process was halted and cancelled by user action.
+### Failures
 
-#### `void onError(IProovException exception)`
+Failures occur when the user's identity could not be verified for some reason. A failure means that the capture was successfully received and processed by the server, which returned a result. Crucially, this differs from an error, where the capture itself failed due to a system failure.
 
-The iProov process failed entirely (i.e. iProov was unable to verify or enrol the user due to a system or streaming issue). This could be for a number of reasons, for example there was an unrecoverable streaming issue (`IProovException.Reason.STREAMING_ERROR`).
+| `feedbackCode` | `reason` |
+|-----------------------------------|---------------------------------------------------------------|
+| `ambiguous_outcome` | Sorry, ambiguous outcome |
+| `network_problem` | Sorry, network problem |
+| `motion_too_much_movement` | Please do not move while iProoving |
+| `lighting_flash_reflection_too_low` | Ambient light too strong or screen brightness too low |
+| `lighting_backlit` | Strong light source detected behind you |
+| `lighting_too_dark` | Your environment appears too dark |
+| `lighting_face_too_bright` | Too much light detected on your face |
+| `motion_too_much_mouth_movement` | Please do not talk while iProoving |
+| `user_timeout` | Sorry, your session has timed out |
+
+The list of feedback codes and reasons is subject to change.
+
+### Errors
+
+The iProov process failed entirely (i.e. iProov was unable to verify or enrol the user due to a system failure of some kind). This could be for a number of reasons, for example there was an unrecoverable streaming issue.
+
 You may wish to display the `localizedMessage` to the user. You can get one of the following reasons using `exception.getReason()`:
 
 ```java
@@ -211,46 +310,14 @@ A description of these errors are as follows:
 - `STREAMING_ERROR` An error occurred with the video streaming process.
 - `UNSUPPORTED_DEVICE` The device is not supported, (e.g. does not have a front-facing camera).
 - `CAMERA_PERMISSION_DENIED` The user disallowed access to the camera when prompted.
-- `SERVER_ERROR` The token was invalidated server-side.
+- `SERVER_ERROR` The token was invalidated server-side, or some other error occurred.
 - `MULTI_WINDOW_MODE_UNSUPPORTED` The user attempted to iProov in split-screen/multi-screen mode,which is not supported.
-- `CAMERA_ERROR` An error occurred acquiring or using the camera. This could happen when a non-phone is used with/without an external/usb camera. See Options.capture.setCameraLensFacing().
+- `CAMERA_ERROR` An error occurred acquiring or using the camera. This could happen when a non-phone is used with/without an external/USB camera. See Options.capture.setCameraLensFacing().
 - `LIGHTING_MODEL_ERROR` An error occurred with the lighting model.
 
-## ⚙ Configuration Options
+## 🐞 Known issues
 
-Various customization options are available to pass as arguments to the IProov intent. To use these, create an instance of `IProov.IProovConfig`, set required parameters, and pass it via `.setIProovConfig` to your `NativeClaim.Builder`. A list of available parameters for customization is below:
-
-##### ui
-- `.ui.setAutoStartDisabled(true)` With autostart, instead of requiring a user tap, there is an auto-countdown from 3 when face is detected. Default false
-- `.ui.setTitle(title)` The message shown during canny preview. Default is provided by the system when this value is null.
-- `.ui.setBackgroundColor(Color.BLACK)` background colour shown before the flashing starts
-- `.ui.setLineColor(Color.CYAN)` face outline colour
-- `.ui.setEnableScreenshots(true)` for added security, screenshotting is disabled during IProoving; re-enable this here. Default false
-- `.ui.setLoadingTintColor(Color.RED)` The app is connecting to the server. Default: grey (#5c5c5c)
-- `.ui.setNotReadyTintColor(Color.BLUE)` Cannot start iProoving until the user takes action (e.g. move closer, etc). Default: orange (#f5a623)
-- `.ui.setReadyTintColor(Color.GREEN)` Ready to start iProoving. Default: green (#01bf46)
-- `.ui.setFontAsset("SomeFont.ttf")` change the default font used within the SDK - from assets directory
-- `.ui.setFontResource(R.font.some_font)` change the default font used within the SDK - from font resources
-- `.ui.setLogo(resourceId)` logo to be included in the title - defaults to iProov logo
-- `.ui.setNotificationImage()` foreground service notification image
-- `.ui.setNotificationTitle()` foreground service notification title
-- `.ui.setScanLineDisabled(true)`to allow removal the scan line graphic. Default false
-- `.ui.setFilter(filter)` to change the way the canny shader appears: `enum Filter (CLASSIC, SHADED, VIBRANT)`
-- `.ui.setOrientation(orientation)` set the orientation of the iProov activity: `enum Orientation (PORTRAIT, REVERSE_PORTRAIT, LANDSCAPE, REVERSE_LANDSCAPE)`
-##### capture
-- `.capture.setMaxPitchAngle(0.25)` Pose control - max face pitch angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
-- `.capture.setMaxYawAngle(0.25)` Pose control - max face yaw angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
-- `.capture.setMaxRollAngle(0.25)` Pose control - max face roll angle allowed - fraction of 180 degrees off normal e.g. 0.25 is +/-45 degrees
-- `.capture.setCameraLensFacing(CameraLensFacing.EXTERNAL)` Allow for an alternate camera to be used. When null, default of FRONT is used except for a small set of known devices. When provided, this overrides selection of camera on all devices Usb cameras will plug n play into Android and register as either EXTERNAL or BACK
-##### network
-- `.network.setBaseURL("https://eu.rp.secure.iproov.me")` The base networking URL (can also be set in launch method)
-- `.network.setCertificates(new ArrayList<>(Collections.singletonList(R.raw.iproov__certificate)))` optionally supply an list of resourceIDs of certificates files to be used for pinning. Useful when using your own baseURL or for overriding the built-in certificate pinning for some other reason. Certificates should be generated in DER-encoded X.509 certificate format, eg. with the command $ openssl x509 -in cert.crt -outform der -out cert.der
-- `.network.setDisableCertificatePinning(false)` when true (not recommended), disables certificate pinning to the server. Default false
-- `.network.setStreamingTransport(transport)` The streaming transport protocol to use: `enum StreamingTransport (WEB_SOCKET, POLLING, AUTO)`
-- `.network.setStreamingTimeoutSecs(duration)` The streaming timeout in seconds - setting to 0 disables timeout
-- `.network.setStreamingPath(path)` The path to use when streaming, defaults to /socket.io/v2/. You should not need to change this unless directed to do so by iProov.
-
-> **⬆️ UPGRADING NOTICE:** Take note of the many changes here! All Option parameters no longer have primitive types and can be set to null to reset them. When a parameter is null then the SDK might use a built-in default value. A special set of getters exists to indicate the value that the SDK will use (Options or default) and they take the form getResolved<parameter-name>(). Note: setLocale, setRegularFont, setBoldFont have been removed. setFontAsset and setFontResource have been added. setCameraLensFacing provides ability to work with usb/external cameras. New reason added CAMERA_UNAVAILABLE.
+- Note that you may experience performance drop when running with the Android debugger attached. It is advised not to attempt iProoving whilst using the debugger.
 
 ## 🔥 Firebase support
 
@@ -261,14 +328,6 @@ Google now direct their efforts into maintaining the [Firebase face detector, pa
 You can therefore opt-into the Firebase functionality by adding the `iproov-firebase` module to your build.gradle (see the Installation instructions).
 
 Please note that adding Firebase support will increase your app size (as it will include the Firebase dependencies) and will also result in poorer performance on low-end devices, since Firebase is more computationally intensive.
-
-## 🌎 String localization & customization
-
-> **⬆️ UPGRADING NOTICE:** The SDK no longer ships with localized strings for languages other than English.
-
-Developers can add their own translations or string overrides to suit. For your convenience, the SDK's [strings.xml](https://raw.githubusercontent.com/iProov/android/nextgen/resources/strings.xml) has been copied to the root of this repository.
-
-> **💠 PRE-RELEASE SOFTWARE:** More information on string customization coming soon.
 
 ## ❓Help & support
 
