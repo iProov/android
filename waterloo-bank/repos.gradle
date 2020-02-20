@@ -5,7 +5,7 @@ repositories {
 
     // This allows RELEASE builds of iProov lib to be used for external projects
     maven {
-        url 'https://raw.githubusercontent.com/iProov/android/nextgen/maven/'
+        url 'https://raw.githubusercontent.com/iProov/android/master/maven/'
     }
 
     mavenCentral()
