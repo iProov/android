@@ -1,4 +1,4 @@
-# iProov Android SDK (v5.0.0-beta6)
+# iProov Android SDK (v5.0.0)
 
 ## 🤳 Introduction
 
@@ -44,7 +44,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	repositories {
-	    maven { url 'https://raw.githubusercontent.com/iProov/android/nextgen/maven/' }
+	    maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
 	}
 	```
 
@@ -52,7 +52,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov:5.0.0-beta6@aar') {
+	    implementation('com.iproov.sdk:iproov:5.0.0@aar') {
 	        transitive=true
 	    }
 	}
@@ -75,7 +75,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov-firebase:5.0.0-beta6@aar') {
+	    implementation('com.iproov.sdk:iproov-firebase:5.0.0@aar') {
 	        transitive=true
 	    }
 	}
@@ -84,8 +84,6 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 You may now build your project!
 
 ## 🚀 Get started
-
-> **⬆️ UPGRADING NOTICE:** Take notice! The API has been changed significantly in v5.0.0-beta6 compared with earlier betas.
 
 Before being able to launch iProov, you need to get a token to iProov against. There are 3 different token types:
 
@@ -205,6 +203,8 @@ By default, iProov will stream to our EU back-end platform. If you wish to strea
 
 Various customization options are available to pass as arguments to the IProov intent. To use these, create an instance of `IProov.Options` and set the parameters of your choice. A list of available parameters for customization is below:
 
+##### Kotlin
+
 ```kotlin
 val options = IProov.Options()
 
@@ -213,7 +213,7 @@ val options = IProov.Options()
     Configure options relating to the user interface
 */
 
-options.ui.autoStartDisabled = true; // With autostart, instead of requiring a user tap, there is an auto-countdown a face is detected. Default false.
+options.ui.autoStartDisabled = true // With autostart, instead of requiring a user tap, there is an auto-countdown a face is detected. Default false.
 options.ui.title = "Authenticating to ACME Bank" // The message shown during canny preview. Default null.
 
 // Adjust various colors for the camera preview:
@@ -246,8 +246,7 @@ options.network.path = path // The path to use when streaming, defaults to "/soc
     Configure options relating to the capture functionality
 */
 
-// Allow for an alternate camera to be used. Provide an ordered set of the following to use in priority order when IProov searches for a camera to use: FRONT, BACK, EXTERNAL. When empty, default of FRONT is used except for a small set of known devices. In cases of USB cameras, {CameraLensFacing.EXTERNAL, CameraLensFacing.BACK} (Java) or arrayOf(CameraLensFacing.EXTERNAL, CameraLensFacing.BACK) (Kotlin) might be used since such cameras can be registered either way - hence this is an array and not a single value.
-options.capture.cameraLensFacing = arrayOf(CameraLensFacing.EXTERNAL)
+options.capture.camera = Camera.EXTERNAL // FRONT or EXTERNAL (USB)
 
 // You can specify max yaw/roll/pitch deviation of the user's face to ensure a given pose. Values are provided in normalised units.
 // These options should not be set for general use. Please contact iProov for further information if you would like to use this feature.
@@ -291,20 +290,7 @@ The iProov process failed entirely (i.e. iProov was unable to verify or enrol th
 
 You may wish to display the `localizedMessage` to the user. You can get one of the following reasons using `exception.getReason()`:
 
-```java
-    public enum Reason {
-        ENCODER_ERROR,
-        STREAMING_ERROR,
-        UNSUPPORTED_DEVICE,
-        CAMERA_PERMISSION_DENIED,
-        SERVER_ERROR,
-        MULTI_WINDOW_MODE_UNSUPPORTED,
-        CAMERA_ERROR,
-        LIGHTING_MODEL_ERROR
-     }
-```
-
-A description of these errors are as follows:
+A description of these `Reason` errors are as follows:
 
 - `ENCODER_ERROR` An error occurred with the video encoding process.
 - `STREAMING_ERROR` An error occurred with the video streaming process.
@@ -318,6 +304,7 @@ A description of these errors are as follows:
 ## 🐞 Known issues
 
 - Note that you may experience performance drop when running with the Android debugger attached. It is advised not to attempt iProoving whilst using the debugger.
+- Please check the [Wiki](https://github.com/iProov/android/wiki) for the most up-to-date [Known Issues](https://github.com/iProov/android/wiki/Known-Issues)
 
 ## 🔥 Firebase support
 
@@ -328,6 +315,16 @@ Google now direct their efforts into maintaining the [Firebase face detector, pa
 You can therefore opt-into the Firebase functionality by adding the `iproov-firebase` module to your build.gradle (see the Installation instructions).
 
 Please note that adding Firebase support will increase your app size (as it will include the Firebase dependencies) and will also result in poorer performance on low-end devices, since Firebase is more computationally intensive.
+
+## 🤖 AndroidX
+
+The Android SDK is moving from using Support Libraries to AndroidX. Apps that use Android X can [migrate](https://developer.android.com/jetpack/androidx/migrate) third party libraries written to use Support Libraries.
+
+This SDK does not use AndroidX and so is compatible with both Support Library and Android X based Apps.
+
+### Further Information
+
+After Aug 1 2019, all apps had to target Android SDK 28 (P), or they would no longer be able to be updated, and SDK 28 (P) supports the final version of the Support Libraries before they are discontinued.
 
 ## ❓Help & support
 
