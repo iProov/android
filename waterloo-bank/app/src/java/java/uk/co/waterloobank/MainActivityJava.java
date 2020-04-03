@@ -1,6 +1,7 @@
 package uk.co.waterloobank;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,11 +22,41 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 public class MainActivityJava extends AppCompatActivity {
 
+    private static final String TAG = MainActivityJava.class.getSimpleName();
+
     private Button loginButton;
     private Button registerButton;
     private EditText userNameEditText;
     private ProgressBar progressBar;
     private TextView captureStatus;
+    private TextView textViewVersion;
+
+    private IProov.Listener listener = new IProov.Listener() {
+        @Override
+        public void onSuccess(String token) {
+            onResult("Success", "Successfully iProoved.\nToken:" + token);
+        }
+
+        @Override
+        public void onFailure(String reason, String feedback) {
+            onResult("Failed", "Failed to register\nreason: " + reason + "feedback: " + feedback);
+        }
+
+        @Override
+        public void onProcessing( double progress, String message) {
+            onProcessingUpdate(message, (int) progress * 100);
+        }
+
+        @Override
+        public void onError(IProovException e) {
+            onResult("Error", "Error: " + e.getLocalizedMessage());
+        }
+
+        @Override
+        public void onCancelled() {
+            onResult("Cancelled", "User action: cancelled");
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,6 +66,7 @@ public class MainActivityJava extends AppCompatActivity {
         userNameEditText = findViewById(R.id.usernameEditText);
         progressBar = findViewById(R.id.progressBar);
         captureStatus = findViewById(R.id.captureStatus);
+        textViewVersion = findViewById(R.id.textViewVersion);
 
         loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(v -> {
@@ -57,6 +89,18 @@ public class MainActivityJava extends AppCompatActivity {
 
             register(userNameEditText.getText().toString());
         });
+
+        textViewVersion.setText("Java using SDK Version [" + IProov.getSDKVersion() + "]");
+
+        Log.w(TAG, "registerListener");
+        IProov.registerListener(listener);
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.w(TAG, "unregisterListener");
+        IProov.unregisterListener();
+        super.onDestroy();
     }
 
     private void hideLoadingViews() {
@@ -95,7 +139,7 @@ public class MainActivityJava extends AppCompatActivity {
                 ClaimType.VERIFY,
                 userID,
                 (call, response) -> {
-                    startIproovForVerifyClaim(response.body().getToken(), ClaimType.VERIFY);
+                    IProov.launch(this, response.body().getToken(), createOptions());
                 },
                 throwable -> {
                     onResult("Filed", "Failed to get token.");
@@ -117,74 +161,15 @@ public class MainActivityJava extends AppCompatActivity {
                 ClaimType.ENROL,
                 userID,
                 (call, response) -> {
-                    startIproovForEnrollrClaim(response.body().getToken(), ClaimType.ENROL);
+                    IProov.launch(this, response.body().getToken(), createOptions());
                 },
                 throwable -> {
                     onResult("Failed", "Failed to get token.");
                 });
     }
 
-    private void startIproovForEnrollrClaim(final String token, final ClaimType claimType) {
-        IProov.launch(this, token, createOptions(), new IProov.Listener() {
-
-            @Override
-            public void onSuccess(String token) {
-                onResult("Success", "Successfully registered.\nToken:" + token);
-            }
-
-            @Override
-            public void onFailure(String reason, String feedback) {
-                onResult("Failed", "Failed to register\nreason: " + reason + "feedback: " + feedback);
-            }
-
-            @Override
-            public void onProcessing( double progress, String message) {
-                onProcessingUpdate(message, (int) progress * 100);
-            }
-
-            @Override
-            public void onError(IProovException e) {
-                onResult("Error", "Error: " + e.getLocalizedMessage());
-            }
-
-            @Override
-            public void onCancelled() {
-                onResult("Cancelled", "User action: cancelled");
-            }
-        });
-    }
-
-    private void startIproovForVerifyClaim(final String token, final ClaimType claimType) {
-        IProov.launch(this, token, createOptions(), new IProov.Listener() {
-
-            @Override
-            public void onSuccess(String token) {
-                onResult("Success", "Successfully iProoved.\nToken:" + token);
-            }
-
-            @Override
-            public void onFailure(String reason, String feedback) {
-                onResult("Failed", "Failed to iProov\nreason: " + reason + "feedback: " + feedback);
-            }
-
-            @Override
-            public void onProcessing(double progress, String message) {
-                onProcessingUpdate(message, (int) progress * 100);
-            }
-
-            @Override
-            public void onError(IProovException e) {
-                onResult("Error", "Error: " + e.getLocalizedMessage());
-            }
-
-            @Override
-            public void onCancelled() {
-                onResult("Cancelled", "User action: cancelled");
-            }
-        });
-    }
-
     private void onResult(final String title, final String resultMessage) {
+        Log.w(TAG, "onResult");
         hideLoadingViews();
         new AlertDialog.Builder(this)
                 .setIcon(R.mipmap.ic_launcher)
@@ -203,7 +188,7 @@ public class MainActivityJava extends AppCompatActivity {
     private IProov.Options createOptions() {
         IProov.Options options = new IProov.Options();
         options.ui.autoStartDisabled = false;
-        options.ui.logoImage = R.mipmap.ic_launcher;
+        options.ui.logoImageResource = R.mipmap.ic_launcher;
         options.ui.fontPath = "Merriweather-Bold.ttf";
         return options;
     }
