@@ -57,6 +57,7 @@ captures/
 
 .idea/markdown-navigator/*.*
 .idea/markdown-navigator.xml
+.idea/markdown-navigator-enh.xml
 .idea/markdown-exported-files.xml
 .idea/inspectionProfiles
 .idea/codeStyles
