@@ -65,7 +65,7 @@ If you are using the `iproov-firebase` module, it is now required for your app t
 
 ## ✍️ Registration
 
-You can obtain API credentials by registering on the [iProov Partner Portal](https://www.iproov.net/).
+You can obtain API credentials by registering on the [iProov Portal](https://portal.iproov.com/).
 
 ## 📲 Installation
 
