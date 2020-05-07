@@ -336,7 +336,7 @@ By default, the SDK leverages the [Android built-in face detector](https://devel
 
 Google now direct their efforts into maintaining the [Firebase face detector, part of ML Kit](https://firebase.google.com/docs/ml-kit/detect-faces). The advantage of the Firebase face detector is that it provides more advanced features such as facial landmarks, which allows us to offer detection of the user's pose. Therefore, if you wish to make use of the pose control features, you will need to add the `iproov-firebase` module to your app.
 
-### Installation Steps
+### Installation Steps
 
 1. Register your app on Firebase [here](https://firebase.google.com/docs/android/setup).
 
