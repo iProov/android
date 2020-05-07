@@ -1,4 +1,4 @@
-# iProov Android SDK v5.1.0
+# iProov Android SDK v5.2.0
 
 ## 📖 Table of contents
 
@@ -11,14 +11,12 @@
 - [Options](#-options)
 - [String localization & customization](#-string-localization--customization)
 - [Handling failures & errors](#-handling-failures--errors)
-- [Known issues](#-known-issues)
 - [Firebase support](#-firebase-support)
-- [AndroidX](#-androidx)
 - [Help & support](#help--support)
 
 ## 🤳 Introduction
 
-The iProov Android SDK enables you to integrate iProov into your Android app. We also have an [iOS SDK](https://github.com/iproov/ios), [Xamarin SDK](https://github.com/iproov/xamarin) and [HTML5 client](https://github.com/iProov/html5).
+The iProov Android SDK enables you to integrate iProov into your Android app. We also have an [iOS SDK](https://github.com/iproov/ios), [Xamarin bindings](https://github.com/iproov/xamarin) and [Web SDK](https://github.com/iProov/web).
 
 ### Requirements
 
@@ -38,32 +36,11 @@ The framework package is provided via this repository, which contains the follow
 * **resources** - Directory containing additional development resources you may find helpful.
 
 
-## ⬆️ Upgrading from earlier versions
+## ⬆ Upgrading from earlier versions
 
-Welcome to the next generation of the iProov SDK! v5 is a substantial overhaul to the SDK and added many new features, and as a result SDK v5 is a major update and includes breaking changes, so please read this document carefully.
+If you're already using an older version of the iProov SDK, consult the [Upgrade Guide](https://github.com/iProov/android/wiki/Upgrade-Guide) for detailed information about how to upgrade your app.
 
-Please consult the [Upgrade Guide](https://github.com/iProov/android/wiki/Upgrade-Guide) for detailed information about how to upgrade your app from earlier versions.
-
-### Upgrading from 5.0.0
-
-There are a couple of specific changes in SDK 5.1.0 which you should be aware of when upgrading from 5.0.0:
-
-#### API changes
-
-The `launch()` method in 5.0.0 which passed the listener as the final parameter has been deprecated in favor of a `launch()` method without the listener. All other parameters remain the same, You must now register the listener with a call to `IProov.registerListener(listener)` in your Activity `onCreate()` method, and call `IProov.unregisterListener()` in `onDestroy()`.
-
-+ This makes it safer if your Activity gets destroyed in the background whilst the iProov Activity is running.
-+ When calling `registerListener(...)` you can be certain to receive the last event immediately (if available).
-+ Only one listener can be registered at any one time, which is why you do not need to pass anything to `unregisterListener()`.
-+ As before, all event methods on the listener will be called on the main thread.
-+ Note that `registerListener(null)` is equivalent to `unregisterListener()`.
-+ The old-style `launch()` method is still present, however it has now been deprecated and will be removed in a future version. You should avoid using it and migrate to the new approach immediately, as it could cause bugs if your Activity is destroyed in the background whilst iProov is running.
-
-#### Firebase module changes
-
-If you are using the `iproov-firebase` module, it is now required for your app to first be registered with Firebase. See [Firebase support](#-firebase-support).
-
-## ✍️ Registration
+## ✍ Registration
 
 You can obtain API credentials by registering on the [iProov Portal](https://portal.iproov.com/).
 
@@ -81,17 +58,13 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 	}
 	```
 
-3. Add the dependencies section to your app build.gradle file:
+3. Add the iProov SDK to the dependencies section in your app's build.gradle file:
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov:5.1.0@aar') {
-	        transitive=true
-	    }
+	    implementation('com.iproov.sdk:iproov:5.2.0')
 	}
 	```
-
-	> **⬆️ UPGRADING NOTICE:** Take note of the new dependencies & versions!
 
 4. Add support for Java 8 to your app build.gradle file (you can skip this step if you already have Java 8 enabled):
 
@@ -110,11 +83,10 @@ You may now build your project!
 
 ## 🚀 Get started
 
-Before being able to launch iProov, you need to get a token to iProov against. There are 3 different token types:
+Before being able to launch iProov, you need to get a token to iProov against. There are 2 different token types:
 
-* A **verify** token - for logging in an existing user
-* An **enrol** token - for registering a new user
-* An **ID match** token - for matching a user against a scanned ID document image.
+1. A **verify** token - for logging-in an existing user
+2. An **enrol** token - for registering a new user
 
 In a production app, you normally would want to obtain the token via a server-to-server back-end call. For the purposes of on-device demos/testing, we provide Kotlin/Java sample code for obtaining tokens via [iProov API v2](https://eu.rp.secure.iproov.me/docs.html) with our open-source [Android API Client](https://github.com/iProov/android-api-client).
 
@@ -123,7 +95,7 @@ Once you have obtained the token, you can simply call `IProov.launch()`:
 ##### Kotlin
 
 ```kotlin
-class MainActivityKotlin : AppCompatActivity(), IProov.Listener {
+class MainActivity : AppCompatActivity(), IProov.Listener {
 
     // IProov.Listener interface ----
     
@@ -184,7 +156,7 @@ class MainActivityKotlin : AppCompatActivity(), IProov.Listener {
 ##### Java
 
 ```java
-public class MainActivityJava extends AppCompatActivity implements IProov.Listener {
+public class MainActivity extends AppCompatActivity implements IProov.Listener {
 
     // IProov.Listener interface ----
 
@@ -252,17 +224,9 @@ By default, iProov will stream to our EU back-end platform. If you wish to strea
 
 > **⚠️ SECURITY NOTICE:** You should never use iProov as a local authentication method. You cannot rely on the fact that the success result was returned to prove that the user was authenticated or enrolled successfully (it is possible the iProov process could be manipulated locally by a malicious user). You can treat the success callback as a hint to your app to update the UI, etc. but you must always independently validate the token server-side (using the validate API call) before performing any authenticated user actions.
 
----
-
-> **⬆️ UPGRADING NOTICE:** In v5 you no longer need to call `IProov.verify()` or `IProov.enrol()`. There were previously many separate methods to launch iProov, these have now been combined into a single method. (Push & URL launched claims are no longer handled within the SDK itself).
-
----
-
-> **⬆️ UPGRADING NOTICE:** Previously, after launching iProov, the SDK would handle the entire user experience end-to-end, from getting a token all the way through to the streaming UI and would then pass back a pass/fail/error result to your app. In v5, the SDK flashes the screen and then hands back control to your app, whilst the capture is streamed in the background. This means that you can now control the UI to display your own streaming UI, or allow the user to continue with another activity whilst the iProov capture streams in the background.
-
 ## ⚙ Options
 
-Various customization options are available to pass as arguments to the IProov intent. To use these, create an instance of `IProov.Options` and set the parameters of your choice. A list of available parameters for customization is below:
+You can customize the iProov session by passing in an instance of `IProov.Option` to the `IProov.launch()` method. A list of available parameters for customization is below:
 
 ##### Kotlin
 
@@ -318,7 +282,6 @@ options.capture.maxPitch = 0.25
 options.capture.maxYaw = 0.25
 options.capture.maxRoll = 0.25
 ```
-> **⬆️ UPGRADING NOTICE:** Take note of the many changes here!
 
 ## 🌎 String localization & customization
 
@@ -356,19 +319,16 @@ You may wish to display the `localizedMessage` to the user. You can get one of t
 
 A description of these `Reason` errors are as follows:
 
-- `ENCODER_ERROR` An error occurred with the video encoding process.
-- `STREAMING_ERROR` An error occurred with the video streaming process.
-- `UNSUPPORTED_DEVICE` The device is not supported, (e.g. does not have a front-facing camera).
-- `CAMERA_PERMISSION_DENIED` The user disallowed access to the camera when prompted.
-- `SERVER_ERROR` The token was invalidated server-side, or some other error occurred.
-- `MULTI_WINDOW_MODE_UNSUPPORTED` The user attempted to iProov in split-screen/multi-screen mode,which is not supported.
-- `CAMERA_ERROR` An error occurred acquiring or using the camera. This could happen when a non-phone is used with/without an external/USB camera. See Options.capture.setCameraLensFacing().
-- `LIGHTING_MODEL_ERROR` An error occurred with the lighting model.
-
-## 🐞 Known issues
-
-- Note that you may experience performance drop when running with the Android debugger attached. It is advised not to attempt iProoving whilst using the debugger.
-- Please check the [Wiki](https://github.com/iProov/android/wiki) for the most up-to-date [Known Issues](https://github.com/iProov/android/wiki/Known-Issues)
+- `ENCODER_ERROR` - An error occurred with the video encoding process.
+- `STREAMING_ERROR` - An error occurred with the video streaming process.
+- `UNSUPPORTED_DEVICE` - The device is not supported, (e.g. does not have a front-facing camera).
+- `CAMERA_PERMISSION_DENIED` - The user disallowed access to the camera when prompted.
+- `SERVER_ERROR` - The token was invalidated server-side, or some other error occurred.
+- `MULTI_WINDOW_MODE_UNSUPPORTED` - The user attempted to iProov in split-screen/multi-screen mode,which is not supported.
+- `CAMERA_ERROR` - An error occurred acquiring or using the camera. This could happen when a non-phone is used with/without an external/USB camera. See Options.capture.setCameraLensFacing().
+- `LIGHTING_MODEL_ERROR` - An error occurred with the lighting model.
+- `FACE_DETECTOR_ERROR` - An error occurred with the face detector. This is likely to be connected to a misconfiguration of Firebase.
+- `CAPTURE_ALREADY_ACTIVE_ERROR` - An existing iProov capture is already in progress. Wait until the current capture completes before starting a new one.
 
 ## 🔥 Firebase support
 
@@ -378,7 +338,7 @@ Google now direct their efforts into maintaining the [Firebase face detector, pa
 
 ### Installation Steps
 
-1. Register for your app for Firebase [here](https://firebase.google.com/docs/android/setup).
+1. Register your app on Firebase [here](https://firebase.google.com/docs/android/setup).
 
 2. Setup Firebase within your app, either by adding `google-services.json` to your project, or by manually instantiating a `FirebaseApp` instance.
 
@@ -386,7 +346,7 @@ Google now direct their efforts into maintaining the [Firebase face detector, pa
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov-firebase:5.1.0@aar') {
+	    implementation('com.iproov.sdk:iproov-firebase:5.2.0') {
 	        transitive=true
 	    }
 	}
@@ -394,18 +354,10 @@ Google now direct their efforts into maintaining the [Firebase face detector, pa
 	
 4. If you integrated Firebase with `google-services.json`, you do not need to do anything further. If you manually instantiated a `FirebaseApp` instance, you need to set `options.capture.firebaseAppInstanceName` to the name of your instance.
 
-Please note that adding Firebase support will increase your app size (as it will include the Firebase dependencies) and will also result in poorer performance on low-end devices, since Firebase is more computationally intensive.
-
-## 🤖 AndroidX
-
-The Android SDK is moving from using Support Libraries to AndroidX. Apps that use Android X can [migrate](https://developer.android.com/jetpack/androidx/migrate) third party libraries written to use Support Libraries.
-
-This SDK does not use AndroidX and so is compatible with both Support Library and Android X based Apps.
-
-### Further Information
-
-After Aug 1 2019, all apps had to target Android SDK 28 (P), or they would no longer be able to be updated, and SDK 28 (P) supports the final version of the Support Libraries before they are discontinued.
+Please note that adding Firebase support will increase your app size (as it will include the Firebase dependencies) and may also result in poorer performance on low-end devices, since Firebase is more computationally intensive.
 
 ## ❓Help & support
+
+You may find your question is answered in our [FAQs](https://github.com/iProov/android/wiki/Frequently-Asked-Questions) or one of our other [Wiki pages](https://github.com/iProov/android/wiki).
 
 For further help with integrating the SDK, please contact [support@iproov.com](mailto:support@iproov.com).
