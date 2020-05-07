@@ -3,7 +3,7 @@
   <groupId>com.iproov.sdk</groupId>
   <artifactId>iproov</artifactId>
   <versioning>
-    <release>5.1.0</release>
+    <release>5.2.0</release>
     <versions>
       <version>4.4.0</version>
       <version>5.0.0-beta1</version>
@@ -14,7 +14,8 @@
       <version>5.0.0-beta6</version>
       <version>5.0.0</version>
       <version>5.1.0</version>
+      <version>5.2.0</version>
     </versions>
-    <lastUpdated>20200402161107</lastUpdated>
+    <lastUpdated>20200507072042</lastUpdated>
   </versioning>
 </metadata>
