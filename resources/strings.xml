@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- Loco xml export: Android string resources
- Project: iProov
- Release: Working copy
- Locale: en, English
- Tagged: sdk-android
- Exported by: Jonathan Ellis
- Exported at: Mon, 30 Mar 2020 15:07:15 +0100
--->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="iproov__language_file">en-GB</string>
     <string name="iproov__app_name">iProov</string>
@@ -61,5 +52,6 @@
     <string name="iproov__error_multi_screen_message">Application is in multi-window mode.\\nPlease make it full-screen and try again</string>
     <string name="iproov__error_device_not_supported">Sorry, your device is currently not supported</string>
     <string name="iproov__error_service_connection_lost">Connection to the Service has been lost</string>
-    <string name="iproov__face_detector_error">Face detector error</string>
+    <string name="iproov__error_face_detector">Face detector error</string>
+    <string name="iproov__error_capture_already_active">An existing capture is already in progress</string>
 </resources>
