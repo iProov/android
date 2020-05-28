@@ -1,4 +1,4 @@
-# iProov Android SDK v5.2.0
+# iProov Android SDK v5.2.1
 
 ## 📖 Table of contents
 
@@ -62,7 +62,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov:5.2.0')
+	    implementation('com.iproov.sdk:iproov:5.2.1')
 	}
 	```
 
@@ -346,9 +346,7 @@ Google now direct their efforts into maintaining the [Firebase face detector, pa
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov-firebase:5.2.0') {
-	        transitive=true
-	    }
+	    implementation('com.iproov.sdk:iproov-firebase:5.2.1')
 	}
 	```
 	
