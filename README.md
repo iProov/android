@@ -62,7 +62,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov:5.3.0')
+	    implementation('com.iproov.sdk:iproov:5.3.0-beta1')
 	}
 	```
 
@@ -98,6 +98,16 @@ Once you have obtained the token, you can simply call `IProov.launch()`:
 class MainActivity : AppCompatActivity(), IProov.Listener {
 
     // IProov.Listener interface ----
+    
+    override fun onConnecting() {
+        // Called when the SDK is connecting to the server. You should provide an indeterminate
+        // progress indication to let the user know that the connection is being established.
+    }
+    
+    override fun onConnected() {
+        // The SDK has connected, and the iProov user interface will now be displayed. You
+        // should hide any progress indication at this point.
+    }
     
     override fun onProcessing(progress: Double, message: String) {
         // The SDK will update your app with the progress of streaming to the server and authenticating
@@ -159,6 +169,18 @@ class MainActivity : AppCompatActivity(), IProov.Listener {
 public class MainActivity extends AppCompatActivity implements IProov.Listener {
 
     // IProov.Listener interface ----
+    
+    @Override
+  	 public void onConnecting() {
+        // Called when the SDK is connecting to the server. You should provide an indeterminate
+        // progress indication to let the user know that the connection is being established.
+    }
+    
+    @Override
+    public void onConnected() {
+        // The SDK has connected, and the iProov user interface will now be displayed. You
+        // should hide any progress indication at this point.
+    }
 
     @Override
     public void onProcessing(double progress, String message) {
@@ -331,13 +353,29 @@ A description of these `Reason` errors are as follows:
 - `FACE_DETECTOR_ERROR` - An error occurred with the face detector. This is likely to be connected to a misconfiguration of Firebase.
 - `CAPTURE_ALREADY_ACTIVE_ERROR` - An existing iProov capture is already in progress. Wait until the current capture completes before starting a new one.
 
-## 🔥 Firebase support
+## 👱‍♂️ Alternative face detectors
 
-By default, the SDK leverages the [Android built-in face detector](https://developer.android.com/reference/android/media/FaceDetector). This is a simple face detector and is ubiquitous in Android phones, however it is not regularly updated.
+By default, the SDK leverages the [Android built-in face detector](https://developer.android.com/reference/android/media/FaceDetector). This is a simple face detector and is ubiquitous in Android phones, however it is not regularly updated. Therefore, we also support BlazeFace and Firebase face detectors.
+
+### BlazeFace
+
+[BlazeFace](https://arxiv.org/pdf/1907.05047.pdf) is a relatively lightweight and performant face detector. Whilst you should find that BlazeFace provides increased accuracy when compared with built-in face detector, it requires the inclusion of TensorFlow Lite with the SDK along with the necessary model, and therefore adds approximately 2.2MB to the downloaded app size. In our benchmarks, it also tends to run approximately 50% slower than the built-in "classic" face detector on very low-end devices.
+
+#### Installation steps
+
+Add the iProov BlazeFace module to your app's build.gradle file:
+
+```groovy
+dependencies {
+    implementation('com.iproov.sdk:iproov-blazeface:5.3.0-beta1')
+}
+```
+
+### Firebase
 
 Google now direct their efforts into maintaining the [Firebase face detector, part of ML Kit](https://firebase.google.com/docs/ml-kit/detect-faces). The advantage of the Firebase face detector is that it provides more advanced features such as facial landmarks, which allows us to offer detection of the user's pose. Therefore, if you wish to make use of the pose control features, you will need to add the `iproov-firebase` module to your app.
 
-### Installation Steps
+#### Installation steps
 
 1. Register your app on Firebase [here](https://firebase.google.com/docs/android/setup).
 
