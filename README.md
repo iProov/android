@@ -1,4 +1,4 @@
-# iProov Android SDK v5.2.1
+# iProov Android SDK v5.3.0-beta1
 
 ## 📖 Table of contents
 
@@ -62,7 +62,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov:5.2.1')
+	    implementation('com.iproov.sdk:iproov:5.3.0')
 	}
 	```
 
@@ -76,7 +76,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 	    }
 	}
 	```
-	
+
 If you wish to make use of pose control functionality, you will also need to [add the Firebase module to your app](#-firebase-support).
 
 You may now build your project!
@@ -244,7 +244,7 @@ options.ui.title = "Authenticating to ACME Bank" // The message shown during can
 // Adjust various colors for the camera preview:
 options.ui.backgroundColor = Color.BLACK
 options.ui.lineColor = Color.CYAN
-options.ui.loadingTintColor = Color.RED
+options.ui.loadingTintColor = Color.RED // Please note this is option is deprecated, and only takes effect when used in conjunction with the useLegacyConnectingUI option.
 options.ui.notReadyTintColor = Color.BLUE
 options.ui.readyTintColor = Color.GREEN
 
@@ -256,6 +256,7 @@ options.ui.logoImageDrawable = drawable // Logo to be included in the title. Def
 options.ui.scanLineDisabled = true // Disable the scan-line whilst scanning the face. Default: false.
 options.ui.filter = filter // Adjust the filter used for the face preview this can be CLASSIC (as in pre-v5), SHADED or VIBRANT. Default: SHADED.
 options.ui.orientation = orientation // Set the orientation of the iProov activity: enum Orientation (PORTRAIT, REVERSE_PORTRAIT, LANDSCAPE, REVERSE_LANDSCAPE). Note that this rotates the UI and does not rotate the camera; this is because it is intended to support USB cameras on a LANDSCAPE display, where the camera is oriented normally.
+options.ui.useLegacyConnectingUI = false // When enabled, the iProov SDK will provide a UI for establishing the connection, rather than your app. Please note that this option is now deprecated and will be removed in a future version of the SDK. You should now use the onConnecting() and onConnected() callback methods to provide your own UI for connection progress.
 
 /*
     options.network
@@ -346,10 +347,10 @@ Google now direct their efforts into maintaining the [Firebase face detector, pa
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov-firebase:5.2.1')
+	    implementation('com.iproov.sdk:iproov-firebase:5.3.0-beta1')
 	}
 	```
-	
+
 4. If you integrated Firebase with `google-services.json`, you do not need to do anything further. If you manually instantiated a `FirebaseApp` instance, you need to set `options.capture.firebaseAppInstanceName` to the name of your instance.
 
 Please note that adding Firebase support will increase your app size (as it will include the Firebase dependencies) and may also result in poorer performance on low-end devices, since Firebase is more computationally intensive.
