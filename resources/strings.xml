@@ -3,9 +3,9 @@
     <string name="iproov__language_file">en-GB</string>
     <string name="iproov__app_name">iProov</string>
     <string name="iproov__error">Error</string>
-    <string name="iproov__prompt_hold_still">Put your face in the oval</string>
+    <string name="iproov__prompt_put_face_in_oval">Fill the oval with your face</string>
+    <string name="iproov__prompt_put_face_in_frame">Put your face in the frame</string>
     <string name="iproov__prompt_connecting">Connecting…</string>
-    <string name="iproov__prompt_connecting_slow">Connecting, network is slow…</string>
     <string name="iproov__prompt_tap_to_begin">Tap the screen to begin</string>
     <string name="iproov__prompt_too_far">Move closer</string>
     <string name="iproov__prompt_too_bright">Go somewhere shadier</string>
@@ -36,6 +36,7 @@
     <string name="iproov__prompt_yaw_too_high">Turn slightly to your left</string>
     <string name="iproov__prompt_pitch_too_high">Hold the device at eye level</string>
     <string name="iproov__prompt_pitch_too_low">Hold the device at eye level</string>
+    <string name="iproov__prompt_scan_complete">Scan complete</string>
     <string name="iproov__error_streaming">Streaming error</string>
     <string name="iproov__error_encoder">Encoder error</string>
     <string name="iproov__error_camera">Camera error</string>
