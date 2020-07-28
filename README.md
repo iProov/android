@@ -54,7 +54,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	repositories {
-	    maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
+	    maven { url 'https://raw.githubusercontent.com/iProov/android/beta/maven/' }
 	}
 	```
 
@@ -310,7 +310,7 @@ options.capture.maxRoll = 0.25
 
 The SDK only ships with English language strings. You are free to localise/customise these strings in your app, if you choose to do so.
 
-All iProov strings are prefixed with `iproov__` and can be overriden by your app's strings.xml file. A copy of the iProov strings.xml file can be found [here](https://github.com/iProov/android/blob/master/resources/strings.xml).
+All iProov strings are prefixed with `iproov__` and can be overriden by your app's strings.xml file. A copy of the iProov strings.xml file can be found [here](https://github.com/iProov/android/blob/beta/resources/strings.xml).
 
 Strings for failure reasons are handled in a special way, in the form `R.string.iproov__failure_<feedback code>` e.g. `iproov__failure_ambiguous_outcome` exist and will be used for `reason`, allowing it to provide localised translations for all current and future failure codes.
 
