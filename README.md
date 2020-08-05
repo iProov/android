@@ -1,4 +1,5 @@
-# iProov Android SDK v5.3.0-beta1
+
+# iProov Android SDK v5.3.0-beta2
 
 ## 📖 Table of contents
 
@@ -22,7 +23,8 @@ The iProov Android SDK enables you to integrate iProov into your Android app. We
 
 - Android Studio
 - API Level 19 (4.4 KitKat) and above
-- Compilation target, build tools and Android compatibility libraries must be 27+
+- Compilation target, build tools and Android compatibility libraries must be 29+
+- AndroidX
 
 Within this repository you can find the fictitious "Waterloo Bank" sample Android app, which illustrates an example iProov integration.
 
@@ -62,7 +64,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov:5.3.0-beta1')
+		    implementation('com.iproov.sdk:iproov:5.3.0-beta2')
 	}
 	```
 
@@ -318,7 +320,9 @@ Strings for failure reasons are handled in a special way, in the form `R.string.
 
 ### Failures
 
-Failures occur when the user's identity could not be verified for some reason. A failure means that the capture was successfully received and processed by the server, which returned a result. Crucially, this differs from an error, where the capture itself failed due to a system failure.
+Failures occur when the user's identity could not be verified for some reason. A failure means that the capture was successfully received and processed by the server, which returned a result. This results in a call to the `onFailure()` listener method.
+
+> ⚠️ **NOTE:** It's important to understand the difference between _failures_ and _errors_. In a failure case, iProov was able to successfully process the claim, but was unable to verify the user's identity due to one of a number of reasons. In the error case, the claim failed entirely and iProov was unable to process the claim. 
 
 | `feedbackCode` | `reason` |
 |-----------------------------------|---------------------------------------------------------------|
@@ -336,22 +340,18 @@ The list of feedback codes and reasons is subject to change.
 
 ### Errors
 
-The iProov process failed entirely (i.e. iProov was unable to verify or enrol the user due to a system failure of some kind). This could be for a number of reasons, for example there was an unrecoverable streaming issue.
+In cases where the iProov process failed entirely (i.e. iProov was unable to verify or enrol the user due to a system failure of some kind), the `onError()` listener method will be called with a subclass of `IProovException`. These exceptions are as follows:-
 
-You may wish to display the `localizedMessage` to the user. You can get one of the following reasons using `exception.getReason()`:
-
-A description of these `Reason` errors are as follows:
-
-- `ENCODER_ERROR` - An error occurred with the video encoding process.
-- `STREAMING_ERROR` - An error occurred with the video streaming process.
-- `UNSUPPORTED_DEVICE` - The device is not supported, (e.g. does not have a front-facing camera).
-- `CAMERA_PERMISSION_DENIED` - The user disallowed access to the camera when prompted.
-- `SERVER_ERROR` - The token was invalidated server-side, or some other error occurred.
-- `MULTI_WINDOW_MODE_UNSUPPORTED` - The user attempted to iProov in split-screen/multi-screen mode,which is not supported.
-- `CAMERA_ERROR` - An error occurred acquiring or using the camera. This could happen when a non-phone is used with/without an external/USB camera. See Options.capture.setCameraLensFacing().
-- `LIGHTING_MODEL_ERROR` - An error occurred with the lighting model.
-- `FACE_DETECTOR_ERROR` - An error occurred with the face detector. This is likely to be connected to a misconfiguration of Firebase.
-- `CAPTURE_ALREADY_ACTIVE_ERROR` - An existing iProov capture is already in progress. Wait until the current capture completes before starting a new one.
+- `CameraException` - An error occurred acquiring or using the camera. This could happen when a non-phone is used with/without an external/USB camera. See Options.capture.setCameraLensFacing().
+- `CameraPermissionException` - The user disallowed access to the camera when prompted. You should prompt them to re-enable camera permissions via Settings.
+- `CaptureAlreadyActiveException` - An existing iProov capture is already in progress. Wait until the current capture completes before starting a new one.
+- `EncoderException` - An error occurred with the video encoding process. This should never occur.
+- `FaceDetectorException` - An error occurred with the face detector. This is likely to be connected to a misconfiguration of Firebase.
+- `LightingModelException` - An error occurred with the lighting model. This should never occur.
+- `MultiWindowException` - The user attempted to iProov in split-screen/multi-screen mode,which is not supported.
+- `ServerException` - The token was invalidated server-side, or some other unrecoverable server error occurred.
+- `StreamingException` - An error occurred with the video streaming process. This generally indicates a device connectivity issue.
+- `UnsupportedDeviceException` - The device is not supported, (e.g. does not have a front-facing camera).
 
 ## 👱‍♂️ Alternative face detectors
 
@@ -367,7 +367,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:5.3.0-beta1')
+    implementation('com.iproov.sdk:iproov-blazeface:5.3.0-beta2')
 }
 ```
 
@@ -385,7 +385,7 @@ Google now direct their efforts into maintaining the [Firebase face detector, pa
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov-firebase:5.3.0-beta1')
+	    implementation('com.iproov.sdk:iproov-firebase:5.3.0-beta2')
 	}
 	```
 
