@@ -64,7 +64,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov:5.3.0-beta1')
+		    implementation('com.iproov.sdk:iproov:5.3.0-beta2')
 	}
 	```
 
@@ -367,7 +367,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:5.3.0-beta1')
+    implementation('com.iproov.sdk:iproov-blazeface:5.3.0-beta2')
 }
 ```
 
@@ -385,7 +385,7 @@ Google now direct their efforts into maintaining the [Firebase face detector, pa
 
 	```groovy
 	dependencies 
-	    ion('com.iproov.sdk:iproov-firebase:5.3.0-beta1')
+	    ion('com.iproov.sdk:iproov-firebase:5.3.0-beta2')
 	}
 	```
 
