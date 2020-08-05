@@ -384,8 +384,8 @@ Google now direct their efforts into maintaining the [Firebase face detector, pa
 3. Add the iProov Firebase module to your app's build.gradle file:
 
 	```groovy
-	dependencies 
-	    ion('com.iproov.sdk:iproov-firebase:5.3.0-beta2')
+	dependencies {
+	    implementation('com.iproov.sdk:iproov-firebase:5.3.0-beta2')
 	}
 	```
 
