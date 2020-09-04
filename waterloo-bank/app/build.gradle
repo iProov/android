@@ -2,15 +2,20 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
+project.ext {
+    branch = "master"
+    version = "5.2.3"
+}
+
 android {
-    compileSdkVersion 29
+    compileSdkVersion rootProject.compileSdk
 
     defaultConfig {
         applicationId "uk.co.waterloobank"
-        minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 1
-        versionName "5.2.0"
+        minSdkVersion rootProject.minSdk
+        targetSdkVersion rootProject.targetSdk
+        versionCode 142
+        versionName version
     }
 
     buildTypes {
@@ -20,7 +25,7 @@ android {
         }
     }
 
-    buildToolsVersion = '28.0.3'
+    buildToolsVersion = '29.0.2'
 
     compileOptions {
         sourceCompatibility = '1.8'
@@ -49,22 +54,19 @@ configurations.all {
 apply from: '../repos.gradle'
 
 dependencies {
-//    implementation fileTree(dir: 'libs', include: ['*.aar'])
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation "androidx.core:core-ktx:1.2.0"
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation "androidx.core:core-ktx:1.3.1"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-
-    implementation group: "com.iproov.sdk", name: "iproov", version: "5.2.0", changing: true
+    implementation "com.iproov.sdk:iproov:${project.ext.version}"
 
     implementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "1.0.0", changing: true
     implementation group: "com.iproov.android-api-client", name: "java-retrofit", version: "1.0.0", changing: true
     implementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "1.0.0", changing: true
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.2.1"
 
-
-
+    implementation "com.github.YarikSOffice:lingver:1.3.0"
 }
