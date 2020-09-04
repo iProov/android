@@ -1,4 +1,4 @@
-# iProov Android SDK v5.2.2
+# iProov Android SDK v5.2.3
 
 ## 📖 Table of contents
 
@@ -54,7 +54,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	repositories {
-	    maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
+	    maven { url 'https://raw.githubusercontent.com/iProov/android/beta/maven/' }
 	}
 	```
 
@@ -62,7 +62,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov:5.2.2')
+	    implementation('com.iproov.sdk:iproov:5.2.0')
 	}
 	```
 
@@ -226,7 +226,7 @@ By default, iProov will stream to our EU back-end platform. If you wish to strea
 
 ## ⚙ Options
 
-You can customize the iProov session by passing in an instance of `IProov.Option` to the `IProov.launch()` method. A list of available parameters for customization is below:
+You can customize the iProov session by passing in an instance of `IProov.Option` to the `IProov.launch()` method. For further information see [FAQ](https://github.com/iProov/android/wiki/Frequently-Asked-Questions). A list of available parameters for customization is below:
 
 ##### Kotlin
 
@@ -256,6 +256,7 @@ options.ui.logoImageDrawable = drawable // Logo to be included in the title. Def
 options.ui.scanLineDisabled = true // Disable the scan-line whilst scanning the face. Default: false.
 options.ui.filter = filter // Adjust the filter used for the face preview this can be CLASSIC (as in pre-v5), SHADED or VIBRANT. Default: SHADED.
 options.ui.orientation = orientation // Set the orientation of the iProov activity: enum Orientation (PORTRAIT, REVERSE_PORTRAIT, LANDSCAPE, REVERSE_LANDSCAPE). Note that this rotates the UI and does not rotate the camera; this is because it is intended to support USB cameras on a LANDSCAPE display, where the camera is oriented normally.
+options.ui.activityCompatibilityRequestCode = requestCode // If set, enables Activity compatibility mode with the specified requestCode. See the FAQ for details.
 
 /*
     options.network
@@ -287,7 +288,7 @@ options.capture.maxRoll = 0.25
 
 The SDK only ships with English language strings. You are free to localise/customise these strings in your app, if you choose to do so.
 
-All iProov strings are prefixed with `iproov__` and can be overriden by your app's strings.xml file. A copy of the iProov strings.xml file can be found [here](https://github.com/iProov/android/blob/master/resources/strings.xml).
+All iProov strings are prefixed with `iproov__` and can be overriden by your app's strings.xml file. A copy of the iProov strings.xml file can be found [here](https://github.com/iProov/android/blob/beta/resources/strings.xml).
 
 Strings for failure reasons are handled in a special way, in the form `R.string.iproov__failure_<feedback code>` e.g. `iproov__failure_ambiguous_outcome` exist and will be used for `reason`, allowing it to provide localised translations for all current and future failure codes.
 
@@ -344,7 +345,9 @@ Google now direct their efforts into maintaining the [Firebase face detector, pa
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov-firebase:5.2.2')
+	    implementation('com.iproov.sdk:iproov-firebase:5.2.3') {
+	        transitive=true
+	    }
 	}
 	```
 	
