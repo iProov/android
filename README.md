@@ -1,5 +1,5 @@
 
-# iProov Android SDK v5.3.0-beta2
+# iProov Android SDK v5.3.0-beta3
 
 ## 📖 Table of contents
 
@@ -64,7 +64,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	dependencies {
-		    implementation('com.iproov.sdk:iproov:5.3.0-beta2')
+	    implementation('com.iproov.sdk:iproov:5.3.0-beta3')
 	}
 	```
 
@@ -248,9 +248,11 @@ By default, iProov will stream to our EU back-end platform. If you wish to strea
 
 > **⚠️ SECURITY NOTICE:** You should never use iProov as a local authentication method. You cannot rely on the fact that the success result was returned to prove that the user was authenticated or enrolled successfully (it is possible the iProov process could be manipulated locally by a malicious user). You can treat the success callback as a hint to your app to update the UI, etc. but you must always independently validate the token server-side (using the validate API call) before performing any authenticated user actions.
 
+> **⚠️ IMPLEMENTATION WARNING:** [Google](https://developer.android.com/guide/topics/manifest/activity-element#lmode) states that `singleInstance` and `singleTask` are `not recommended for general use`. We specifically don't recommend the calling Activity to have a `launchMode` of `singleInstance` - when tested, `back` does not always work correctly, particularly after the task switcher has momentarily put any `standard` Activity (like IProov) into the background.
+
 ## ⚙ Options
 
-You can customize the iProov session by passing in an instance of `IProov.Option` to the `IProov.launch()` method. A list of available parameters for customization is below:
+You can customize the iProov session by passing in an instance of `IProov.Option` to the `IProov.launch()` method. For further information see [FAQ](https://github.com/iProov/android/wiki/Frequently-Asked-Questions). A list of available parameters for customization is below:
 
 ##### Kotlin
 
@@ -281,6 +283,8 @@ options.ui.scanLineDisabled = true // Disable the scan-line whilst scanning the 
 options.ui.filter = filter // Adjust the filter used for the face preview this can be CLASSIC (as in pre-v5), SHADED or VIBRANT. Default: SHADED.
 options.ui.orientation = orientation // Set the orientation of the iProov activity: enum Orientation (PORTRAIT, REVERSE_PORTRAIT, LANDSCAPE, REVERSE_LANDSCAPE). Note that this rotates the UI and does not rotate the camera; this is because it is intended to support USB cameras on a LANDSCAPE display, where the camera is oriented normally.
 options.ui.useLegacyConnectingUI = false // When enabled, the iProov SDK will provide a UI for establishing the connection, rather than your app. Please note that this option is now deprecated and will be removed in a future version of the SDK. You should now use the onConnecting() and onConnected() callback methods to provide your own UI for connection progress.
+options.ui.activityCompatibilityRequestCode = requestCode // If set, enables Activity compatibility mode with the specified requestCode. See the FAQ for details.
+
 
 /*
     options.network
@@ -367,7 +371,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:5.3.0-beta2')
+    implementation('com.iproov.sdk:iproov-blazeface:5.3.0-beta3')
 }
 ```
 
@@ -385,7 +389,7 @@ Google now direct their efforts into maintaining the [Firebase face detector, pa
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov-firebase:5.3.0-beta2')
+	    implementation('com.iproov.sdk:iproov-firebase:5.3.0-beta3')
 	}
 	```
 
