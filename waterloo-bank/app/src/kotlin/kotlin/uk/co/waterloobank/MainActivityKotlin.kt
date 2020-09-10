@@ -9,24 +9,43 @@ import com.iproov.androidapiclient.BuildConfig
 import com.iproov.androidapiclient.DemonstrationPurposesOnly
 import com.iproov.androidapiclient.kotlinfuel.ApiClientFuel
 import com.iproov.sdk.IProov
-import com.iproov.sdk.IProovException
+import com.iproov.sdk.core.exception.IProovException
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivityKotlin : AppCompatActivity() {
 
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
+    private lateinit var constants: Constants
+
     private val listener = object : IProov.Listener {
+
+        override fun onConnecting() =
+                com.iproov.sdk.logging.IPLog.i("Main", "Connecting")
+
+        override fun onConnected() =
+                com.iproov.sdk.logging.IPLog.i("Main", "Connected")
+
         override fun onSuccess(token: String) =
                 onResult("Success", "Successfully iProoved.\nToken:$token")
+
         override fun onFailure(reason: String?, feedback: String?) =
                 onResult("Failed", "Failed to iProov\nreason: $reason feedback:$feedback")
-        override fun onProcessing(progress: Double, message: String) =
-                onProcessing(message, progress.times(100).toInt())
+
+        override fun onProcessing(progress: Double, message: String) {
+            captureStatus.text = message
+            progressBar.progress = progress.times(100).toInt()
+        }
+
         override fun onError(e: IProovException) =
                 onResult("Error", "Error: ${e.localizedMessage}")
+
         override fun onCancelled() =
                 onResult("Cancelled", "User action: cancelled")
     }
@@ -35,7 +54,12 @@ class MainActivityKotlin : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Demonstration of library to change all strings
+        // Lingver.getInstance().setLocale(this, "fr")
+
         setContentView(R.layout.activity_main)
+
+        this.constants = Constants(this)
 
         loginButton.setOnClickListener {
             usernameEditText.text.toString().let {
@@ -93,20 +117,23 @@ class MainActivityKotlin : AppCompatActivity() {
         hideButtons()
         showLoadingViews()
 
-        val apiClientFuel = ApiClientFuel(
-                this,
-                Constants.BASE_URL,
-                Constants.API_KEY,
-                Constants.SECRET
-        )
+        constants?.let { c ->
 
-        uiScope.launch(Dispatchers.IO) {
-            try {
-                val token = apiClientFuel.getToken(com.iproov.androidapiclient.ClaimType.VERIFY, userID)
-                IProov.launch(this@MainActivityKotlin, token, createOptions())
-            } catch (ex: Exception) {
-                withContext(Dispatchers.Main) {
-                    onResult("Failed", "Failed to get token.")
+            val apiClientFuel = ApiClientFuel(
+                    this,
+                    Constants.BASE_URL,
+                    c.getApiKey(),
+                    c.getSecret()
+            )
+
+            uiScope.launch(Dispatchers.IO) {
+                try {
+                    val token = apiClientFuel.getToken(com.iproov.androidapiclient.ClaimType.VERIFY, userID)
+                    IProov.launch(this@MainActivityKotlin, token, createOptions())
+                } catch (ex: Exception) {
+                    withContext(Dispatchers.Main) {
+                        onResult("Failed", "Failed to get token.")
+                    }
                 }
             }
         }
@@ -118,20 +145,23 @@ class MainActivityKotlin : AppCompatActivity() {
         hideButtons()
         showLoadingViews()
 
-        val apiClientFuel = ApiClientFuel(
-                this,
-                Constants.BASE_URL,
-                Constants.API_KEY,
-                Constants.SECRET
-        )
+        constants?.let { c ->
 
-        uiScope.launch(Dispatchers.IO) {
-            try {
-                val token = apiClientFuel.getToken(com.iproov.androidapiclient.ClaimType.ENROL, userID)
-                IProov.launch(this@MainActivityKotlin, token, createOptions())
-            } catch (ex: Exception) {
-                withContext(Dispatchers.Main) {
-                    onResult("Failed", "Failed to get token.")
+            val apiClientFuel = ApiClientFuel(
+                    this,
+                    Constants.BASE_URL,
+                    c.getApiKey(),
+                    c.getSecret()
+            )
+
+            uiScope.launch(Dispatchers.IO) {
+                try {
+                    val token = apiClientFuel.getToken(com.iproov.androidapiclient.ClaimType.ENROL, userID)
+                    IProov.launch(this@MainActivityKotlin, token, createOptions())
+                } catch (ex: Exception) {
+                    withContext(Dispatchers.Main) {
+                        onResult("Failed", "Failed to get token.")
+                    }
                 }
             }
         }
@@ -148,16 +178,10 @@ class MainActivityKotlin : AppCompatActivity() {
                 .show()
     }
 
-    private fun onProcessing(status: String, progressValue: Int) {
-        captureStatus.text = status
-        progressBar.progress = progressValue
-    }
-
     private fun createOptions(): IProov.Options
         = IProov.Options()
                 .apply {
                     ui.autoStartDisabled = false
-                    ui.fontPath = "Merriweather-Bold.ttf"
                     ui.logoImageResource = R.mipmap.ic_launcher
                 }
 }

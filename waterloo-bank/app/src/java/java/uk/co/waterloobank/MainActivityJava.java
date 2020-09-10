@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.iproov.androidapiclient.javaretrofit.ApiClientJavaRetrofit;
 import com.iproov.androidapiclient.javaretrofit.ClaimType;
 import com.iproov.sdk.IProov;
-import com.iproov.sdk.IProovException;
+import com.iproov.sdk.core.exception.IProovException;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -30,8 +30,20 @@ public class MainActivityJava extends AppCompatActivity {
     private ProgressBar progressBar;
     private TextView captureStatus;
     private TextView textViewVersion;
+    private Constants constants;
 
     private IProov.Listener listener = new IProov.Listener() {
+
+        @Override
+        public void onConnecting() {
+            Log.w(TAG, "Connecting");
+        }
+
+        @Override
+        public void onConnected() {
+            Log.w(TAG, "Connected");
+        }
+
         @Override
         public void onSuccess(String token) {
             onResult("Success", "Successfully iProoved.\nToken:" + token);
@@ -62,6 +74,11 @@ public class MainActivityJava extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        this.constants = new Constants(this);
+
+        // Demonstration of library to change all strings
+        // Lingver.getInstance().setLocale(this, "fr");
 
         userNameEditText = findViewById(R.id.usernameEditText);
         progressBar = findViewById(R.id.progressBar);
@@ -132,8 +149,8 @@ public class MainActivityJava extends AppCompatActivity {
                 this,
                 Constants.BASE_URL,
                 HttpLoggingInterceptor.Level.BODY,
-                Constants.API_KEY,
-                Constants.SECRET);
+                constants.getApiKey(),
+                constants.getSecret());
 
         apiClient.getToken(
                 ClaimType.VERIFY,
@@ -154,8 +171,8 @@ public class MainActivityJava extends AppCompatActivity {
                 this,
                 Constants.BASE_URL,
                 HttpLoggingInterceptor.Level.BODY,
-                Constants.API_KEY,
-                Constants.SECRET);
+                constants.getApiKey(),
+                constants.getSecret());
 
         apiClient.getToken(
                 ClaimType.ENROL,
@@ -189,7 +206,6 @@ public class MainActivityJava extends AppCompatActivity {
         IProov.Options options = new IProov.Options();
         options.ui.autoStartDisabled = false;
         options.ui.logoImageResource = R.mipmap.ic_launcher;
-        options.ui.fontPath = "Merriweather-Bold.ttf";
         return options;
     }
 }
