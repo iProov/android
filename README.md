@@ -1,5 +1,5 @@
 
-# iProov Android SDK v5.3.0-beta3
+# iProov Biometrics Android SDK v6.0.0-beta1
 
 ## 📖 Table of contents
 
@@ -12,12 +12,14 @@
 - [Options](#-options)
 - [String localization & customization](#-string-localization--customization)
 - [Handling failures & errors](#-handling-failures--errors)
-- [Firebase support](#-firebase-support)
+- [ML Kit support](#-ml-kit-support)
 - [Help & support](#help--support)
 
 ## 🤳 Introduction
 
-The iProov Android SDK enables you to integrate iProov into your Android app. We also have an [iOS SDK](https://github.com/iproov/ios), [Xamarin bindings](https://github.com/iproov/xamarin) and [Web SDK](https://github.com/iProov/web).
+The iProov Biometrics Android SDK enables you to integrate iProov into your Android app. We also have an [iOS Biometrics SDK](https://github.com/iproov/ios), [Xamarin bindings](https://github.com/iproov/xamarin) and [Web Biometrics SDK](https://github.com/iProov/web).
+
+It supports both _Genuine Presence Assurance_ and _Liveness Assurance_ methods of face verification. Which method gets used depends on the token request and response. See [Get started](#-get-started).
 
 ### Requirements
 
@@ -33,7 +35,7 @@ Within this repository you can find the fictitious "Waterloo Bank" sample Androi
 The framework package is provided via this repository, which contains the following:
 
 * **README.md** - This document
-* **maven** - Maven repository for the SDK
+* **maven** - Maven repository for the Biometrics SDK
 * **waterloo-bank** - A sample project of iProov for the fictitious _Waterloo Bank_.
 * **resources** - Directory containing additional development resources you may find helpful.
 
@@ -48,7 +50,7 @@ You can obtain API credentials by registering on the [iProov Portal](https://por
 
 ## 📲 Installation
 
-The Android SDK is provided in AAR format (Android Library Project) as a Maven dependency.
+The iProov Biometrics Android SDK is provided in AAR format (Android Library Project) as a Maven dependency.
 
 1. Open the build.gradle file corresponding to your new or existing Android Studio project with which you wish to integrate (commonly, this is the build.gradle file for the `app` module).
 
@@ -64,7 +66,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov:5.3.0-beta3')
+	    implementation('com.iproov.sdk:iproov:6.0.0-beta1')
 	}
 	```
 
@@ -79,7 +81,7 @@ The Android SDK is provided in AAR format (Android Library Project) as a Maven d
 	}
 	```
 
-If you wish to make use of pose control functionality, you will also need to [add the Firebase module to your app](#-firebase-support).
+If you wish to make use of pose control functionality, you will also need to [add the ML Kit module to your app](#-ml-kit-support).
 
 You may now build your project!
 
@@ -92,7 +94,7 @@ Before being able to launch iProov, you need to get a token to iProov against. T
 
 In a production app, you normally would want to obtain the token via a server-to-server back-end call. For the purposes of on-device demos/testing, we provide Kotlin/Java sample code for obtaining tokens via [iProov API v2](https://eu.rp.secure.iproov.me/docs.html) with our open-source [Android API Client](https://github.com/iProov/android-api-client).
 
-Once you have obtained the token, you can simply call `IProov.launch()`:
+Once you have obtained the a Genuine Presence Assurance or Liveness Assurance token, you can simply call `IProov.launch()`:
 
 ##### Kotlin
 
@@ -273,6 +275,7 @@ options.ui.lineColor = Color.CYAN
 options.ui.loadingTintColor = Color.RED // Please note this is option is deprecated, and only takes effect when used in conjunction with the useLegacyConnectingUI option.
 options.ui.notReadyTintColor = Color.BLUE
 options.ui.readyTintColor = Color.GREEN
+options.ui.livenessTintColor = Color.BLUE
 
 options.ui.enableScreenshots = true // For added security, screenshotting is disabled during IProoving; re-enable this here. Default: false.
 options.ui.fontAsset = "SomeFont.ttf" // Set the default font from assets directory.
@@ -302,8 +305,7 @@ options.network.path = path // The path to use when streaming, defaults to "/soc
 */
 
 options.capture.camera = Camera.EXTERNAL // FRONT or EXTERNAL (USB). Default is FRONT.
-options.capture.faceDetector = IProov.FaceDetector.AUTO // Explicitly declare which face detector is used, can either be AUTO, FIREBASE or CLASSIC. The AUTO declaration will try to use the firebase face detector and fallback to classic if unavailable. Default: AUTO.
-options.capture.firebaseAppInstanceName = "MyFirebaseApp" // The name of the FirebaseApp instance that is used to initialise the Firebase face detector, a null value means the default FirebaseApp instance is used. This is only needed when integrating the iproov-firebase module.
+options.capture.faceDetector = IProov.FaceDetector.AUTO // Explicitly declare which face detector is used, can either be AUTO, ML_KIT or CLASSIC. The AUTO declaration will try to use the ML Kit face detector and fallback to classic if unavailable. Default: AUTO.
 
 // You can specify max yaw/roll/pitch deviation of the user's face to ensure a given pose. Values are provided in normalised units.
 // These options should not be set for general use. Please contact iProov for further information if you would like to use this feature.
@@ -314,7 +316,7 @@ options.capture.maxRoll = 0.25
 
 ## 🌎 String localization & customization
 
-The SDK only ships with English language strings. You are free to localise/customise these strings in your app, if you choose to do so.
+The iProov Biometrics Android SDK only ships with English language strings. You are free to localise/customise these strings in your app, if you choose to do so.
 
 All iProov strings are prefixed with `iproov__` and can be overriden by your app's strings.xml file. A copy of the iProov strings.xml file can be found [here](https://github.com/iProov/android/blob/beta/resources/strings.xml).
 
@@ -331,14 +333,12 @@ Failures occur when the user's identity could not be verified for some reason. A
 | `feedbackCode` | `reason` |
 |-----------------------------------|---------------------------------------------------------------|
 | `ambiguous_outcome` | Sorry, ambiguous outcome |
-| `network_problem` | Sorry, network problem |
 | `motion_too_much_movement` | Please do not move while iProoving |
 | `lighting_flash_reflection_too_low` | Ambient light too strong or screen brightness too low |
 | `lighting_backlit` | Strong light source detected behind you |
 | `lighting_too_dark` | Your environment appears too dark |
 | `lighting_face_too_bright` | Too much light detected on your face |
 | `motion_too_much_mouth_movement` | Please do not talk while iProoving |
-| `user_timeout` | Sorry, your session has timed out |
 
 The list of feedback codes and reasons is subject to change.
 
@@ -350,18 +350,18 @@ In cases where the iProov process failed entirely (i.e. iProov was unable to ver
 - `CameraPermissionException` - The user disallowed access to the camera when prompted. You should prompt them to re-enable camera permissions via Settings.
 - `CaptureAlreadyActiveException` - An existing iProov capture is already in progress. Wait until the current capture completes before starting a new one.
 - `EncoderException` - An error occurred with the video encoding process. This should never occur.
-- `FaceDetectorException` - An error occurred with the face detector. This is likely to be connected to a misconfiguration of Firebase.
+- `FaceDetectorException` - An error occurred with the face detector.
 - `LightingModelException` - An error occurred with the lighting model. This should never occur.
 - `MultiWindowException` - The user attempted to iProov in split-screen/multi-screen mode,which is not supported.
 - `ServerException` - The token was invalidated server-side, or some other unrecoverable server error occurred.
-- `StreamingException` - An error occurred with the video streaming process. This generally indicates a device connectivity issue.
+- `NetworkException` - An error occurred with communications to the server. This generally indicates a device connectivity issue (e.g. the user's session has timed out, or internet service has been lost).
 - `UnsupportedDeviceException` - The device is not supported, (e.g. does not have a front-facing camera).
 
 ## 👱‍♂️ Alternative face detectors
 
-By default, the SDK leverages the [Android built-in face detector](https://developer.android.com/reference/android/media/FaceDetector). This is a simple face detector and is ubiquitous in Android phones, however it is not regularly updated. Therefore, we also support BlazeFace and Firebase face detectors.
+By default, the iProov Biometrics Android SDK leverages the [Android built-in face detector](https://developer.android.com/reference/android/media/FaceDetector). This is a simple face detector and is ubiquitous in Android phones, however it is not regularly updated. Therefore, we also support BlazeFace and ML Kit face detectors.
 
-### BlazeFace
+### BlazeFace
 
 [BlazeFace](https://arxiv.org/pdf/1907.05047.pdf) is a relatively lightweight and performant face detector. Whilst you should find that BlazeFace provides increased accuracy when compared with built-in face detector, it requires the inclusion of TensorFlow Lite with the SDK along with the necessary model, and therefore adds approximately 2.2MB to the downloaded app size. In our benchmarks, it also tends to run approximately 50% slower than the built-in "classic" face detector on very low-end devices.
 
@@ -371,31 +371,25 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:5.3.0-beta3')
+    implementation('com.iproov.sdk:iproov-blazeface:6.0.0-beta1')
 }
 ```
 
-### Firebase
+### ML Kit support
 
-Google now direct their efforts into maintaining the [Firebase face detector, part of ML Kit](https://firebase.google.com/docs/ml-kit/detect-faces). The advantage of the Firebase face detector is that it provides more advanced features such as facial landmarks, which allows us to offer detection of the user's pose. Therefore, if you wish to make use of the pose control features, you will need to add the `iproov-firebase` module to your app.
+Google now direct their efforts into maintaining the [ML Kit face detector](https://developers.google.com/ml-kit/vision/face-detection). The advantage of the ML Kit face detector is that it provides more advanced features such as facial landmarks, which allows us to offer detection of the user's pose. Therefore, if you wish to make use of the pose control features, you will need to add the `iproov-mlkit` module to your app.
 
 #### Installation steps
 
-1. Register your app on Firebase [here](https://firebase.google.com/docs/android/setup).
+Add the iProov ML Kit module to your app's build.gradle file:
 
-2. Setup Firebase within your app, either by adding `google-services.json` to your project, or by manually instantiating a `FirebaseApp` instance.
+```groovy
+dependencies {
+	implementation('com.iproov.sdk:iproov-mlkit:6.0.0-beta1')
+}
+```
 
-3. Add the iProov Firebase module to your app's build.gradle file:
-
-	```groovy
-	dependencies {
-	    implementation('com.iproov.sdk:iproov-firebase:5.3.0-beta3')
-	}
-	```
-
-4. If you integrated Firebase with `google-services.json`, you do not need to do anything further. If you manually instantiated a `FirebaseApp` instance, you need to set `options.capture.firebaseAppInstanceName` to the name of your instance.
-
-Please note that adding Firebase support will increase your app size (as it will include the Firebase dependencies) and may also result in poorer performance on low-end devices, since Firebase is more computationally intensive.
+Please note that adding ML Kit support will increase your app size (as it will include various machine learning models used for face detection) and may also result in poorer performance on low-end devices, since ML Kit is more computationally intensive. Find out more [here](https://developers.google.com/ml-kit/vision/face-detection/android).
 
 ## ❓Help & support
 
