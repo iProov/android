@@ -153,6 +153,7 @@ public class MainActivityJava extends AppCompatActivity {
                 constants.getSecret());
 
         apiClient.getToken(
+                ApiClientJavaRetrofit.AssuranceType.GENUINE_PRESENCE,
                 ClaimType.VERIFY,
                 userID,
                 (call, response) -> {
@@ -175,6 +176,7 @@ public class MainActivityJava extends AppCompatActivity {
                 constants.getSecret());
 
         apiClient.getToken(
+                ApiClientJavaRetrofit.AssuranceType.GENUINE_PRESENCE,
                 ClaimType.ENROL,
                 userID,
                 (call, response) -> {

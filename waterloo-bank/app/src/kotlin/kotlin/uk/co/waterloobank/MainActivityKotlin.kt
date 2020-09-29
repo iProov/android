@@ -128,7 +128,7 @@ class MainActivityKotlin : AppCompatActivity() {
 
             uiScope.launch(Dispatchers.IO) {
                 try {
-                    val token = apiClientFuel.getToken(com.iproov.androidapiclient.ClaimType.VERIFY, userID)
+                    val token = apiClientFuel.getToken(com.iproov.androidapiclient.AssuranceType.GENUINE_PRESENCE, com.iproov.androidapiclient.ClaimType.VERIFY, userID)
                     IProov.launch(this@MainActivityKotlin, token, createOptions())
                 } catch (ex: Exception) {
                     withContext(Dispatchers.Main) {
@@ -156,7 +156,7 @@ class MainActivityKotlin : AppCompatActivity() {
 
             uiScope.launch(Dispatchers.IO) {
                 try {
-                    val token = apiClientFuel.getToken(com.iproov.androidapiclient.ClaimType.ENROL, userID)
+                    val token = apiClientFuel.getToken(com.iproov.androidapiclient.AssuranceType.GENUINE_PRESENCE, com.iproov.androidapiclient.ClaimType.ENROL, userID)
                     IProov.launch(this@MainActivityKotlin, token, createOptions())
                 } catch (ex: Exception) {
                     withContext(Dispatchers.Main) {
