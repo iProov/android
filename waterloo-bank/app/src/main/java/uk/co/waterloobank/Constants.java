@@ -1,7 +1,6 @@
 package uk.co.waterloobank;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
