@@ -29,10 +29,9 @@ public class MainActivityJava extends AppCompatActivity {
     private EditText userNameEditText;
     private ProgressBar progressBar;
     private TextView captureStatus;
-    private TextView textViewVersion;
     private Constants constants;
 
-    private IProov.Listener listener = new IProov.Listener() {
+    private final IProov.Listener listener = new IProov.Listener() {
 
         @Override
         public void onConnecting() {
@@ -45,13 +44,13 @@ public class MainActivityJava extends AppCompatActivity {
         }
 
         @Override
-        public void onSuccess(String token) {
-            onResult("Success", "Successfully iProoved.\nToken:" + token);
+        public void onSuccess(IProov.SuccessResult result) {
+            onResult("Success", "Successfully iProoved.\nToken:" + result.token);
         }
 
         @Override
-        public void onFailure(String reason, String feedback) {
-            onResult("Failed", "Failed to register\nreason: " + reason + "feedback: " + feedback);
+        public void onFailure(IProov.FailureResult result) {
+            onResult("Failed", "Failed to register\nreason: " + result.reason + "feedback: " + result.feedbackCode);
         }
 
         @Override
@@ -83,13 +82,12 @@ public class MainActivityJava extends AppCompatActivity {
         userNameEditText = findViewById(R.id.usernameEditText);
         progressBar = findViewById(R.id.progressBar);
         captureStatus = findViewById(R.id.captureStatus);
-        textViewVersion = findViewById(R.id.textViewVersion);
 
         loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(v -> {
             String userId = userNameEditText.getText().toString();
             if (userId.isEmpty()) {
-                Toast.makeText(this, "User ID can't be empty", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.user_id_cannot_be_empty), Toast.LENGTH_LONG).show();
                 return;
             }
 
@@ -100,14 +98,14 @@ public class MainActivityJava extends AppCompatActivity {
         registerButton.setOnClickListener(v -> {
             String userId = userNameEditText.getText().toString();
             if (userId.isEmpty()) {
-                Toast.makeText(this, "User ID can't be empty", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.user_id_cannot_be_empty), Toast.LENGTH_LONG).show();
                 return;
             }
 
             register(userNameEditText.getText().toString());
         });
 
-        textViewVersion.setText("Java using SDK Version [" + IProov.getSDKVersion() + "]");
+        ((TextView)findViewById(R.id.textViewVersion)).setText(String.format(getString(R.string.java_version_format), IProov.getSDKVersion()));
 
         Log.w(TAG, "registerListener");
         IProov.registerListener(listener);
@@ -116,7 +114,7 @@ public class MainActivityJava extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Log.w(TAG, "unregisterListener");
-        IProov.unregisterListener();
+        IProov.unregisterListener(listener);
         super.onDestroy();
     }
 

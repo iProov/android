@@ -32,11 +32,11 @@ class MainActivityKotlin : AppCompatActivity() {
         override fun onConnected() =
                 com.iproov.sdk.logging.IPLog.i("Main", "Connected")
 
-        override fun onSuccess(token: String) =
-                onResult("Success", "Successfully iProoved.\nToken:$token")
+        override fun onSuccess(result: IProov.SuccessResult) =
+                onResult("Success", "Successfully iProoved.\nToken:$result.token")
 
-        override fun onFailure(reason: String?, feedback: String?) =
-                onResult("Failed", "Failed to iProov\nreason: $reason feedback:$feedback")
+        override fun onFailure(result: IProov.FailureResult) =
+                onResult("Failed", "Failed to iProov\nreason: $result.reason feedback:$result.feedbackCode")
 
         override fun onProcessing(progress: Double, message: String) {
             captureStatus.text = message
@@ -64,7 +64,7 @@ class MainActivityKotlin : AppCompatActivity() {
         loginButton.setOnClickListener {
             usernameEditText.text.toString().let {
                 if(it.isEmpty()) {
-                    Toast.makeText(this, "User ID can't be empty", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.user_id_cannot_be_empty), Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
                 login(it)
@@ -74,20 +74,20 @@ class MainActivityKotlin : AppCompatActivity() {
         registerButton.setOnClickListener {
             usernameEditText.text.toString().let {
                 if(it.isEmpty()) {
-                    Toast.makeText(this, "User ID can't be empty", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.user_id_cannot_be_empty), Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
                 register(it)
             }
         }
 
-        textViewVersion.text = "Kotlin using SDK Version [${IProov.getSDKVersion()}]"
+        textViewVersion.text = String.format(getString(R.string.user_id_cannot_be_empty), IProov.getSDKVersion())
 
         IProov.registerListener(listener);
     }
 
     override fun onDestroy() {
-        IProov.unregisterListener()
+        IProov.unregisterListener(listener)
         super.onDestroy()
     }
 
@@ -117,7 +117,7 @@ class MainActivityKotlin : AppCompatActivity() {
         hideButtons()
         showLoadingViews()
 
-        constants?.let { c ->
+        constants.let { c ->
 
             val apiClientFuel = ApiClientFuel(
                     this,
@@ -145,7 +145,7 @@ class MainActivityKotlin : AppCompatActivity() {
         hideButtons()
         showLoadingViews()
 
-        constants?.let { c ->
+        constants.let { c ->
 
             val apiClientFuel = ApiClientFuel(
                     this,
