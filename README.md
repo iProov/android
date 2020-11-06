@@ -1,5 +1,5 @@
 
-# iProov Biometrics Android SDK v6.0.0-beta3
+# iProov Biometrics Android SDK v6.0.0-beta4
 
 ## 📖 Table of contents
 
@@ -66,7 +66,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov:6.0.0-beta3')
+	    implementation('com.iproov.sdk:iproov:6.0.0-beta4')
 	}
 	```
 
@@ -87,14 +87,30 @@ You may now build your project!
 
 ## 🚀 Get started
 
+To use iProov to enrol or verify a user it is necessary to follow these steps:
+
+### Obtain a token
+
 Before being able to launch iProov, you need to get a token to iProov against. There are 2 different token types:
 
 1. A **verify** token - for logging-in an existing user
 2. An **enrol** token - for registering a new user
 
-In a production app, you normally would want to obtain the token via a server-to-server back-end call. For the purposes of on-device demos/testing, we provide Kotlin/Java sample code for obtaining tokens via [iProov API v2](https://eu.rp.secure.iproov.me/docs.html) with our open-source [Android API Client](https://github.com/iProov/android-api-client).
+In a production app, you normally would want to obtain the token via a server-to-server back-end call. 
+For the purposes of on-device demos/testing, we provide Kotlin/Java sample code for obtaining tokens via [iProov API v2](https://eu.rp.secure.iproov.me/docs.html) with our open-source [Android API Client](https://github.com/iProov/android-api-client).
 
-Once you have obtained the a Genuine Presence Assurance or Liveness Assurance token, you can simply call `IProov.launch()`:
+### Register a listener
+
+In order to monitor the progress of an iProov scan and receive the result, you should register an `IProov.Listener` class with a call to `IProov.registerListener()`. Once the listener is no longer required, you should unregister it with a call to `IProov.unregisterListener()`.
+
+Please note the following:
+
+* Multiple listeners can be registered simultaneously.
+* After calling `IProov.registerListener()`, the new listener will immediately receive the last event sent (if there is one).
+* Any listener can only be registered once, registering the same listener more than once will have no effect.
+* Listeners are held as `WeakReference`s to avoid memory leaks, however it is still best practice to explicitly unregister a listener when you are finished with it.
+* We advise registering the listener in `onCreate()` and unregistering it in `onDestroy()`.
+
 
 ##### Kotlin
 
@@ -118,15 +134,13 @@ class MainActivity : AppCompatActivity(), IProov.Listener {
         // the user. This will be called multiple time as the progress updates.
     }
 
-    override fun onSuccess(token: String) {
+    override fun onSuccess(IProov.SuccessResult result) {
         // The user was successfully verified/enrolled and the token has been validated.
-        // The token passed back will be the same as the one passed in to the original call.
     }
 
-    override fun onFailure(reason: String?, feedback: String?) {
+    override fun onFailure(IProov.FailureResult result) {
         // The user was not successfully verified/enrolled, as their identity could not be verified,
-        // or there was another issue with their verification/enrollment. A reason (as a string)
-        // is provided as to why the claim failed, along with a feedback code from the back-end.
+        // or there was another issue with their verification/enrollment.
     }
 
     override fun onCancelled() {
@@ -148,20 +162,8 @@ class MainActivity : AppCompatActivity(), IProov.Listener {
     }
 
     override fun onDestroy() {
-        IProov.unregisterListener()        
+        IProov.unregisterListener(this)        
         super.onDestroy()
-    }
-
-    private fun launchIProov() {
-        val options = IProov.Options()
-        // ...customise any iProov options...
-        
-        IProov.launch(
-            this, // Reference to current activity
-            "https://eu.rp.secure.iproov.me", // Streaming URL (optional)
-            "{{ your token here }}", // iProov token
-            options // Optional
-        )
     }
 }
 
@@ -193,16 +195,14 @@ public class MainActivity extends AppCompatActivity implements IProov.Listener {
     }
 
     @Override
-    public void onSuccess(String token) {
+    public void onSuccess(IProov.SuccessResult result) {
         // The user was successfully verified/enrolled and the token has been validated.
-        // The token passed back will be the same as the one passed in to the original call.
     }
 
     @Override
-    public void onFailure(@Nullable String reason, @Nullable String feedbackCode) {
+    public void onFailure(IProov.FailureResult result) {
         // The user was not successfully verified/enrolled, as their identity could not be verified,
-        // or there was another issue with their verification/enrollment. A reason (as a string)
-        // is provided as to why the claim failed, along with a feedback code from the back-end.
+        // or there was another issue with their verification/enrollment.
     }
 
     @Override
@@ -228,10 +228,43 @@ public class MainActivity extends AppCompatActivity implements IProov.Listener {
     
     @Override
     protected void onDestroy() {
-        IProov.unregisterListener();
+        IProov.unregisterListener(this);
         super.onDestroy();
+    }    
+}
+```
+
+### Launch
+
+Once you have obtained the a Genuine Presence Assurance or Liveness Assurance token, you can simply call `IProov.launch()`.
+
+You can customize the SDK by adjusting visual appearance and setting various user experience options by passing in an `IProov.Options` object (described fully [later](#-options) in this document).
+
+##### Kotlin
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    private fun launchIProov() {
+        val options = IProov.Options()
+        // ...customise any iProov options...
+        
+        IProov.launch(
+            this, // Reference to current activity
+            "https://eu.rp.secure.iproov.me", // Streaming URL (optional)
+            "{{ your token here }}", // iProov token
+            options // Optional
+        )
     }
-    
+}
+
+```
+
+##### Java
+
+```java
+public class MainActivity extends AppCompatActivity {
+
     private void launchIProov() {
         IProov.Options options = new IProov.Options();
         // ...customise any iProov options...
@@ -245,6 +278,8 @@ public class MainActivity extends AppCompatActivity implements IProov.Listener {
     }
 }
 ```
+
+### Important notes
 
 By default, iProov will stream to our EU back-end platform. If you wish to stream to a different back-end, you can pass a `streamingURL` as the first parameter to `IProov.launch()` with the base URL of the back-end to stream to.
 
@@ -371,7 +406,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:6.0.0-beta3')
+    implementation('com.iproov.sdk:iproov-blazeface:6.0.0-beta4')
 }
 ```
 
@@ -385,7 +420,7 @@ Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-	implementation('com.iproov.sdk:iproov-mlkit:6.0.0-beta3')
+	implementation('com.iproov.sdk:iproov-mlkit:6.0.0-beta4')
 }
 ```
 
