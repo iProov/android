@@ -62,5 +62,8 @@
 
     <string name="login">Lồgȋn</string>
     <string name="register">Regȋster</string>
+    <string name="java_version_format">Java using SDK Version [%1$s]</string>
+    <string name="kotlin_version_format">Kotlin using SDK Version [%1$s]</string>
+    <string name="user_id_cannot_be_empty">User ID cannot be empty</string>
 
 </resources>
