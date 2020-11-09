@@ -134,11 +134,11 @@ class MainActivity : AppCompatActivity(), IProov.Listener {
         // the user. This will be called multiple time as the progress updates.
     }
 
-    override fun onSuccess(IProov.SuccessResult result) {
+    override fun onSuccess(result: IProov.SuccessResult) {
         // The user was successfully verified/enrolled and the token has been validated.
     }
 
-    override fun onFailure(IProov.FailureResult result) {
+    override fun onFailure(result: IProov.FailureResult) {
         // The user was not successfully verified/enrolled, as their identity could not be verified,
         // or there was another issue with their verification/enrollment.
     }
