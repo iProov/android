@@ -136,11 +136,15 @@ class MainActivity : AppCompatActivity(), IProov.Listener {
 
     override fun onSuccess(result: IProov.SuccessResult) {
         // The user was successfully verified/enrolled and the token has been validated.
+        token: String = result.token
     }
 
     override fun onFailure(result: IProov.FailureResult) {
         // The user was not successfully verified/enrolled, as their identity could not be verified,
         // or there was another issue with their verification/enrollment.
+        token: String = result.token
+        reason: String = result.reason
+        feedbackCode: String = result.feedbackCode
     }
 
     override fun onCancelled() {
@@ -197,12 +201,16 @@ public class MainActivity extends AppCompatActivity implements IProov.Listener {
     @Override
     public void onSuccess(IProov.SuccessResult result) {
         // The user was successfully verified/enrolled and the token has been validated.
+        String token = result.token;
     }
 
     @Override
     public void onFailure(IProov.FailureResult result) {
         // The user was not successfully verified/enrolled, as their identity could not be verified,
         // or there was another issue with their verification/enrollment.
+        String token = result.token;
+        String reason = result.reason;
+        String feedbackCode = result.feedbackCode;        
     }
 
     @Override
