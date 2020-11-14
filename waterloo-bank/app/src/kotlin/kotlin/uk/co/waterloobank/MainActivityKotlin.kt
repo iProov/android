@@ -81,7 +81,7 @@ class MainActivityKotlin : AppCompatActivity() {
             }
         }
 
-        textViewVersion.text = String.format(getString(R.string.user_id_cannot_be_empty), IProov.getSDKVersion())
+        textViewVersion.text = String.format(getString(R.string.kotlin_version_format), IProov.getSDKVersion())
 
         IProov.registerListener(listener);
     }

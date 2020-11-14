@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 
 project.ext {
     branch = "beta"
-    version = "6.0.0-beta4"
+    version = "6.0.0-beta5"
 }
 
 android {
@@ -14,7 +14,7 @@ android {
         applicationId "uk.co.waterloobank"
         minSdkVersion rootProject.minSdk
         targetSdkVersion rootProject.targetSdk
-        versionCode 161
+        versionCode 163
         versionName "${version}"
     }
 
