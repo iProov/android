@@ -5,4 +5,11 @@
     <string name="action_settings">Settings</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
+    <string name="java_version_format">Java using SDK Version [%1$s]</string>
+    <string name="kotlin_version_format">Kotlin using SDK Version [%1$s]</string>
+    <string name="user_id_cannot_be_empty">User ID cannot be empty</string>
+    <string-array name="assuranceTypeArray">
+        <item>genuine_presence</item>
+        <item>liveness</item>
+    </string-array>
 </resources>
