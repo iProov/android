@@ -8,5 +8,12 @@ repositories {
         url 'https://raw.githubusercontent.com/iProov/android/master/maven/'
     }
 
+    maven {
+        url "https://raw.githubusercontent.com/iProov/android/beta/maven/"
+        mavenContent {
+            releasesOnly()
+        }
+    }
+
     mavenCentral()
 }
