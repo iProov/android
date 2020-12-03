@@ -1,21 +1,22 @@
 
-# iProov Biometrics Android SDK v6.0.0
+![iProov flexible authentication for identity assurance](images/banner.jpg)
+# iProov Biometrics Android SDK v6.1.0
 
-## 📖 Table of contents
+## Table of contents
 
-- [Introduction](#-introduction)
-- [Contents](#-contents)
-- [Upgrading from earlier versions](#-upgrading-from-earlier-versions)
-- [Registration](#-registration)
-- [Installation](#-installation)
-- [Get started](#-get-started)
-- [Options](#-options)
-- [String localization & customization](#-string-localization--customization)
-- [Handling failures & errors](#-handling-failures--errors)
-- [ML Kit support](#-ml-kit-support)
+- [Introduction](#introduction)
+- [Contents](#contents)
+- [Upgrading from earlier versions](#upgrading-from-earlier-versions)
+- [Registration](#registration)
+- [Installation](#installation)
+- [Get started](#get-started)
+- [Options](#options)
+- [String localization & customization](#string-localization--customization)
+- [Handling failures & errors](#handling-failures--errors)
+- [ML Kit support](#ml-kit-support)
 - [Help & support](#help--support)
 
-## 🤳 Introduction
+## Introduction
 
 The iProov Biometrics Android SDK enables you to integrate iProov into your Android app. We also have an [iOS Biometrics SDK](https://github.com/iproov/ios), [Xamarin bindings](https://github.com/iproov/xamarin) and [Web Biometrics SDK](https://github.com/iProov/web).
 
@@ -30,7 +31,7 @@ It supports both _Genuine Presence Assurance_ and _Liveness Assurance_ methods o
 
 Within this repository you can find the fictitious "Waterloo Bank" sample Android app, which illustrates an example iProov integration.
 
-## 📖 Contents
+## Contents
 
 The framework package is provided via this repository, which contains the following:
 
@@ -40,15 +41,15 @@ The framework package is provided via this repository, which contains the follow
 * **resources** - Directory containing additional development resources you may find helpful.
 
 
-## ⬆ Upgrading from earlier versions
+## Upgrading from earlier versions
 
 If you're already using an older version of the iProov SDK, consult the [Upgrade Guide](https://github.com/iProov/android/wiki/Upgrade-Guide) for detailed information about how to upgrade your app.
 
-## ✍ Registration
+## Registration
 
 You can obtain API credentials by registering on the [iProov Portal](https://portal.iproov.com/).
 
-## 📲 Installation
+## Installation
 
 The iProov Biometrics Android SDK is provided in AAR format (Android Library Project) as a Maven dependency.
 
@@ -66,7 +67,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
 	```groovy
 	dependencies {
-	    implementation('com.iproov.sdk:iproov:6.0.0')
+	    implementation('com.iproov.sdk:iproov:6.1.0')
 	}
 	```
 
@@ -85,7 +86,7 @@ If you wish to make use of pose control functionality, you will also need to [ad
 
 You may now build your project!
 
-## 🚀 Get started
+## Get started
 
 To use iProov to enrol or verify a user it is necessary to follow these steps:
 
@@ -257,12 +258,16 @@ class MainActivity : AppCompatActivity() {
         val options = IProov.Options()
         // ...customise any iProov options...
         
-        IProov.launch(
-            this, // Reference to current activity
-            "https://eu.rp.secure.iproov.me", // Streaming URL (optional)
-            "{{ your token here }}", // iProov token
-            options // Optional
-        )
+        try {
+            IProov.launch(
+                this, // Reference to current activity
+                "https://eu.rp.secure.iproov.me", // Streaming URL
+                "{{ your token here }}", // iProov token
+                options // Optional
+            )
+        } catch (ex: IProovException) {
+            // Handle immediate failures: MultiWindowUnsupportedException, ListenerNotRegisteredException or CaptureAlreadyActiveException
+        }
     }
 }
 
@@ -277,25 +282,27 @@ public class MainActivity extends AppCompatActivity {
         IProov.Options options = new IProov.Options();
         // ...customise any iProov options...
 
-        IProov.launch(
-            this, // Reference to current activity
-            "https://eu.rp.secure.iproov.me", // Streaming URL (optional)
-            "{{ your token here }}", // iProov token
-            options // Optional
-        );
+        try {
+            IProov.launch(
+                this, // Reference to current activity
+                "https://eu.rp.secure.iproov.me", // Streaming URL
+                "{{ your token here }}", // iProov token
+                options // Optional
+            );
+        } catch (IProovException e) {
+            // Handle immediate failures: MultiWindowUnsupportedException, ListenerNotRegisteredException or CaptureAlreadyActiveException        
+        }
     }
 }
 ```
 
 ### Important notes
 
-By default, iProov will stream to our EU back-end platform. If you wish to stream to a different back-end, you can pass a `streamingURL` as the first parameter to `IProov.launch()` with the base URL of the back-end to stream to.
-
 > **⚠️ SECURITY NOTICE:** You should never use iProov as a local authentication method. You cannot rely on the fact that the success result was returned to prove that the user was authenticated or enrolled successfully (it is possible the iProov process could be manipulated locally by a malicious user). You can treat the success callback as a hint to your app to update the UI, etc. but you must always independently validate the token server-side (using the validate API call) before performing any authenticated user actions.
 
 > **⚠️ IMPLEMENTATION WARNING:** [Google](https://developer.android.com/guide/topics/manifest/activity-element#lmode) states that `singleInstance` and `singleTask` are `not recommended for general use`. We specifically don't recommend the calling Activity to have a `launchMode` of `singleInstance` - when tested, `back` does not always work correctly, particularly after the task switcher has momentarily put any `standard` Activity (like IProov) into the background.
 
-## ⚙ Options
+## Options
 
 You can customize the iProov session by passing in an instance of `IProov.Option` to the `IProov.launch()` method. For further information see [FAQ](https://github.com/iProov/android/wiki/Frequently-Asked-Questions). A list of available parameters for customization is below:
 
@@ -357,7 +364,7 @@ options.capture.maxYaw = 0.25
 options.capture.maxRoll = 0.25
 ```
 
-## 🌎 String localization & customization
+## String localization & customization
 
 The iProov Biometrics Android SDK only ships with English language strings. You are free to localise/customise these strings in your app, if you choose to do so.
 
@@ -365,7 +372,7 @@ All iProov strings are prefixed with `iproov__` and can be overriden by your app
 
 Strings for failure reasons are handled in a special way, in the form `R.string.iproov__failure_<feedback code>` e.g. `iproov__failure_ambiguous_outcome` exist and will be used for `reason`, allowing it to provide localised translations for all current and future failure codes.
 
-## 💥 Handling failures & errors
+## Handling failures & errors
 
 ### Failures
 
@@ -387,20 +394,25 @@ The list of feedback codes and reasons is subject to change.
 
 ### Errors
 
+In cases where the iProov `launch()` method fails immediately, it will throw one of the following `IProovException` subclasses:-
+
+- `ListenerNotRegisteredException` - The `launch()` method was called before a listener was registered using `registerListener()`.
+- `MultiWindowUnsupportedException` - The user attempted to iProov in split-screen/multi-screen mode, which is not supported.
+- `CaptureAlreadyActiveException` - An existing iProov capture is already in progress. Wait until the current capture completes before starting a new one.
+
+
 In cases where the iProov process failed entirely (i.e. iProov was unable to verify or enrol the user due to a system failure of some kind), the `onError()` listener method will be called with a subclass of `IProovException`. These exceptions are as follows:-
 
 - `CameraException` - An error occurred acquiring or using the camera. This could happen when a non-phone is used with/without an external/USB camera. See Options.capture.setCameraLensFacing().
 - `CameraPermissionException` - The user disallowed access to the camera when prompted. You should prompt them to re-enable camera permissions via Settings.
-- `CaptureAlreadyActiveException` - An existing iProov capture is already in progress. Wait until the current capture completes before starting a new one.
 - `EncoderException` - An error occurred with the video encoding process. This should never occur.
 - `FaceDetectorException` - An error occurred with the face detector.
 - `LightingModelException` - An error occurred with the lighting model. This should never occur.
-- `MultiWindowException` - The user attempted to iProov in split-screen/multi-screen mode,which is not supported.
 - `ServerException` - The token was invalidated server-side, or some other unrecoverable server error occurred.
 - `NetworkException` - An error occurred with communications to the server. This generally indicates a device connectivity issue (e.g. the user's session has timed out, or internet service has been lost).
 - `UnsupportedDeviceException` - The device is not supported, (e.g. does not have a front-facing camera).
 
-## 👱‍♂️ Alternative face detectors
+## Alternative face detectors
 
 By default, the iProov Biometrics Android SDK leverages the [Android built-in face detector](https://developer.android.com/reference/android/media/FaceDetector). This is a simple face detector and is ubiquitous in Android phones, however it is not regularly updated. Therefore, we also support BlazeFace and ML Kit face detectors.
 
@@ -408,13 +420,13 @@ By default, the iProov Biometrics Android SDK leverages the [Android built-in fa
 
 [BlazeFace](https://arxiv.org/pdf/1907.05047.pdf) is a relatively lightweight and performant face detector. Whilst you should find that BlazeFace provides increased accuracy when compared with built-in face detector, it requires the inclusion of TensorFlow Lite with the SDK along with the necessary model, and therefore adds approximately 2.2MB to the downloaded app size. In our benchmarks, it also tends to run approximately 50% slower than the built-in "classic" face detector on very low-end devices.
 
-#### Installation steps
+#### Installation steps
 
 Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:6.0.0')
+    implementation('com.iproov.sdk:iproov-blazeface:6.1.0')
 }
 ```
 
@@ -422,19 +434,19 @@ dependencies {
 
 Google now direct their efforts into maintaining the [ML Kit face detector](https://developers.google.com/ml-kit/vision/face-detection). The advantage of the ML Kit face detector is that it provides more advanced features such as facial landmarks, which allows us to offer detection of the user's pose. Therefore, if you wish to make use of the pose control features, you will need to add the `iproov-mlkit` module to your app.
 
-#### Installation steps
+#### Installation steps
 
 Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-	implementation('com.iproov.sdk:iproov-mlkit:6.0.0')
+	implementation('com.iproov.sdk:iproov-mlkit:6.1.0')
 }
 ```
 
 Please note that adding ML Kit support will increase your app size (as it will include various machine learning models used for face detection) and may also result in poorer performance on low-end devices, since ML Kit is more computationally intensive. Find out more [here](https://developers.google.com/ml-kit/vision/face-detection/android).
 
-## ❓Help & support
+## Help & support
 
 You may find your question is answered in our [FAQs](https://github.com/iProov/android/wiki/Frequently-Asked-Questions) or one of our other [Wiki pages](https://github.com/iProov/android/wiki).
 
