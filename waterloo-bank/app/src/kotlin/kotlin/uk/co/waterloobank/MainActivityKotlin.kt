@@ -129,7 +129,7 @@ class MainActivityKotlin : AppCompatActivity() {
             uiScope.launch(Dispatchers.IO) {
                 try {
                     val token = apiClientFuel.getToken(com.iproov.androidapiclient.AssuranceType.GENUINE_PRESENCE, com.iproov.androidapiclient.ClaimType.VERIFY, userID)
-                    IProov.launch(this@MainActivityKotlin, token, createOptions())
+                    IProov.launch(this@MainActivityKotlin, Constants.BASE_URL, token, createOptions())
                 } catch (ex: Exception) {
                     withContext(Dispatchers.Main) {
                         onResult("Failed", "Failed to get token.")
@@ -156,8 +156,8 @@ class MainActivityKotlin : AppCompatActivity() {
 
             uiScope.launch(Dispatchers.IO) {
                 try {
-                    val token = apiClientFuel.getToken(com.iproov.androidapiclient.AssuranceType.GENUINE_PRESENCE, com.iproov.androidapiclient.ClaimType.ENROL, userID)
-                    IProov.launch(this@MainActivityKotlin, token, createOptions())
+                    val token = apiClientFuel.getToken(com.iproov.androidapiclient.AssuranceType.GENUINE_PRESENCE, com.iproov.androidapiclient.ClaimType.ENROL, userID, null)
+                    IProov.launch(this@MainActivityKotlin, Constants.BASE_URL, token, createOptions())
                 } catch (ex: Exception) {
                     withContext(Dispatchers.Main) {
                         onResult("Failed", "Failed to get token.")

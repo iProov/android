@@ -155,11 +155,16 @@ public class MainActivityJava extends AppCompatActivity {
                 ClaimType.VERIFY,
                 userID,
                 (call, response) -> {
-                    IProov.launch(this, response.body().getToken(), createOptions());
+                    try {
+                        IProov.launch(this, Constants.BASE_URL, response.body().getToken(), createOptions());
+                    } catch (IProovException ex) {
+                        onResult(ex.toString(), "");
+                    }
                 },
                 throwable -> {
                     onResult("Filed", "Failed to get token.");
-                });
+                },
+            null);
     }
 
     private void register(final String userID) {
@@ -178,11 +183,16 @@ public class MainActivityJava extends AppCompatActivity {
                 ClaimType.ENROL,
                 userID,
                 (call, response) -> {
-                    IProov.launch(this, response.body().getToken(), createOptions());
+                    try {
+                        IProov.launch(this, Constants.BASE_URL, response.body().getToken(), createOptions());
+                    } catch (IProovException ex) {
+                        onResult(ex.toString(), "");
+                    }
                 },
                 throwable -> {
                     onResult("Failed", "Failed to get token.");
-                });
+                },
+            null);
     }
 
     private void onResult(final String title, final String resultMessage) {

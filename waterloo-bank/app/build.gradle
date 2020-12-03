@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 
 project.ext {
     branch = "master"
-    version = "6.0.0"
+    version = "6.1.0"
 }
 
 android {
@@ -14,7 +14,7 @@ android {
         applicationId "uk.co.waterloobank"
         minSdkVersion rootProject.minSdk
         targetSdkVersion rootProject.targetSdk
-        versionCode 165
+        versionCode 169
         versionName "${version}"
     }
 
@@ -60,9 +60,9 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation "com.iproov.sdk:iproov:${project.ext.version}"
 
-    kotlinImplementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "1.1.0", changing: true
-    javaImplementation group: "com.iproov.android-api-client", name: "java-retrofit", version: "1.1.0", changing: true
-    kotlinImplementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "1.1.0", changing: true
+    kotlinImplementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "1.2.0", changing: true
+    javaImplementation group: "com.iproov.android-api-client", name: "java-retrofit", version: "1.2.0", changing: true
+    kotlinImplementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "1.2.0", changing: true
 
     implementation "com.squareup.okhttp3:okhttp:4.2.2"
 
