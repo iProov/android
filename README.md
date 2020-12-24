@@ -1,6 +1,5 @@
-
-![iProov flexible authentication for identity assurance](images/banner.jpg)
-# iProov Biometrics Android SDK v6.2.0
+![iProov: Flexible authentication for identity assurance](images/banner.jpg)
+# iProov Biometrics Android SDK v6.2.1
 
 ## Table of contents
 
@@ -14,6 +13,7 @@
 - [String localization & customization](#string-localization--customization)
 - [Handling failures & errors](#handling-failures--errors)
 - [ML Kit support](#ml-kit-support)
+- [Sample code](#sample-code)
 - [Help & support](#help--support)
 
 ## Introduction
@@ -57,30 +57,30 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
 2. Add the repositories section to your build.gradle file:
 
-	```groovy
-	repositories {
-	    maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
-	}
-	```
+    ```groovy
+    repositories {
+        maven { url 'https://raw.githubusercontent.com/iProov/android/master/maven/' }
+    }
+    ```
 
 3. Add the iProov SDK to the dependencies section in your app's build.gradle file:
 
-	```groovy
-	dependencies {
-	    implementation('com.iproov.sdk:iproov:6.2.0')
-	}
-	```
+    ```groovy
+    dependencies {
+        implementation('com.iproov.sdk:iproov:6.2.1')
+    }
+    ```
 
 4. Add support for Java 8 to your app build.gradle file (you can skip this step if you already have Java 8 enabled):
 
-	```groovy
-	android {
-	    compileOptions {
-	        sourceCompatibility JavaVersion.VERSION_1_8
-	        targetCompatibility JavaVersion.VERSION_1_8
-	    }
-	}
-	```
+    ```groovy
+    android {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+    }
+    ```
 
 If you wish to make use of pose control functionality, you will also need to [add the ML Kit module to your app](#-ml-kit-support).
 
@@ -97,7 +97,7 @@ Before being able to launch iProov, you need to get a token to iProov against. T
 1. A **verify** token - for logging-in an existing user
 2. An **enrol** token - for registering a new user
 
-In a production app, you normally would want to obtain the token via a server-to-server back-end call. 
+In a production app, you normally would want to obtain the token via a server-to-server back-end call.
 For the purposes of on-device demos/testing, we provide Kotlin/Java sample code for obtaining tokens via [iProov API v2](https://eu.rp.secure.iproov.me/docs.html) with our open-source [Android API Client](https://github.com/iProov/android-api-client).
 
 ### Register a listener
@@ -119,17 +119,17 @@ Please note the following:
 class MainActivity : AppCompatActivity(), IProov.Listener {
 
     // IProov.Listener interface ----
-    
+
     override fun onConnecting() {
         // Called when the SDK is connecting to the server. You should provide an indeterminate
         // progress indication to let the user know that the connection is being established.
     }
-    
+
     override fun onConnected() {
         // The SDK has connected, and the iProov user interface will now be displayed. You
         // should hide any progress indication at this point.
     }
-    
+
     override fun onProcessing(progress: Double, message: String) {
         // The SDK will update your app with the progress of streaming to the server and authenticating
         // the user. This will be called multiple time as the progress updates.
@@ -167,7 +167,7 @@ class MainActivity : AppCompatActivity(), IProov.Listener {
     }
 
     override fun onDestroy() {
-        IProov.unregisterListener(this)        
+        IProov.unregisterListener(this)
         super.onDestroy()
     }
 }
@@ -180,13 +180,13 @@ class MainActivity : AppCompatActivity(), IProov.Listener {
 public class MainActivity extends AppCompatActivity implements IProov.Listener {
 
     // IProov.Listener interface ----
-    
+
     @Override
-  	 public void onConnecting() {
+       public void onConnecting() {
         // Called when the SDK is connecting to the server. You should provide an indeterminate
         // progress indication to let the user know that the connection is being established.
     }
-    
+
     @Override
     public void onConnected() {
         // The SDK has connected, and the iProov user interface will now be displayed. You
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements IProov.Listener {
         // or there was another issue with their verification/enrollment.
         String token = result.token;
         String reason = result.reason;
-        String feedbackCode = result.feedbackCode;        
+        String feedbackCode = result.feedbackCode;
     }
 
     @Override
@@ -234,12 +234,12 @@ public class MainActivity extends AppCompatActivity implements IProov.Listener {
         super.onCreate(savedInstanceState);
         IProov.registerListener(this);
     }
-    
+
     @Override
     protected void onDestroy() {
         IProov.unregisterListener(this);
         super.onDestroy();
-    }    
+    }
 }
 ```
 
@@ -257,7 +257,7 @@ class MainActivity : AppCompatActivity() {
     private fun launchIProov() {
         val options = IProov.Options()
         // ...customise any iProov options...
-        
+
         try {
             IProov.launch(
                 this, // Reference to current activity
@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
                 options // Optional
             );
         } catch (IProovException e) {
-            // Handle immediate failures: MultiWindowUnsupportedException, ListenerNotRegisteredException or CaptureAlreadyActiveException        
+            // Handle immediate failures: MultiWindowUnsupportedException, ListenerNotRegisteredException or CaptureAlreadyActiveException
         }
     }
 }
@@ -378,7 +378,7 @@ Strings for failure reasons are handled in a special way, in the form `R.string.
 
 Failures occur when the user's identity could not be verified for some reason. A failure means that the capture was successfully received and processed by the server, which returned a result. This results in a call to the `onFailure()` listener method.
 
-> ⚠️ **NOTE:** It's important to understand the difference between _failures_ and _errors_. In a failure case, iProov was able to successfully process the claim, but was unable to verify the user's identity due to one of a number of reasons. In the error case, the claim failed entirely and iProov was unable to process the claim. 
+> ⚠️ **NOTE:** It's important to understand the difference between _failures_ and _errors_. In a failure case, iProov was able to successfully process the claim, but was unable to verify the user's identity due to one of a number of reasons. In the error case, the claim failed entirely and iProov was unable to process the claim.
 
 | `feedbackCode` | `reason` |
 |-----------------------------------|---------------------------------------------------------------|
@@ -426,7 +426,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:6.2.0')
+    implementation('com.iproov.sdk:iproov-blazeface:6.2.1')
 }
 ```
 
@@ -440,11 +440,25 @@ Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-	implementation('com.iproov.sdk:iproov-mlkit:6.2.0')
+    implementation('com.iproov.sdk:iproov-mlkit:6.2.1')
 }
 ```
 
 Please note that adding ML Kit support will increase your app size (as it will include various machine learning models used for face detection) and may also result in poorer performance on low-end devices, since ML Kit is more computationally intensive. Find out more [here](https://developers.google.com/ml-kit/vision/face-detection/android).
+
+## Sample code
+
+For a simple iProov experience that is ready to run out-of-the-box, check out the [Waterloo Bank sample project](tree/master/waterloo-bank).
+
+### Installation
+
+1. Open the `waterloo-bank` project in Android Studio.
+
+2. Open the `Constants.kt` file and insert your API Key and Secret at the relevant points.
+
+3. You can choose between Kotlin (`kotlinlang`) and Java (`javalang`) versions of Waterloo Bank by changing the build variant within Android Studio.
+
+> **⚠️ SECURITY NOTICE:** The Waterloo Bank sample project uses the [Android API Client](https://github.com/iProov/android-api-client) to directly fetch tokens on-device and this is inherently insecure. Production implementations of iProov should always obtain tokens securely from a server-to-server call.
 
 ## Help & support
 
