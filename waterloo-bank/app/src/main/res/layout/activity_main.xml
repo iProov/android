@@ -39,18 +39,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/usernameEditText" />
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/loginButton"
-        android:layout_marginStart="18dp"
-        android:visibility="gone"
-        android:entries="@array/assuranceTypeArray"
-        app:layout_constraintBottom_toBottomOf="@+id/loginButton"
-        app:layout_constraintStart_toEndOf="@+id/loginButton"
-        app:layout_constraintTop_toTopOf="@+id/loginButton" />
-
     <Button
         android:id="@+id/registerButton"
         android:layout_width="wrap_content"
@@ -66,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/loginButton" />
 
     <TextView
-        android:id="@+id/captureStatus"
+        android:id="@+id/statusTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
@@ -85,10 +73,10 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/captureStatus" />
+        app:layout_constraintTop_toBottomOf="@+id/statusTextView" />
 
     <TextView
-        android:id="@+id/textViewVersion"
+        android:id="@+id/versionTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"

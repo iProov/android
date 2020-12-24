@@ -2,20 +2,17 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-project.ext {
-    branch = "master"
-    version = "6.1.0"
-}
+project.version = "6.2.1"
 
 android {
-    compileSdkVersion rootProject.compileSdk
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "uk.co.waterloobank"
-        minSdkVersion rootProject.minSdk
-        targetSdkVersion rootProject.targetSdk
-        versionCode 169
-        versionName "${version}"
+        minSdkVersion 19
+        targetSdkVersion 29
+        versionCode 206
+        versionName version
     }
 
     buildTypes {
@@ -28,19 +25,19 @@ android {
     buildToolsVersion = '29.0.2'
 
     compileOptions {
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    flavorDimensions "programming-language"
+    flavorDimensions "lang"
 
     productFlavors {
-        java {
-            dimension "programming-language"
+        javalang {
+            dimension "lang"
             applicationIdSuffix ".java"
         }
-        kotlin {
-            dimension "programming-language"
+        kotlinlang {
+            dimension "lang"
             applicationIdSuffix ".kotlin"
         }
     }
@@ -48,27 +45,21 @@ android {
 
 configurations.all {
     exclude group: 'org.json', module: 'json'
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
-
-apply from: '../repos.gradle'
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation "androidx.core:core-ktx:1.3.1"
+    implementation "androidx.core:core-ktx:1.3.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
-    implementation "com.iproov.sdk:iproov:${project.ext.version}"
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation "com.iproov.sdk:iproov:${version}"
 
-    kotlinImplementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "1.2.0", changing: true
-    javaImplementation group: "com.iproov.android-api-client", name: "java-retrofit", version: "1.2.0", changing: true
-    kotlinImplementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "1.2.0", changing: true
+    kotlinlangImplementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "1.2.0"
+    kotlinlangImplementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "1.2.0"
 
-    implementation "com.squareup.okhttp3:okhttp:4.2.2"
+    javalangImplementation group: "com.iproov.android-api-client", name: "java-retrofit", version: "1.2.0"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.2.1"
-
-    implementation "com.github.YarikSOffice:lingver:1.3.0"
 }

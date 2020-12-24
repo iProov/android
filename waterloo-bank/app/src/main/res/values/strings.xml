@@ -1,15 +1,17 @@
 <resources>
     <string name="app_name">Waterloo Bank</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
-    <string name="java_version_format">Java using SDK Version [%1$s]</string>
-    <string name="kotlin_version_format">Kotlin using SDK Version [%1$s]</string>
+    <string name="java_version_format">SDK v%1$s (Java)</string>
+    <string name="kotlin_version_format">SDK v%1$s (Kotlin)</string>
     <string name="user_id_cannot_be_empty">User ID cannot be empty</string>
-    <string-array name="assuranceTypeArray">
-        <item>genuine_presence</item>
-        <item>liveness</item>
-    </string-array>
+    <string name="connecting">Connecting...</string>
+    <string name="connected">Connected!</string>
+    <string name="getting_token">Getting token...</string>
+    <string name="error">Error</string>
+    <string name="failed_to_get_token">Failed to get token.</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="success">Success</string>
+    <string name="token_format">Token: %1$s</string>
 </resources>

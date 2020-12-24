@@ -1,3 +1,2 @@
 /build
-/src/main/assets
-/src/main/assets/secrets.json
+/src/main/java/uk/co/waterloobank/Constants.kt
