@@ -448,7 +448,7 @@ Please note that adding ML Kit support will increase your app size (as it will i
 
 ## Sample code
 
-For a simple iProov experience that is ready to run out-of-the-box, check out the [Waterloo Bank sample project](tree/master/waterloo-bank).
+For a simple iProov experience that is ready to run out-of-the-box, check out the [Waterloo Bank sample project](https://github.com/iProov/android/tree/master/waterloo-bank).
 
 ### Installation
 
