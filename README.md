@@ -20,7 +20,7 @@
 
 The iProov Biometrics Android SDK enables you to integrate iProov into your Android app. We also have an [iOS Biometrics SDK](https://github.com/iproov/ios), [Xamarin bindings](https://github.com/iproov/xamarin) and [Web Biometrics SDK](https://github.com/iProov/web).
 
-It supports both _Genuine Presence Assurance_ and _Liveness Assurance_ methods of face verification. Which method gets used depends on the token request and response. See [Get started](#-get-started).
+It supports both _Genuine Presence Assurance_ and _Liveness Assurance_ methods of face verification. Which method gets used depends on the token request and response. See [Get started](#get-started).
 
 ### Requirements
 
@@ -82,7 +82,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
     }
     ```
 
-If you wish to make use of pose control functionality, you will also need to [add the ML Kit module to your app](#-ml-kit-support).
+If you wish to make use of pose control functionality, you will also need to [add the ML Kit module to your app](#ml-kit-support).
 
 You may now build your project!
 
@@ -137,15 +137,15 @@ class MainActivity : AppCompatActivity(), IProov.Listener {
 
     override fun onSuccess(result: IProov.SuccessResult) {
         // The user was successfully verified/enrolled and the token has been validated.
-        token: String = result.token
+        val token: String = result.token
     }
 
     override fun onFailure(result: IProov.FailureResult) {
         // The user was not successfully verified/enrolled, as their identity could not be verified,
         // or there was another issue with their verification/enrollment.
-        token: String = result.token
-        reason: String = result.reason
-        feedbackCode: String = result.feedbackCode
+        val token: String = result.token
+        val reason: String = result.reason
+        val feedbackCode: String = result.feedbackCode
     }
 
     override fun onCancelled() {
@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements IProov.Listener {
 
 Once you have obtained the a Genuine Presence Assurance or Liveness Assurance token, you can simply call `IProov.launch()`.
 
-You can customize the SDK by adjusting visual appearance and setting various user experience options by passing in an `IProov.Options` object (described fully [later](#-options) in this document).
+You can customize the SDK by adjusting visual appearance and setting various user experience options by passing in an `IProov.Options` object (described fully [later](#options) in this document).
 
 ##### Kotlin
 
