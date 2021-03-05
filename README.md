@@ -1,5 +1,5 @@
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
-# iProov Biometrics Android SDK v6.3.0
+# iProov Biometrics Android SDK v6.3.1
 
 ## Table of contents
 
@@ -12,7 +12,7 @@
 - [Options](#options)
 - [String localization & customization](#string-localization--customization)
 - [Handling failures & errors](#handling-failures--errors)
-- [ML Kit support](#ml-kit-support)
+- [Alternative face detectors](#alternative-face-detectors)
 - [Sample code](#sample-code)
 - [Help & support](#help--support)
 
@@ -25,11 +25,13 @@ It supports both _Genuine Presence Assurance_ and _Liveness Assurance_ methods o
 ### Requirements
 
 - Android Studio
-- API Level 19 (4.4 KitKat) and above
+- API Level 19 (4.4 KitKat) and above*
 - Compilation target, build tools and Android compatibility libraries must be 29+
 - AndroidX
 
 Within this repository you can find the fictitious "Waterloo Bank" sample Android app, which illustrates an example iProov integration.
+
+> \* Please note that whilst the SDK supports API Level 19+, due to lack of proper support for TLS 1.2 until API Level 21 and above, we only offer limited support pre-API Level 21. For further details, please [see here](https://github.com/iProov/android/wiki/TLS-1.2-support-in-Android-4.x). **All customers are advised to move to API Level 21 and above as soon as possible.**
 
 ## Contents
 
@@ -67,7 +69,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:6.3.0')
+        implementation('com.iproov.sdk:iproov:6.3.1')
     }
     ```
 
@@ -411,6 +413,7 @@ In cases where the iProov process failed entirely (i.e. iProov was unable to ver
 - `ServerException` - The token was invalidated server-side, or some other unrecoverable server error occurred.
 - `NetworkException` - An error occurred with communications to the server. This generally indicates a device connectivity issue (e.g. the user's session has timed out, or internet service has been lost).
 - `UnsupportedDeviceException` - The device is not supported, (e.g. does not have a front-facing camera).
+- `InvalidOptionsException` - An error occurred when trying to apply your [options](#options).
 
 ## Alternative face detectors
 
@@ -426,7 +429,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:6.3.0')
+    implementation('com.iproov.sdk:iproov-blazeface:6.3.1')
 }
 ```
 
@@ -440,7 +443,7 @@ Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-mlkit:6.3.0')
+    implementation('com.iproov.sdk:iproov-mlkit:6.3.1')
 }
 ```
 
