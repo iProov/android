@@ -1,5 +1,5 @@
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
-# iProov Biometrics Android SDK v6.3.1
+# iProov Biometrics Android SDK v6.4.0
 
 ## Table of contents
 
@@ -69,7 +69,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:6.3.1')
+        implementation('com.iproov.sdk:iproov:6.4.0')
     }
     ```
 
@@ -327,7 +327,13 @@ options.ui.lineColor = Color.CYAN
 options.ui.loadingTintColor = Color.RED // Please note this is option is deprecated, and only takes effect when used in conjunction with the useLegacyConnectingUI option.
 options.ui.notReadyTintColor = Color.BLUE
 options.ui.readyTintColor = Color.GREEN
-options.ui.livenessTintColor = Color.BLUE
+ui.headerTextColor = Color.GREEN
+ui.footerTextColor = Color.GREEN
+ui.progressBarColor = Color.MAGENTA
+ui.headerBackgroundColor = Color.parseColor("#40ffff00")
+ui.footerBackgroundColor = Color.parseColor("#40ff00ff")
+ui.livenessScanningTintColor = Color.parseColor("#4000ff00")
+ui.livenessTintColor = Color.parseColor("#4000ffff")
 
 options.ui.enableScreenshots = true // For added security, screenshotting is disabled during IProoving; re-enable this here. Default: false.
 options.ui.fontAsset = "SomeFont.ttf" // Set the default font from assets directory.
@@ -414,6 +420,7 @@ In cases where the iProov process failed entirely (i.e. iProov was unable to ver
 - `NetworkException` - An error occurred with communications to the server. This generally indicates a device connectivity issue (e.g. the user's session has timed out, or internet service has been lost).
 - `UnsupportedDeviceException` - The device is not supported, (e.g. does not have a front-facing camera).
 - `InvalidOptionsException` - An error occurred when trying to apply your [options](#options).
+- `KeyStoreManagerException` - An error occurred when trying to access key pair from Android Keystore
 
 ## Alternative face detectors
 
@@ -429,7 +436,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:6.3.1')
+    implementation('com.iproov.sdk:iproov-blazeface:6.4.0')
 }
 ```
 
@@ -443,7 +450,7 @@ Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-mlkit:6.3.1')
+    implementation('com.iproov.sdk:iproov-mlkit:6.4.0')
 }
 ```
 
