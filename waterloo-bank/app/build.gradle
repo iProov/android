@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-project.version = "6.5.1"
+project.version = "6.5.2"
 
 android {
     compileSdkVersion 30
@@ -11,7 +11,7 @@ android {
         applicationId "uk.co.waterloobank"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 225
+        versionCode 1
         versionName version
     }
 
