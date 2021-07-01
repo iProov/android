@@ -51,4 +51,7 @@
     <string name="iproov__error_lighting_model">Lighting model error</string>
     <string name="iproov__error_face_detector">Face detector error</string>
     <string name="iproov__error_capture_already_active">An existing capture is already in progress</string>
+    <string name="iproov__error_no_listener_exception">Before calling IProov.launch(), you should register a listener with IProov.registerListener()</string>
+    <string name="iproov__error_invalid_options_error">Invalid iProov options</string>
+    <string name="iproov__error_keystore_manager_exception">Keystore manager exception</string>
 </resources>
