@@ -1,5 +1,5 @@
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
-# iProov Biometrics Android SDK v7.0.0
+# iProov Biometrics Android SDK v7.0.1
 
 ## Table of contents
 
@@ -28,8 +28,6 @@ It supports both _Genuine Presence Assurance_ and _Liveness Assurance_ methods o
 - API Level 21 (Android 5 Lollipop) and above
 - Compilation target, build tools and Android compatibility libraries must be 29+
 - AndroidX
-
-Within this repository you can find an example Android app, which illustrates a simple iProov integration.
 
 ## Contents
 
@@ -67,7 +65,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:7.0.0')
+        implementation('com.iproov.sdk:iproov:7.0.1')
     }
     ```
 
@@ -450,7 +448,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:7.0.0')
+    implementation('com.iproov.sdk:iproov-blazeface:7.0.1')
 }
 ```
 
@@ -464,7 +462,7 @@ Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-mlkit:7.0.0')
+    implementation('com.iproov.sdk:iproov-mlkit:7.0.1')
 }
 ```
 
