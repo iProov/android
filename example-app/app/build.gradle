@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
-ext.iproovSdkVersion = "7.0.2"
+ext.iproovSdkVersion = "7.0.3"
 
 android {
     compileSdkVersion 30

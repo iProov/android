@@ -1,5 +1,5 @@
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
-# iProov Biometrics Android SDK v7.0.2
+# iProov Biometrics Android SDK v7.0.3
 
 ## Table of contents
 
@@ -65,7 +65,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:7.0.2')
+        implementation('com.iproov.sdk:iproov:7.0.3')
     }
     ```
 
@@ -448,7 +448,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:7.0.2')
+    implementation('com.iproov.sdk:iproov-blazeface:7.0.3')
 }
 ```
 
@@ -462,7 +462,7 @@ Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-mlkit:7.0.2')
+    implementation('com.iproov.sdk:iproov-mlkit:7.0.3')
 }
 ```
 
