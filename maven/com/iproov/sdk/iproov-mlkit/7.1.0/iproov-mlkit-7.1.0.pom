@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.iproov.sdk</groupId>
+  <artifactId>iproov-mlkit</artifactId>
+  <version>7.1.0</version>
+  <packaging>aar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>androidx.appcompat</groupId>
+      <artifactId>appcompat</artifactId>
+      <version>1.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.mlkit</groupId>
+      <artifactId>face-detection</artifactId>
+      <version>16.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.iproov.sdk</groupId>
+      <artifactId>iproov</artifactId>
+      <version>7.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib-jdk8</artifactId>
+      <version>1.5.30</version>
+    </dependency>
+  </dependencies>
+</project>

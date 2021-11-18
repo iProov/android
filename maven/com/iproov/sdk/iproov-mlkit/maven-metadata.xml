@@ -3,8 +3,8 @@
   <groupId>com.iproov.sdk</groupId>
   <artifactId>iproov-mlkit</artifactId>
   <versioning>
-    <latest>7.0.3</latest>
-    <release>7.0.3</release>
+    <latest>7.1.0</latest>
+    <release>7.1.0</release>
     <versions>
       <version>6.0.0</version>
       <version>6.1.0</version>
@@ -22,7 +22,8 @@
       <version>7.0.1</version>
       <version>7.0.2</version>
       <version>7.0.3</version>
+      <version>7.1.0</version>
     </versions>
-    <lastUpdated>20210824143320</lastUpdated>
+    <lastUpdated>20211118143424</lastUpdated>
   </versioning>
 </metadata>

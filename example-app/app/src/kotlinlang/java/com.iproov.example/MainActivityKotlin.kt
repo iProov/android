@@ -115,7 +115,8 @@ class MainActivityKotlin : AppCompatActivity() {
                 val token = apiClientFuel.getToken(
                     assuranceType,
                     claimType,
-                    username)
+                    username
+                )
 
                 try {
                     IProov.launch(this@MainActivityKotlin, Constants.BASE_URL, token)

@@ -1,5 +1,5 @@
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
-# iProov Biometrics Android SDK v7.0.3
+# iProov Biometrics Android SDK v7.1.0
 
 ## Table of contents
 
@@ -65,7 +65,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:7.0.3')
+        implementation('com.iproov.sdk:iproov:7.1.0')
     }
     ```
 
@@ -356,7 +356,7 @@ options.ui.livenessAssurance.secondaryTintColor = Color.parseColor("#4000ff00")
     Configure options relating to networking & security
 */
 
-options.network.certificates = arrayOf(R.raw.iproov__certificate) // Optionally supply a list of resource IDs of certificate files to be used for pinning. Useful when using your own reverse proxy to stream to iProov. Pinning can be disabled by passing an empty array (never do this in production apps!) Certificates should be generated in DER-encoded X.509 certificate format, eg. with the command $ openssl x509 -in cert.crt -outform der -out cert.der.
+options.network.certificates = arrayOf(R.raw.iproov__certificate) // Optionally supply certificates used for pinning as either a list of resource IDs or the contents of certificates as a list of byte arrays. Useful when using your own reverse proxy to stream to iProov. Pinning can be disabled by passing an empty array (never do this in production apps!) Certificates should be generated in DER-encoded X.509 certificate format, eg. with the command $ openssl x509 -in cert.crt -outform der -out cert.der. (R.raw.iproov__certificate is used by default)
 options.network.timeoutSecs = duration // The streaming timeout in seconds - setting to 0 disables timeout (default 10)
 options.network.path = path // The path to use when streaming, defaults to "/socket.io/v2/". You should not need to change this unless directed to do so by iProov.
 
@@ -404,6 +404,7 @@ Failures occur when the user's identity could not be verified for some reason. A
 | `lighting_too_dark` | Your environment appears too dark |
 | `lighting_face_too_bright` | Too much light detected on your face |
 | `motion_too_much_mouth_movement` | Please do not talk while iProoving |
+| `failure_user_timeout` | Your session has expired |
 
 The list of feedback codes and reasons is subject to change.
 
@@ -448,7 +449,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:7.0.3')
+    implementation('com.iproov.sdk:iproov-blazeface:7.1.0')
 }
 ```
 
@@ -462,7 +463,7 @@ Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-mlkit:7.0.3')
+    implementation('com.iproov.sdk:iproov-mlkit:7.1.0')
 }
 ```
 
