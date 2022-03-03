@@ -26,7 +26,7 @@ It supports both _Genuine Presence Assurance_ and _Liveness Assurance_ methods o
 
 - Android Studio
 - API Level 21 (Android 5 Lollipop) and above
-- Compilation target, build tools and Android compatibility libraries must be 29+
+- Compilation target, build tools and Android compatibility libraries must be 31+ (see [Upgrade Guide](https://github.com/iProov/android/wiki/Upgrade-Guide) for 29+)
 - AndroidX
 
 ## Contents
