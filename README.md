@@ -1,5 +1,5 @@
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
-# iProov Biometrics Android SDK v7.3.0
+# iProov Biometrics Android SDK v7.4.0
 
 ## Table of contents
 
@@ -65,7 +65,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:7.3.0')
+        implementation('com.iproov.sdk:iproov:7.4.0')
     }
     ```
 
@@ -116,58 +116,58 @@ Please note the following:
 ```kotlin
 class MainActivity : AppCompatActivity(), IProov.Listener {
 
-    // IProov.Listener interface ----
+   // IProov.Listener interface ----
 
-    override fun onConnecting() {
-        // Called when the SDK is connecting to the server. You should provide an indeterminate
-        // progress indication to let the user know that the connection is being established.
-    }
+   override fun onConnecting() {
+      // Called when the SDK is connecting to the server. You should provide an indeterminate
+      // progress indication to let the user know that the connection is being established.
+   }
 
-    override fun onConnected() {
-        // The SDK has connected, and the iProov user interface will now be displayed. You
-        // should hide any progress indication at this point.
-    }
+   override fun onConnected() {
+      // The SDK has connected, and the iProov user interface will now be displayed. You
+      // should hide any progress indication at this point.
+   }
 
-    override fun onProcessing(progress: Double, message: String) {
-        // The SDK will update your app with the progress of streaming to the server and authenticating
-        // the user. This will be called multiple time as the progress updates.
-    }
+   override fun onProcessing(progress: Double, message: String) {
+      // The SDK will update your app with the progress of streaming to the server and authenticating
+      // the user. This will be called multiple time as the progress updates.
+   }
 
-    override fun onSuccess(result: IProov.SuccessResult) {
-        // The user was successfully verified/enrolled and the token has been validated.
-        val token: String = result.token
-    }
+   override fun onSuccess(result: IProov.SuccessResult) {
+      // The user was successfully verified/enrolled and the token has been validated.
+      val token: String = result.token
+   }
 
-    override fun onFailure(result: IProov.FailureResult) {
-        // The user was not successfully verified/enrolled, as their identity could not be verified,
-        // or there was another issue with their verification/enrollment.
-        val token: String = result.token
-        val reason: String = result.reason
-        val feedbackCode: String = result.feedbackCode
-    }
+   override fun onFailure(result: IProov.FailureResult) {
+      // The user was not successfully verified/enrolled, as their identity could not be verified,
+      // or there was another issue with their verification/enrollment.
+      val token: String = result.token
+      val reason: String = result.reason
+      val feedbackCode: String = result.feedbackCode
+   }
 
-    override fun onCancelled() {
-        // The user cancelled iProov, either by pressing the close button at the top right, or pressing
-        // the home button.
-    }
+   override fun onCancelled() {
+      // The user cancelled iProov, either by pressing the close button at the top right, or pressing
+      // the home button.
+   }
 
-    override fun onError(e: IProovException) {
-        // The user was not successfully verified/enrolled due to an error (e.g. lost internet connection)
-        // You can obtain the reason from the reason property.
-        // It will be called once, or never.
-    }
+   override fun onError(e: IProovException) {
+      // The user was not successfully verified/enrolled due to an error (e.g. lost internet connection)
+      // You can obtain the reason from the reason property.
+      // It will be called once, or never.
+   }
 
-    // Overrides ----
+   // Overrides ----
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        IProov.registerListener(this)
-    }
+   override fun onCreate(savedInstanceState: Bundle?) {
+      super.onCreate(savedInstanceState)
+      IProov.registerListener(this)
+   }
 
-    override fun onDestroy() {
-        IProov.unregisterListener(this)
-        super.onDestroy()
-    }
+   override fun onDestroy() {
+      IProov.unregisterListener(this)
+      super.onDestroy()
+   }
 }
 
 ```
@@ -177,67 +177,67 @@ class MainActivity : AppCompatActivity(), IProov.Listener {
 ```java
 public class MainActivity extends AppCompatActivity implements IProov.Listener {
 
-    // IProov.Listener interface ----
+   // IProov.Listener interface ----
 
-    @Override
-       public void onConnecting() {
-        // Called when the SDK is connecting to the server. You should provide an indeterminate
-        // progress indication to let the user know that the connection is being established.
-    }
+   @Override
+   public void onConnecting() {
+      // Called when the SDK is connecting to the server. You should provide an indeterminate
+      // progress indication to let the user know that the connection is being established.
+   }
 
-    @Override
-    public void onConnected() {
-        // The SDK has connected, and the iProov user interface will now be displayed. You
-        // should hide any progress indication at this point.
-    }
+   @Override
+   public void onConnected() {
+      // The SDK has connected, and the iProov user interface will now be displayed. You
+      // should hide any progress indication at this point.
+   }
 
-    @Override
-    public void onProcessing(double progress, String message) {
-        // The SDK will update your app with the progress of streaming to the server and authenticating
-        // the user. This will be called multiple time as the progress updates.
-    }
+   @Override
+   public void onProcessing(double progress, String message) {
+      // The SDK will update your app with the progress of streaming to the server and authenticating
+      // the user. This will be called multiple time as the progress updates.
+   }
 
-    @Override
-    public void onSuccess(IProov.SuccessResult result) {
-        // The user was successfully verified/enrolled and the token has been validated.
-        String token = result.token;
-    }
+   @Override
+   public void onSuccess(IProov.SuccessResult result) {
+      // The user was successfully verified/enrolled and the token has been validated.
+      String token = result.token;
+   }
 
-    @Override
-    public void onFailure(IProov.FailureResult result) {
-        // The user was not successfully verified/enrolled, as their identity could not be verified,
-        // or there was another issue with their verification/enrollment.
-        String token = result.token;
-        String reason = result.reason;
-        String feedbackCode = result.feedbackCode;
-    }
+   @Override
+   public void onFailure(IProov.FailureResult result) {
+      // The user was not successfully verified/enrolled, as their identity could not be verified,
+      // or there was another issue with their verification/enrollment.
+      String token = result.token;
+      String reason = result.reason;
+      String feedbackCode = result.feedbackCode;
+   }
 
-    @Override
-    public void onCancelled() {
-        // The user cancelled iProov, either by pressing the close button at the top right, or pressing
-        // the home button.
-    }
+   @Override
+   public void onCancelled() {
+      // The user cancelled iProov, either by pressing the close button at the top right, or pressing
+      // the home button.
+   }
 
-    @Override
-    public void onError(IProovException e) {
-        // The user was not successfully verified/enrolled due to an error (e.g. lost internet connection)
-        // You can obtain the reason by calling getReason().
-        // It will be called once, or never.
-    }
+   @Override
+   public void onError(IProovException e) {
+      // The user was not successfully verified/enrolled due to an error (e.g. lost internet connection)
+      // You can obtain the reason by calling getReason().
+      // It will be called once, or never.
+   }
 
-    // Overrides ----
+   // Overrides ----
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        IProov.registerListener(this);
-    }
+   @Override
+   protected void onCreate(@Nullable Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      IProov.registerListener(this);
+   }
 
-    @Override
-    protected void onDestroy() {
-        IProov.unregisterListener(this);
-        super.onDestroy();
-    }
+   @Override
+   protected void onDestroy() {
+      IProov.unregisterListener(this);
+      super.onDestroy();
+   }
 }
 ```
 
@@ -252,21 +252,21 @@ You can customize the SDK by adjusting visual appearance and setting various use
 ```kotlin
 class MainActivity : AppCompatActivity() {
 
-    private fun launchIProov() {
-        val options = IProov.Options()
-        // ...customise any iProov options...
+   private fun launchIProov() {
+      val options = IProov.Options()
+      // ...customise any iProov options...
 
-        try {
-            IProov.launch(
-                this, // Reference to current activity
-                "https://eu.rp.secure.iproov.me", // Streaming URL
-                "{{ your token here }}", // iProov token
-                options // Optional
-            )
-        } catch (ex: IProovException) {
-            // Handle immediate failures: MultiWindowUnsupportedException, ListenerNotRegisteredException or CaptureAlreadyActiveException
-        }
-    }
+      try {
+         IProov.launch(
+            this, // Reference to current activity
+            "https://eu.rp.secure.iproov.me", // Streaming URL
+            "{{ your token here }}", // iProov token
+            options // Optional
+         )
+      } catch (ex: IProovException) {
+         // Handle immediate failures: MultiWindowUnsupportedException, ListenerNotRegisteredException or CaptureAlreadyActiveException
+      }
+   }
 }
 
 ```
@@ -276,21 +276,21 @@ class MainActivity : AppCompatActivity() {
 ```java
 public class MainActivity extends AppCompatActivity {
 
-    private void launchIProov() {
-        IProov.Options options = new IProov.Options();
-        // ...customise any iProov options...
+   private void launchIProov() {
+      IProov.Options options = new IProov.Options();
+      // ...customise any iProov options...
 
-        try {
-            IProov.launch(
-                this, // Reference to current activity
-                "https://eu.rp.secure.iproov.me", // Streaming URL
-                "{{ your token here }}", // iProov token
-                options // Optional
-            );
-        } catch (IProovException e) {
-            // Handle immediate failures: MultiWindowUnsupportedException, ListenerNotRegisteredException or CaptureAlreadyActiveException
-        }
-    }
+      try {
+         IProov.launch(
+                 this, // Reference to current activity
+                 "https://eu.rp.secure.iproov.me", // Streaming URL
+                 "{{ your token here }}", // iProov token
+                 options // Optional
+         );
+      } catch (IProovException e) {
+         // Handle immediate failures: MultiWindowUnsupportedException, ListenerNotRegisteredException or CaptureAlreadyActiveException
+      }
+   }
 }
 ```
 
@@ -325,7 +325,6 @@ options.ui.promptTextColor = Color.GREEN // new name for footerTextColor
 options.ui.floatingPromptEnabled = true // Controls position of the prompt text on the screen. When false, at the bottom; when true, floating in the middle. Default: false
 options.ui.headerBackgroundColor = Color.parseColor("#40ffff00")
 options.ui.footerBackgroundColor = Color.parseColor("#40ff00ff")
-
 options.ui.enableScreenshots = true // For added security, screenshotting is disabled during IProoving; re-enable this here. Default: false.
 options.ui.fontAsset = "SomeFont.ttf" // Set the default font from assets directory.
 options.ui.fontResource = R.font.some_font // Set the default font from font resources.
@@ -334,6 +333,7 @@ options.ui.logoImageDrawable = drawable // Logo to be included in the title. Def
 options.ui.filter = filter // Adjust the filter used for the face preview this can be CLASSIC (as in pre-v5), SHADED or VIBRANT. Default: SHADED.
 options.ui.orientation = orientation // Set the orientation of the iProov activity: enum Orientation (PORTRAIT, REVERSE_PORTRAIT, LANDSCAPE, REVERSE_LANDSCAPE). Note that this rotates the UI and does not rotate the camera; this is because it is intended to support USB cameras on a LANDSCAPE display, where the camera is oriented normally.
 options.ui.activityCompatibilityRequestCode = requestCode // If set, enables Activity compatibility mode with the specified requestCode. See the FAQ for details.
+options.ui.floatingPromptRoundedCorners = true // Determines whether the floating prompt box has rounded corners or not
 
 /*
     options.ui.genuinePresenceAssurance
@@ -342,6 +342,10 @@ options.ui.activityCompatibilityRequestCode = requestCode // If set, enables Act
 
 options.ui.genuinePresenceAssurance.notReadyTintColor = Color.BLUE
 options.ui.genuinePresenceAssurance.readyTintColor = Color.GREEN
+options.ui.genuinePresenceAssurance.notReadyOverlayStrokeColor = null // Oval and reticle colors
+options.ui.genuinePresenceAssurance.readyOverlayStrokeColor = null // Oval and reticle colors
+options.ui.genuinePresenceAssurance.notReadyFloatingPromptBackgroundColor = null
+options.ui.genuinePresenceAssurance.readyFloatingPromptBackgroundColor = null
 options.ui.genuinePresenceAssurance.progressBarColor = Color.MAGENTA
 options.ui.genuinePresenceAssurance.autoStartDisabled = true // With autostart, instead of requiring a user tap, there is an auto-countdown a face is detected. Default false.
 
@@ -352,6 +356,8 @@ options.ui.genuinePresenceAssurance.autoStartDisabled = true // With autostart, 
 
 options.ui.livenessAssurance.primaryTintColor = Color.parseColor("#4000ffff")
 options.ui.livenessAssurance.secondaryTintColor = Color.parseColor("#4000ff00")
+options.ui.livenessAssurance.overlayStrokeColor = null  // Oval and reticle color
+options.ui.livenessAssurance.floatingPromptBackgroundColor = null
 
 /*
     options.network
@@ -383,7 +389,7 @@ options.capture.genuinePresenceAssurance.maxRoll = 0.25
 
 ## String localization & customization
 
-The iProov Biometrics Android SDK only ships with English language strings. You are free to localise/customise these strings in your app, if you choose to do so.
+The iProov Biometrics Android SDK only ships with English language strings. You are free to localize/customize these strings in your app, if you choose to do so.
 
 All iProov strings are prefixed with `iproov__` and can be overridden by your app's strings.xml file. A copy of the iProov strings.xml file can be found [here](https://github.com/iProov/android/blob/master/resources/strings.xml).
 
@@ -453,7 +459,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:7.3.0')
+   implementation('com.iproov.sdk:iproov-blazeface:7.4.0')
 }
 ```
 
@@ -467,7 +473,7 @@ Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-mlkit:7.3.0')
+   implementation('com.iproov.sdk:iproov-mlkit:7.4.0')
 }
 ```
 
