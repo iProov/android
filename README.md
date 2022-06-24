@@ -1,5 +1,5 @@
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
-# iProov Biometrics Android SDK v7.4.0
+# iProov Biometrics Android SDK v7.5.0
 
 ## Table of contents
 
@@ -65,7 +65,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:7.4.0')
+        implementation('com.iproov.sdk:iproov:7.5.0')
     }
     ```
 
@@ -300,6 +300,18 @@ public class MainActivity extends AppCompatActivity {
 
 > **⚠️ IMPLEMENTATION WARNING:** [Google](https://developer.android.com/guide/topics/manifest/activity-element#lmode) states that `singleInstance` and `singleTask` are `not recommended for general use`. We specifically don't recommend the calling Activity to have a `launchMode` of `singleInstance` - when tested, `back` does not always work correctly, particularly after the task switcher has momentarily put any `standard` Activity (like IProov) into the background.
 
+> **⚠️ [SNYK-JAVA-ORGJSON-2841369](https://security.snyk.io/vuln/SNYK-JAVA-ORGJSON-2841369)** indicates a security warning you might notice.
+> JSON 20090211 is fairly widely used, almost universally.
+> Firstly, much as this might seem alarming, in this case it's a client-side application and so the risk here is very low.
+> This security vulnerability concerns DoS attacks on a server-side application.
+> Secondly, what you could do is simply exclude org.json from the iProov SDK using to following gradle script snippet, which might help:
+> ```
+> implementation('com.iproov.sdk:iproov:7.4.0') {
+>   exclude group: 'org.json', module: 'json'
+> }
+> ```
+> Finally, we do have plans to migrate away from a dependency on socketio, which should remove this problem, however, this requires a substantial change to our tech stack, thus there is no quick fix available.
+
 ## Options
 
 You can customize the iProov session by passing in an instance of `IProov.Option` to the `IProov.launch()` method. For further information see [FAQ](https://github.com/iProov/android/wiki/Frequently-Asked-Questions). A list of available parameters for customization is below:
@@ -334,6 +346,9 @@ options.ui.filter = filter // Adjust the filter used for the face preview this c
 options.ui.orientation = orientation // Set the orientation of the iProov activity: enum Orientation (PORTRAIT, REVERSE_PORTRAIT, LANDSCAPE, REVERSE_LANDSCAPE). Note that this rotates the UI and does not rotate the camera; this is because it is intended to support USB cameras on a LANDSCAPE display, where the camera is oriented normally.
 options.ui.activityCompatibilityRequestCode = requestCode // If set, enables Activity compatibility mode with the specified requestCode. See the FAQ for details.
 options.ui.floatingPromptRoundedCorners = true // Determines whether the floating prompt box has rounded corners or not
+options.ui.closeButtonImageResource = R.drawable.ic_arrow_back // Resource used to set the back button (takes preference over closeButtonImageDrawable). Default is standard back arrow
+options.ui.closeButtonImageDrawable = closeButtonDrawable // Resource used to set the back button. Default is standard back arrow
+options.ui.closeButtonTintColor = Color.WHITE // Customize the close button color
 
 /*
     options.ui.genuinePresenceAssurance
@@ -365,7 +380,7 @@ options.ui.livenessAssurance.floatingPromptBackgroundColor = null
 */
 
 options.network.certificates = arrayOf(R.raw.iproov__certificate) // Optionally supply certificates used for pinning as either a list of resource IDs or the contents of certificates as a list of byte arrays. Useful when using your own reverse proxy to stream to iProov. Pinning can be disabled by passing an empty array (never do this in production apps!) Certificates should be generated in DER-encoded X.509 certificate format, eg. with the command $ openssl x509 -in cert.crt -outform der -out cert.der. (R.raw.iproov__certificate is used by default)
-options.network.timeoutSecs = duration // The streaming timeout in seconds - setting to 0 disables timeout (default 10)
+options.network.timeoutSecs = 10 // The streaming timeout in seconds - setting to 0 disables timeout (default 10)
 options.network.path = path // The path to use when streaming, defaults to "/socket.io/v2/". You should not need to change this unless directed to do so by iProov.
 
 /*
@@ -459,7 +474,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-   implementation('com.iproov.sdk:iproov-blazeface:7.4.0')
+   implementation('com.iproov.sdk:iproov-blazeface:7.5.0')
 }
 ```
 
@@ -473,7 +488,7 @@ Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-   implementation('com.iproov.sdk:iproov-mlkit:7.4.0')
+   implementation('com.iproov.sdk:iproov-mlkit:7.5.0')
 }
 ```
 
