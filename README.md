@@ -95,7 +95,14 @@ Before being able to launch iProov, you need to get a token to iProov against. T
 1. A **verify** token - for logging-in an existing user
 2. An **enrol** token - for registering a new user
 
-In a production app, you normally would want to obtain the token via a server-to-server back-end call.
+iProov offers Genuine Presence Assurance™ technology and Liveness Assurance™ technology:
+
+* [**Genuine Presence Assurance**](https://www.iproov.com/iproov-system/technology/genuine-presence-assurance) verifies that an online remote user is the right person, a real person and that they are authenticating right now, for purposes of access control and security.
+* [**Liveness Assurance**](https://www.iproov.com/iproov-system/technology/liveness-assurance) verifies a remote online user is the right person and a real person for access control and security.
+
+Please consult our [REST API documentation](https://secure.iproov.me/docs.html) for details on how to generate tokens.
+
+> **💡 TIP:** In a production app, you normally would want to obtain the token via a server-to-server back-end call.
 For the purposes of on-device demos/testing, we provide Kotlin/Java sample code for obtaining tokens via [iProov API v2](https://eu.rp.secure.iproov.me/docs.html) with our open-source [Android API Client](https://github.com/iProov/android-api-client).
 
 ### Register a listener
