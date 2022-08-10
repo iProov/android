@@ -44,17 +44,6 @@ android {
     }
 
     flavorDimensions "lang"
-
-    productFlavors {
-        javalang {
-            dimension "lang"
-            applicationIdSuffix ".java"
-        }
-        kotlinlang {
-            dimension "lang"
-            applicationIdSuffix ".kotlin"
-        }
-    }
 }
 
 configurations.all {
@@ -69,9 +58,8 @@ dependencies {
 
     implementation iproovDep()
 
-    kotlinlangImplementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "1.4.1"
-    kotlinlangImplementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "1.4.1"
-    javalangImplementation group: "com.iproov.android-api-client", name: "java-retrofit", version: "1.4.1"
+    implementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "1.4.1"
+    implementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "1.4.1"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
