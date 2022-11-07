@@ -2,7 +2,8 @@
 package com.iproov.example
 
 object Constants {
-    const val BASE_URL = "https://eu.rp.secure.iproov.me/api/v2/"
+    const val BASE_URL = "wss://beta.rp.secure.iproov.me/ws"
+    const val FUEL_URL = "https://beta.rp.secure.iproov.me/api/v2/"
     const val API_KEY = "" // TODO: Add your API key here
     const val SECRET = "" // TODO: Add your Secret here
 }

@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.json.jsonDeserializer
 import com.iproov.androidapiclient.AssuranceType
@@ -14,45 +17,21 @@ import com.iproov.androidapiclient.DemonstrationPurposesOnly
 import com.iproov.androidapiclient.kotlinfuel.ApiClientFuel
 import com.iproov.example.databinding.ActivityMainBinding
 import com.iproov.sdk.IProov
-import com.iproov.sdk.core.exception.IProovException
+import com.iproov.sdk.IProovFlowLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivityKotlin : AppCompatActivity() {
+class MainActivityFlows : AppCompatActivity() {
 
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
     private lateinit var binding: ActivityMainBinding
-
-    private val listener = object : IProov.Listener {
-
-        override fun onConnecting() {
-            binding.progressBar.isIndeterminate = true
-        }
-
-        override fun onConnected() {
-            binding.progressBar.isIndeterminate = false
-        }
-
-        override fun onSuccess(result: IProov.SuccessResult) =
-            onResult(getString(R.string.success), getString(R.string.token_format, result.token))
-
-        override fun onFailure(result: IProov.FailureResult) =
-            onResult(result.feedbackCode, result.reason)
-
-        override fun onProcessing(progress: Double, message: String) {
-            binding.progressBar.progress = progress.times(100).toInt()
-        }
-
-        override fun onError(e: IProovException) =
-            onResult(getString(R.string.error), e.localizedMessage)
-
-        override fun onCancelled() =
-            onResult(getString(R.string.cancelled), null)
-    }
+    private val iProov = IProovFlowLauncher()
+    private var session: IProov.Session? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,14 +67,32 @@ class MainActivityKotlin : AppCompatActivity() {
             }
         }
 
-        binding.versionTextView.text = getString(R.string.kotlin_version_format, IProov.getSDKVersion())
+        binding.versionTextView.text = getString(R.string.kotlin_version_format, iProov.SDK_VERSION)
 
-        IProov.registerListener(listener)
+        lifecycleScope.launch(Dispatchers.Default) {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                iProov.sessionsStates.collect { sessionState: IProov.IProovSessionState? ->
+                    sessionState?.state?.let { state ->
+                        withContext(Dispatchers.Main) {
+                            when (state) {
+                                is IProov.IProovState.Connecting -> binding.progressBar.isIndeterminate = true
+                                is IProov.IProovState.Connected -> binding.progressBar.isIndeterminate = false
+                                is IProov.IProovState.Processing -> binding.progressBar.progress = state.progress.times(100).toInt()
+                                is IProov.IProovState.Success -> onResult(getString(R.string.success), "")
+                                is IProov.IProovState.Failure -> onResult(state.failureResult.reason.feedbackCode, getString(state.failureResult.reason.description))
+                                is IProov.IProovState.Error -> onResult(getString(R.string.error), state.exception.localizedMessage)
+                                is IProov.IProovState.Cancelled -> onResult(getString(R.string.cancelled), null)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
-        IProov.unregisterListener(listener)
         super.onDestroy()
+        job.cancel()
     }
 
     @DemonstrationPurposesOnly
@@ -118,12 +115,9 @@ class MainActivityKotlin : AppCompatActivity() {
                     username
                 )
 
-                try {
-                    IProov.launch(this@MainActivityKotlin, Constants.BASE_URL, token)
-                } catch (ex: Exception) {
-                    withContext(Dispatchers.Main) {
-                        onResult(getString(R.string.error), ex.localizedMessage)
-                    }
+                if (!job.isActive) return@launch
+                launch(Dispatchers.Default) {
+                    session = iProov.launch(applicationContext, Constants.BASE_URL, token, IProov.Options())
                 }
             } catch (ex: Exception) {
                 withContext(Dispatchers.Main) {
@@ -144,7 +138,7 @@ class MainActivityKotlin : AppCompatActivity() {
         binding.progressBar.progress = 0
         binding.progressBar.visibility = View.GONE
 
-        AlertDialog.Builder(this@MainActivityKotlin)
+        AlertDialog.Builder(this@MainActivityFlows)
             .setTitle(title)
             .setMessage(resultMessage)
             .setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.cancel() }

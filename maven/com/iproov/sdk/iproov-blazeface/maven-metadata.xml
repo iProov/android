@@ -3,8 +3,8 @@
   <groupId>com.iproov.sdk</groupId>
   <artifactId>iproov-blazeface</artifactId>
   <versioning>
-    <latest>7.5.0</latest>
-    <release>7.5.0</release>
+    <latest>8.0.0-beta</latest>
+    <release>8.0.0-beta</release>
     <versions>
       <version>6.0.0</version>
       <version>6.1.0</version>
@@ -27,7 +27,8 @@
       <version>7.3.0</version>
       <version>7.4.0</version>
       <version>7.5.0</version>
+      <version>8.0.0-beta</version>
     </versions>
-    <lastUpdated>20220624100101</lastUpdated>
+    <lastUpdated>20221107172335</lastUpdated>
   </versioning>
 </metadata>

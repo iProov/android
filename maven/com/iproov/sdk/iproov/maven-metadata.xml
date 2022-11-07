@@ -3,8 +3,8 @@
   <groupId>com.iproov.sdk</groupId>
   <artifactId>iproov</artifactId>
   <versioning>
-    <latest>7.5.0</latest>
-    <release>7.5.0</release>
+    <latest>8.0.0-beta</latest>
+    <release>8.0.0-beta</release>
     <versions>
       <version>4.4.0</version>
       <version>5.0.0-beta1</version>
@@ -40,7 +40,8 @@
       <version>7.3.0</version>
       <version>7.4.0</version>
       <version>7.5.0</version>
+      <version>8.0.0-beta</version>
     </versions>
-    <lastUpdated>20220624100059</lastUpdated>
+    <lastUpdated>20221107172331</lastUpdated>
   </versioning>
 </metadata>

@@ -3,7 +3,7 @@ plugins {
     id 'kotlin-android'
 }
 
-ext.iproovSdkVersion = "7.5.0"
+ext.iproovSdkVersion = "8.0.0-beta"
 
 android {
     compileSdkVersion 31
@@ -43,16 +43,17 @@ android {
         targetCompatibility "1.8"
     }
 
-    flavorDimensions "lang"
+    flavorDimensions "impl"
 
     productFlavors {
-        javalang {
-            dimension "lang"
-            applicationIdSuffix ".java"
+        callback {
+            dimension "impl"
+            applicationIdSuffix ".callback"
         }
-        kotlinlang {
-            dimension "lang"
-            applicationIdSuffix ".kotlin"
+
+        flows {
+            dimension "impl"
+            applicationIdSuffix ".flows"
         }
     }
 }
@@ -69,11 +70,12 @@ dependencies {
 
     implementation iproovDep()
 
-    kotlinlangImplementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "1.4.1"
-    kotlinlangImplementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "1.4.1"
-    javalangImplementation group: "com.iproov.android-api-client", name: "java-retrofit", version: "1.4.1"
+    implementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "1.4.1"
+    implementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "1.4.1"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.2.1"
+
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
 }
