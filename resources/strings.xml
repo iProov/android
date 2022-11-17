@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+  <string name="iproov__accessibility_prompt_align_face">Hold the device in front of your face and look at the screen</string>
+  <string name="iproov__accessibility_prompt_scanning">Scanning</string>
   <string name="iproov__back_button_content_description">Back</string>
   <string name="iproov__error_camera">Camera error</string>
   <string name="iproov__error_camera_permission_denied">Camera permission denied</string>
@@ -25,7 +27,7 @@
   <string name="iproov__failure_too_much_movement">Keep still</string>
   <string name="iproov__failure_unknown">Try again</string>
   <string name="iproov__failure_user_timeout">Try again</string>
-  <string name="iproov__language_file">en-US</string>
+  <string name="iproov__language_file">en</string>
   <string name="iproov__progress_assessing_genuine_presence">Assessing genuine presence…</string>
   <string name="iproov__progress_assessing_liveness">Assessing liveness…</string>
   <string name="iproov__progress_confirming_identity">Confirming identity…</string>
@@ -35,17 +37,17 @@
   <string name="iproov__progress_loading">Loading…</string>
   <string name="iproov__progress_streaming">Streaming…</string>
   <string name="iproov__prompt_align_face">Put your face in the oval</string>
-  <string name="iproov__prompt_align_face_accessibility">Hold the device in front of your face and look at the screen</string>
   <string name="iproov__prompt_get_ready">Get ready…</string>
   <string name="iproov__prompt_liveness_scan_completed">Scan completed</string>
   <string name="iproov__prompt_pitch_too_high">Hold the device at eye level</string>
   <string name="iproov__prompt_pitch_too_low">Hold the device at eye level</string>
   <string name="iproov__prompt_roll_too_high">Avoid tilting your head</string>
   <string name="iproov__prompt_roll_too_low">Avoid tilting your head</string>
-  <string name="iproov__prompt_scanning">Scanning…</string>
   <string name="iproov__prompt_too_bright">Go somewhere shadier</string>
   <string name="iproov__prompt_too_close">Too close</string>
   <string name="iproov__prompt_too_far">Move closer</string>
   <string name="iproov__prompt_yaw_too_high">Turn slightly to your left</string>
   <string name="iproov__prompt_yaw_too_low">Turn slightly to your right</string>
+  <string name="iproov_accessibility_label_close_button">Close</string>
+  <string name="iproov_accessibility_label_secured_by_iproov">Secured by iProov</string>
 </resources>

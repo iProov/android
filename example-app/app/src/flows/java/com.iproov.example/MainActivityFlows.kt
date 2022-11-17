@@ -102,7 +102,7 @@ class MainActivityFlows : AppCompatActivity() {
 
         val apiClientFuel = ApiClientFuel(
             this,
-            Constants.BASE_URL,
+            Constants.FUEL_URL,
             Constants.API_KEY,
             Constants.SECRET
         )

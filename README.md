@@ -1,8 +1,6 @@
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v8.0.0-beta
-
-> **Note**: This is a beta version of the SDK, which means that there may be missing or broken functionality, or features which may vary between this beta and the production release. This version of the SDK is for testing, feedback and evaluation purposes only and should not be deployed to production without prior express approval from iProov.
+# iProov Android Biometrics SDK v8.0.0
 
 ## Contents of this Package
 
@@ -35,7 +33,7 @@ iProov also supports [iOS](https://github.com/iproov/ios), [Xamarin](https://git
 
 ## Upgrading from Earlier Versions
 
-See the [Upgrade Guide](https://github.com/iProov/android/wiki/Upgrade-Guide) for information about upgrading from earlier versions of the SDK.
+See the [Upgrade Guide](https://github.com/iProov/android/wiki/Upgrading-to-v8.x) for information about upgrading from earlier versions of the SDK.
 
 ## Obtain API Credentials
 
@@ -59,7 +57,7 @@ The Android SDK is provided in Android Library Project (AAR) format as a Maven d
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:8.0.0-beta')
+        implementation('com.iproov.sdk:iproov:8.0.0')
     }
     ```
 
@@ -206,7 +204,7 @@ class MainActivityCallback : AppCompatActivity() {
         // Here you can customize any iProov options...
         val session = iProovCallback.launch(
             this, // Reference to current activity
-            "wss://beta.rp.secure.iproov.me/ws", // Streaming URL
+            "wss://eu.rp.secure.iproov.me/ws", // Streaming URL
             "{{ your token here }}", // iProov token
             options // Optional
         )
@@ -294,8 +292,8 @@ class MainActivityFlow : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.Default) {
             session = iProovFlowLauncher.launch(
                 applicationContext,
-                Constants.BASE_URL,
-                token,
+                "wss://eu.rp.secure.iproov.me/ws", // Streaming URL
+                "{{ your token here }}", // iProov token
                 options
             )
         }
