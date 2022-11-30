@@ -90,7 +90,7 @@ class MainActivityCallback : AppCompatActivity() {
             }
         }
 
-        binding.versionTextView.text = getString(R.string.kotlin_version_format, iProovCallbackLauncher.SDK_VERSION)
+        binding.versionTextView.text = getString(R.string.kotlin_version_format, iProovCallbackLauncher.sdkVersion)
 
         iProovCallbackLauncher.listener = listener
     }

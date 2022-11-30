@@ -67,7 +67,7 @@ class MainActivityFlows : AppCompatActivity() {
             }
         }
 
-        binding.versionTextView.text = getString(R.string.kotlin_version_format, iProov.SDK_VERSION)
+        binding.versionTextView.text = getString(R.string.kotlin_version_format, iProov.sdkVersion)
 
         lifecycleScope.launch(Dispatchers.Default) {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
