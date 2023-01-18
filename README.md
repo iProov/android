@@ -1,6 +1,7 @@
+
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v8.0.3
+# iProov Android Biometrics SDK v8.1.0
 
 ## Contents of this Package
 
@@ -57,7 +58,7 @@ The Android SDK is provided in Android Library Project (AAR) format as a Maven d
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:8.0.3')
+        implementation('com.iproov.sdk:iproov:8.1.0')
     }
     ```
 
@@ -397,8 +398,8 @@ The following values are found under `IProov.Options.genuinePresenceAssurance`.
 
 | Option name             | Description                                                                                                                            | Defaults      |
 |-------------------------|----------------------------------------------------------------------------------------------------------------------------------------|---------------|
-| `readyOvalColor`        | Color for oval stroke when in a GPA "not ready" state.                                                                                 | `#01AC41`     |
-| `notReadyOvalColor`     | Color for oval stroke when in the GPA "ready" state.                                                                                   | `Color.WHITE` |
+| `readyOvalColor`        | Color for oval stroke when in a GPA "ready" state.                                                                                     | `#01AC41`     |
+| `notReadyOvalColor`     | Color for oval stroke when in the GPA "not ready" state.                                                                               | `Color.WHITE` |
 | `maxYaw` (deprecated)   | Specify the maximum deviation on the yaw axis of the user’s face. Do not change without advice. Applies only to MLKit Face Detector.   | `0.25`        |
 | `maxRoll` (deprecated)  | Specify the maximum deviation on the roll axis of the user’s face. Do not change without advice. Applies only to MLKit Face Detector.  | `0.25`        |
 | `maxPitch` (deprecated) | Specify the maximum deviation on the pitch axis of the user’s face. Do not change without advice. Applies only to MLKit Face Detector. | `0.25`        |
