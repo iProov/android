@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v8.1.2
+# iProov Android Biometrics SDK v8.3.0
 
 ## Contents of this Package
 
@@ -58,7 +58,7 @@ The Android SDK is provided in Android Library Project (AAR) format as a Maven d
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:8.1.2')
+        implementation('com.iproov.sdk:iproov:8.3.0')
     }
     ```
 
@@ -306,6 +306,7 @@ class MainActivityFlow : AppCompatActivity() {
 
 A `Session` represents the lifecycle of a single claim. It has:
 
+- `uuid` - this is unique to every session, even those without a token such a `InvalidSession`
 - `token` - this is unique, and when using `IProovFlowLauncher` is can be used to distinguish events of one Session from another
 - `currentState` - the current state of the claim, of the form `IProov.IProovState`, which `IProovFlowLauncher` receives
 - `isActive` - whether the claim is still in progress (another cannot be started if this is true)
