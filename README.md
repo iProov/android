@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v8.3.0
+# iProov Android Biometrics SDK v8.3.1
 
 ## Contents of this Package
 
@@ -58,7 +58,7 @@ The Android SDK is provided in Android Library Project (AAR) format as a Maven d
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:8.3.0')
+        implementation('com.iproov.sdk:iproov:8.3.1')
     }
     ```
 
@@ -359,7 +359,7 @@ The following values are found at the top level of `IProov.Options`:
 | `promptTextColor`           | The color of text in prompt box.                                                                                                                                                                                                                                                                                                                                                                   | `Color.WHITE`                               |
 | `promptBackgroundColor`     | The color of the prompt box.                                                                                                                                                                                                                                                                                                                                                                       | `#CC000000`                                 |
 | `promptRoundedCorners`      | Whether the prompt has rounded corners.                                                                                                                                                                                                                                                                                                                                                            | `true`                                      |
-| `certificates`              | Optionally supply certificates used for pinning. If you are using a reverse proxy you may need to provide your own certificates. Certificate pinning is enabled by default. Certificates should be passed as a list of resource IDs or byte arrays (certificate content).<br /> See [below](#certificate-pinning) for more information                                                             | AlphaSSL intermediate certificate           |
+| `certificates`              | Optionally supply certificates used for pinning. If you are using a reverse proxy you may need to provide your own certificates. Certificate pinning is enabled by default. Certificates should be passed as a list of resource IDs or byte arrays (certificate content).<br /> See [below](#certificate-pinning) for more information                                                             | iProov Server Certificates                  |
 | `timeoutSecs`               | The WebSocket streaming timeout in seconds. To disable timeout, set to 0.                                                                                                                                                                                                                                                                                                                          | `10`                                        |
 | `orientation`               | Set the orientation of the iProov activity. Possible values are (`PORTRAIT`, `REVERSE_PORTRAIT`, `LANDSCAPE` or `REVERSE_LANDSCAPE`.<br />**Note**: This option rotates the UI, not the camera. Supports USB cameras on `LANDSCAPE` displays, such as tablets and kiosks, where the camera is oriented normally. For Liveness Assurance, LANDSCAPE and REVERSE_LANDSCAPE is not allowed.           | `PORTRAIT`                                  |
 | `camera`                    | Either use the in-built front-facing camera (`FRONT`) or USB `EXTERNAL` camera support for kiosks.                                                                                                                                                                                                                                                                                                 | `FRONT`                                     |
@@ -367,7 +367,7 @@ The following values are found at the top level of `IProov.Options`:
 
 #### Certificate Pinning
 
-By default, the iProov SDK pins to the iProov AlphaSSL intermediate certificate, which is used by `*.rp.secure.iproov.me`.
+By default, the iProov SDK pins to the iProov server certificates, which are used by `*.rp.secure.iproov.me`.
 
 If you are using your own reverse-proxy, you will need to update the pinning configuration to pin to your own certificate(s) instead.
 
