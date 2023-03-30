@@ -1,5 +1,5 @@
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
-# iProov Biometrics Android SDK v7.1.1
+# iProov Biometrics Android SDK v7.3.1
 
 ## Table of contents
 
@@ -65,7 +65,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:7.1.1')
+        implementation('com.iproov.sdk:iproov:7.3.1')
     }
     ```
 
@@ -320,7 +320,9 @@ options.ui.title = "Authenticating to ACME Bank" // The message shown during can
 options.ui.backgroundColor = Color.BLACK
 options.ui.lineColor = Color.CYAN
 options.ui.headerTextColor = Color.GREEN
-options.ui.footerTextColor = Color.GREEN
+// options.ui.footerTextColor = Color.GREEN // DEPRECATED, please use promptTextColor instead
+options.ui.promptTextColor = Color.GREEN // new name for footerTextColor
+options.ui.floatingPromptEnabled = true // Controls position of the prompt text on the screen. When false, at the bottom; when true, floating in the middle. Default: false
 options.ui.headerBackgroundColor = Color.parseColor("#40ffff00")
 options.ui.footerBackgroundColor = Color.parseColor("#40ff00ff")
 
@@ -432,16 +434,18 @@ In cases where the iProov process failed entirely (i.e. iProov was unable to ver
 
 By default, the iProov Biometrics Android SDK leverages the [Android built-in face detector](https://developer.android.com/reference/android/media/FaceDetector). This is a simple face detector and is ubiquitous in Android phones, however it is not regularly updated. Therefore, we also support BlazeFace and ML Kit face detectors.
 
-Here are some discoveries we have made that might help you to choose which is best for you:
+The following table highlights the trade-offs with each Face Detector.
+
+The total size impacts were approximated by measuring the APK size increases of a simple app when including only the minimum required iProov AAR dependencies: thus `CLASSIC` used only the core `iproov` AAR dependency, `BLAZEFACE` used both `iproov` and `iproov-blazeface`, and `ML_KIT` used both `iproov` and `iproov-mlkit`.
 
 | Face detector | Size impact | Accuracy | Speed | Angles supported | Lighting conditions supported | Pose control |
 |-|-|-|-|-|-|-|
-| CLASSIC | 0MB (built-in) | OK | Fastest | Limited | Limited | Unsupported |
-| BLAZEFACE | 2.2MB | Better | Slower | Better | Better | Unsupported |
-| ML_KIT | Varies | Best | Slowest | Best | Best | Supported |
+| `CLASSIC` | 700 KB | OK | Fastest | Limited | Limited | Unsupported |
+| `BLAZEFACE` | 3.7 MB | Better | Slower | Better | Better | Unsupported |
+| `ML_KIT` | 21.3 MB | Best | Slowest | Best | Best | Supported |
 ### BlazeFace support
 
-[BlazeFace](https://arxiv.org/pdf/1907.05047.pdf) is a relatively lightweight and performant face detector. Whilst you should find that BlazeFace provides increased accuracy when compared with built-in face detector, it requires the inclusion of TensorFlow Lite with the SDK along with the necessary model, and therefore adds approximately 2.2MB to the downloaded app size. In our benchmarks, it also tends to run approximately 50% slower than the built-in "classic" face detector on very low-end devices.
+[BlazeFace](https://arxiv.org/pdf/1907.05047.pdf) is a relatively lightweight and performant face detector. Whilst you should find that BlazeFace provides increased accuracy when compared with built-in face detector, it requires the inclusion of TensorFlow Lite with the SDK along with the necessary model, and therefore adds approximately 3.0 MB to the downloaded app size. In our benchmarks, it also tends to run approximately 50% slower than the built-in "classic" face detector on very low-end devices.
 
 #### Installation steps
 
@@ -449,7 +453,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:7.1.1')
+    implementation('com.iproov.sdk:iproov-blazeface:7.3.1')
 }
 ```
 
@@ -463,7 +467,7 @@ Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-mlkit:7.1.1')
+    implementation('com.iproov.sdk:iproov-mlkit:7.3.1')
 }
 ```
 
