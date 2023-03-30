@@ -1,5 +1,5 @@
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
-# iProov Biometrics Android SDK v6.5.3
+# iProov Biometrics Android SDK v7.1.1
 
 ## Table of contents
 
@@ -25,13 +25,9 @@ It supports both _Genuine Presence Assurance_ and _Liveness Assurance_ methods o
 ### Requirements
 
 - Android Studio
-- API Level 19 (4.4 KitKat) and above*
+- API Level 21 (Android 5 Lollipop) and above
 - Compilation target, build tools and Android compatibility libraries must be 29+
 - AndroidX
-
-Within this repository you can find the fictitious "Waterloo Bank" sample Android app, which illustrates an example iProov integration.
-
-> \* Please note that whilst the SDK supports API Level 19+, due to lack of proper support for TLS 1.2 until API Level 21 and above, we only offer limited support pre-API Level 21. For further details, please [see here](https://github.com/iProov/android/wiki/TLS-1.2-support-in-Android-4.x). **All customers are advised to move to API Level 21 and above as soon as possible.**
 
 ## Contents
 
@@ -39,7 +35,7 @@ The framework package is provided via this repository, which contains the follow
 
 * **README.md** - This document
 * **maven** - Maven repository for the Biometrics SDK
-* **waterloo-bank** - A sample project of iProov for the fictitious _Waterloo Bank_.
+* **example-app** - A sample project of iProov to demonstrate integration.
 * **resources** - Directory containing additional development resources you may find helpful.
 
 
@@ -69,7 +65,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:6.5.3')
+        implementation('com.iproov.sdk:iproov:7.1.1')
     }
     ```
 
@@ -318,42 +314,49 @@ val options = IProov.Options()
     Configure options relating to the user interface
 */
 
-options.ui.autoStartDisabled = true // With autostart, instead of requiring a user tap, there is an auto-countdown a face is detected. Default false.
 options.ui.title = "Authenticating to ACME Bank" // The message shown during canny preview. Default null.
 
 // Adjust various colors for the camera preview:
 options.ui.backgroundColor = Color.BLACK
 options.ui.lineColor = Color.CYAN
-options.ui.loadingTintColor = Color.RED // Please note this is option is deprecated, and only takes effect when used in conjunction with the useLegacyConnectingUI option.
-options.ui.notReadyTintColor = Color.BLUE
-options.ui.readyTintColor = Color.GREEN
-ui.headerTextColor = Color.GREEN
-ui.footerTextColor = Color.GREEN
-ui.progressBarColor = Color.MAGENTA
-ui.headerBackgroundColor = Color.parseColor("#40ffff00")
-ui.footerBackgroundColor = Color.parseColor("#40ff00ff")
-ui.livenessScanningTintColor = Color.parseColor("#4000ff00")
-ui.livenessTintColor = Color.parseColor("#4000ffff")
+options.ui.headerTextColor = Color.GREEN
+options.ui.footerTextColor = Color.GREEN
+options.ui.headerBackgroundColor = Color.parseColor("#40ffff00")
+options.ui.footerBackgroundColor = Color.parseColor("#40ff00ff")
 
 options.ui.enableScreenshots = true // For added security, screenshotting is disabled during IProoving; re-enable this here. Default: false.
 options.ui.fontAsset = "SomeFont.ttf" // Set the default font from assets directory.
 options.ui.fontResource = R.font.some_font // Set the default font from font resources.
 options.ui.logoImageResource = R.drawable.logo // Logo to be included in the title (takes precedence over logoImageDrawable). Defaults to iProov logo.
 options.ui.logoImageDrawable = drawable // Logo to be included in the title. Defaults to iProov logo.
-options.ui.scanLineDisabled = true // Disable the scan-line whilst scanning the face. Default: false.
 options.ui.filter = filter // Adjust the filter used for the face preview this can be CLASSIC (as in pre-v5), SHADED or VIBRANT. Default: SHADED.
 options.ui.orientation = orientation // Set the orientation of the iProov activity: enum Orientation (PORTRAIT, REVERSE_PORTRAIT, LANDSCAPE, REVERSE_LANDSCAPE). Note that this rotates the UI and does not rotate the camera; this is because it is intended to support USB cameras on a LANDSCAPE display, where the camera is oriented normally.
-options.ui.useLegacyConnectingUI = false // When enabled, the iProov SDK will provide a UI for establishing the connection, rather than your app. Please note that this option is now deprecated and will be removed in a future version of the SDK. You should now use the onConnecting() and onConnected() callback methods to provide your own UI for connection progress.
 options.ui.activityCompatibilityRequestCode = requestCode // If set, enables Activity compatibility mode with the specified requestCode. See the FAQ for details.
 
+/*
+    options.ui.genuinePresenceAssurance
+    Configure options relating to the user interface for Genuine Presence Assurance
+*/
+
+options.ui.genuinePresenceAssurance.notReadyTintColor = Color.BLUE
+options.ui.genuinePresenceAssurance.readyTintColor = Color.GREEN
+options.ui.genuinePresenceAssurance.progressBarColor = Color.MAGENTA
+options.ui.genuinePresenceAssurance.autoStartDisabled = true // With autostart, instead of requiring a user tap, there is an auto-countdown a face is detected. Default false.
+
+/*
+    options.ui.livenessAssurance
+    Configure options relating to the user interface for Liveness Assurance
+*/
+
+options.ui.livenessAssurance.primaryTintColor = Color.parseColor("#4000ffff")
+options.ui.livenessAssurance.secondaryTintColor = Color.parseColor("#4000ff00")
 
 /*
     options.network
     Configure options relating to networking & security
 */
 
-options.network.disableCertificatePinning = false // When true (not recommended), disables certificate pinning to the server. Default false
-options.network.certificates = arrayOf(R.raw.iproov__certificate) // Optionally supply an list of resourceIDs of certificates files to be used for pinning. Useful when using your own baseURL or for overriding the built-in certificate pinning for some other reason. Certificates should be generated in DER-encoded X.509 certificate format, eg. with the command $ openssl x509 -in cert.crt -outform der -out cert.der
+options.network.certificates = arrayOf(R.raw.iproov__certificate) // Optionally supply certificates used for pinning as either a list of resource IDs or the contents of certificates as a list of byte arrays. Useful when using your own reverse proxy to stream to iProov. Pinning can be disabled by passing an empty array (never do this in production apps!) Certificates should be generated in DER-encoded X.509 certificate format, eg. with the command $ openssl x509 -in cert.crt -outform der -out cert.der. (R.raw.iproov__certificate is used by default)
 options.network.timeoutSecs = duration // The streaming timeout in seconds - setting to 0 disables timeout (default 10)
 options.network.path = path // The path to use when streaming, defaults to "/socket.io/v2/". You should not need to change this unless directed to do so by iProov.
 
@@ -365,18 +368,22 @@ options.network.path = path // The path to use when streaming, defaults to "/soc
 options.capture.camera = Camera.EXTERNAL // FRONT or EXTERNAL (USB). Default is FRONT.
 options.capture.faceDetector = IProov.FaceDetector.AUTO // Explicitly declare which face detector is used, can either be AUTO, ML_KIT, BLAZEFACE or CLASSIC. The AUTO declaration will try to use the ML Kit face detector and fallback to classic if unavailable. Default: AUTO. See section and table below.
 
-// You can specify max yaw/roll/pitch deviation of the user's face to ensure a given pose. Values are provided in normalised units.
-// These options should not be set for general use. Please contact iProov for further information if you would like to use this feature.
-options.capture.maxPitch = 0.25
-options.capture.maxYaw = 0.25
-options.capture.maxRoll = 0.25
+/*
+    options.capture.genuinePresenceAssurance
+    You can specify max yaw/roll/pitch deviation of the user's face to ensure a given pose. Values are provided in normalised units.
+    These options should not be set for general use. Please contact iProov for further information if you would like to use this feature.
+*/
+
+options.capture.genuinePresenceAssurance.maxPitch = 0.25
+options.capture.genuinePresenceAssurance.maxYaw = 0.25
+options.capture.genuinePresenceAssurance.maxRoll = 0.25
 ```
 
 ## String localization & customization
 
 The iProov Biometrics Android SDK only ships with English language strings. You are free to localise/customise these strings in your app, if you choose to do so.
 
-All iProov strings are prefixed with `iproov__` and can be overriden by your app's strings.xml file. A copy of the iProov strings.xml file can be found [here](https://github.com/iProov/android/blob/master/resources/strings.xml).
+All iProov strings are prefixed with `iproov__` and can be overridden by your app's strings.xml file. A copy of the iProov strings.xml file can be found [here](https://github.com/iProov/android/blob/master/resources/strings.xml).
 
 Strings for failure reasons are handled in a special way, in the form `R.string.iproov__failure_<feedback code>` e.g. `iproov__failure_ambiguous_outcome` exist and will be used for `reason`, allowing it to provide localised translations for all current and future failure codes.
 
@@ -397,6 +404,7 @@ Failures occur when the user's identity could not be verified for some reason. A
 | `lighting_too_dark` | Your environment appears too dark |
 | `lighting_face_too_bright` | Too much light detected on your face |
 | `motion_too_much_mouth_movement` | Please do not talk while iProoving |
+| `failure_user_timeout` | Your session has expired |
 
 The list of feedback codes and reasons is subject to change.
 
@@ -413,14 +421,12 @@ In cases where the iProov process failed entirely (i.e. iProov was unable to ver
 
 - `CameraException` - An error occurred acquiring or using the camera. This could happen when a non-phone is used with/without an external/USB camera. See Options.capture.setCameraLensFacing().
 - `CameraPermissionException` - The user disallowed access to the camera when prompted. You should prompt them to re-enable camera permissions via Settings.
-- `EncoderException` - An error occurred with the video encoding process. This should never occur.
 - `FaceDetectorException` - An error occurred with the face detector.
-- `LightingModelException` - An error occurred with the lighting model. This should never occur.
+- `UnexpectedErrorException` - An unrecoverable error has occurred during the transaction.
 - `ServerException` - The token was invalidated server-side, or some other unrecoverable server error occurred.
 - `NetworkException` - An error occurred with communications to the server. This generally indicates a device connectivity issue (e.g. the user's session has timed out, or internet service has been lost).
 - `UnsupportedDeviceException` - The device is not supported, (e.g. does not have a front-facing camera).
 - `InvalidOptionsException` - An error occurred when trying to apply your [options](#options).
-- `KeyStoreManagerException` - An error occurred when trying to access key pair from Android Keystore
 
 ## Alternative face detectors
 
@@ -443,7 +449,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:6.5.3')
+    implementation('com.iproov.sdk:iproov-blazeface:7.1.1')
 }
 ```
 
@@ -457,7 +463,7 @@ Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-mlkit:6.5.3')
+    implementation('com.iproov.sdk:iproov-mlkit:7.1.1')
 }
 ```
 
@@ -465,17 +471,17 @@ Please note that adding ML Kit support will increase your app size (as it will i
 
 ## Sample code
 
-For a simple iProov experience that is ready to run out-of-the-box, check out the [Waterloo Bank sample project](https://github.com/iProov/android/tree/master/waterloo-bank).
+For a simple iProov experience that is ready to run out-of-the-box, check out the [Example App](https://github.com/iProov/android/tree/master/example-app).
 
 ### Installation
 
-1. Open the `waterloo-bank` project in Android Studio.
+1. Open the `example-app` project in Android Studio.
 
 2. Open the `Constants.kt` file and insert your API Key and Secret at the relevant points.
 
-3. You can choose between Kotlin (`kotlinlang`) and Java (`javalang`) versions of Waterloo Bank by changing the build variant within Android Studio.
+3. You can choose between Kotlin (`kotlinlang`) and Java (`javalang`) versions of the Example app by changing the build variant within Android Studio.
 
-> **⚠️ SECURITY NOTICE:** The Waterloo Bank sample project uses the [Android API Client](https://github.com/iProov/android-api-client) to directly fetch tokens on-device and this is inherently insecure. Production implementations of iProov should always obtain tokens securely from a server-to-server call.
+> **⚠️ SECURITY NOTICE:** The Example App uses the [Android API Client](https://github.com/iProov/android-api-client) to directly fetch tokens on-device and this is inherently insecure. Production implementations of iProov should always obtain tokens securely from a server-to-server call.
 
 ## Help & support
 
