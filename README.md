@@ -1,5 +1,5 @@
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
-# iProov Biometrics Android SDK v6.4.3
+# iProov Biometrics Android SDK v6.5.3
 
 ## Table of contents
 
@@ -69,7 +69,7 @@ The iProov Biometrics Android SDK is provided in AAR format (Android Library Pro
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:6.4.3')
+        implementation('com.iproov.sdk:iproov:6.5.3')
     }
     ```
 
@@ -363,7 +363,7 @@ options.network.path = path // The path to use when streaming, defaults to "/soc
 */
 
 options.capture.camera = Camera.EXTERNAL // FRONT or EXTERNAL (USB). Default is FRONT.
-options.capture.faceDetector = IProov.FaceDetector.AUTO // Explicitly declare which face detector is used, can either be AUTO, ML_KIT or CLASSIC. The AUTO declaration will try to use the ML Kit face detector and fallback to classic if unavailable. Default: AUTO.
+options.capture.faceDetector = IProov.FaceDetector.AUTO // Explicitly declare which face detector is used, can either be AUTO, ML_KIT, BLAZEFACE or CLASSIC. The AUTO declaration will try to use the ML Kit face detector and fallback to classic if unavailable. Default: AUTO. See section and table below.
 
 // You can specify max yaw/roll/pitch deviation of the user's face to ensure a given pose. Values are provided in normalised units.
 // These options should not be set for general use. Please contact iProov for further information if you would like to use this feature.
@@ -426,7 +426,14 @@ In cases where the iProov process failed entirely (i.e. iProov was unable to ver
 
 By default, the iProov Biometrics Android SDK leverages the [Android built-in face detector](https://developer.android.com/reference/android/media/FaceDetector). This is a simple face detector and is ubiquitous in Android phones, however it is not regularly updated. Therefore, we also support BlazeFace and ML Kit face detectors.
 
-### BlazeFace
+Here are some discoveries we have made that might help you to choose which is best for you:
+
+| Face detector | Size impact | Accuracy | Speed | Angles supported | Lighting conditions supported | Pose control |
+|-|-|-|-|-|-|-|
+| CLASSIC | 0MB (built-in) | OK | Fastest | Limited | Limited | Unsupported |
+| BLAZEFACE | 2.2MB | Better | Slower | Better | Better | Unsupported |
+| ML_KIT | Varies | Best | Slowest | Best | Best | Supported |
+### BlazeFace support
 
 [BlazeFace](https://arxiv.org/pdf/1907.05047.pdf) is a relatively lightweight and performant face detector. Whilst you should find that BlazeFace provides increased accuracy when compared with built-in face detector, it requires the inclusion of TensorFlow Lite with the SDK along with the necessary model, and therefore adds approximately 2.2MB to the downloaded app size. In our benchmarks, it also tends to run approximately 50% slower than the built-in "classic" face detector on very low-end devices.
 
@@ -436,7 +443,7 @@ Add the iProov BlazeFace module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-blazeface:6.4.3')
+    implementation('com.iproov.sdk:iproov-blazeface:6.5.3')
 }
 ```
 
@@ -450,7 +457,7 @@ Add the iProov ML Kit module to your app's build.gradle file:
 
 ```groovy
 dependencies {
-    implementation('com.iproov.sdk:iproov-mlkit:6.4.3')
+    implementation('com.iproov.sdk:iproov-mlkit:6.5.3')
 }
 ```
 
