@@ -4,6 +4,7 @@
     <string name="iproov__prompt_genuine_presence_align_face">Put your face in the oval</string>
     <string name="iproov__prompt_liveness_align_face">Fill the oval with your face</string>
     <string name="iproov__prompt_liveness_no_target">Put your face in the frame</string>
+    <string name="iproov__prompt_align_face_accessibility">Hold the device in front of your face and look at the screen</string>
     <string name="iproov__prompt_connecting">Connecting…</string>
     <string name="iproov__prompt_tap_to_begin">Tap the screen to begin</string>
     <string name="iproov__prompt_too_far">Move closer</string>
@@ -18,9 +19,6 @@
     <string name="iproov__progress_loading">Loading…</string>
     <string name="iproov__progress_creating_identity">Creating identity…</string>
     <string name="iproov__progress_finding_face">Finding face…</string>
-    <string name="iproov__authenticate">Authenticate</string>
-    <string name="iproov__enrol">Enrol</string>
-    <string name="iproov__message_format">%1$s to %2$s</string>
     <string name="iproov__prompt_too_close">Too close</string>
     <string name="iproov__failure_ambiguous_outcome">Ambiguous outcome</string>
     <string name="iproov__failure_motion_too_much_movement">Please do not move while iProoving</string>
@@ -30,7 +28,6 @@
     <string name="iproov__failure_lighting_face_too_bright">Too much light detected on your face</string>
     <string name="iproov__failure_motion_too_much_mouth_movement">Please do not talk while iProoving</string>
     <string name="iproov__failure_user_timeout">Your session has expired</string>
-    <string name="iproov__message_format_with_username">%1$s as %2$s to %3$s</string>
     <string name="iproov__prompt_roll_too_high">Avoid tilting your head</string>
     <string name="iproov__prompt_roll_too_low">Avoid tilting your head</string>
     <string name="iproov__prompt_yaw_too_low">Turn slightly to your right</string>
@@ -52,5 +49,6 @@
     <string name="iproov__error_listener_not_registered">Before calling IProov.launch(), you should register a listener with IProov.registerListener()</string>
     <string name="iproov__error_invalid_options">Invalid iProov options</string>
     <string name="iproov__error_unexpected_error">Unexpected error</string>
+    <string name="iproov__back_button_content_description">Back</string>
 
 </resources>
