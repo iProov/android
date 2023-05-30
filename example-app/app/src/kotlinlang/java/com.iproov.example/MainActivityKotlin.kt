@@ -14,7 +14,6 @@ import com.iproov.androidapiclient.DemonstrationPurposesOnly
 import com.iproov.androidapiclient.kotlinfuel.ApiClientFuel
 import com.iproov.example.databinding.ActivityMainBinding
 import com.iproov.sdk.IProov
-import com.iproov.sdk.IProovCallbackLauncher
 import com.iproov.sdk.core.exception.IProovException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,14 +21,13 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivityCallback : AppCompatActivity() {
+class MainActivityKotlin : AppCompatActivity() {
 
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
     private lateinit var binding: ActivityMainBinding
-    private val iProovCallbackLauncher: IProovCallbackLauncher = IProovCallbackLauncher()
 
-    private val listener = object : IProovCallbackLauncher.Listener {
+    private val listener = object : IProov.Listener {
 
         override fun onConnecting() {
             binding.progressBar.isIndeterminate = true
@@ -40,20 +38,20 @@ class MainActivityCallback : AppCompatActivity() {
         }
 
         override fun onSuccess(result: IProov.SuccessResult) =
-            onResult(getString(R.string.success), "")
+            onResult(getString(R.string.success), getString(R.string.token_format, result.token))
 
         override fun onFailure(result: IProov.FailureResult) =
-            onResult(result.reason.feedbackCode, getString(result.reason.description))
+            onResult(result.feedbackCode, result.reason)
 
-        override fun onProcessing(progress: Double, message: String?) {
+        override fun onProcessing(progress: Double, message: String) {
             binding.progressBar.progress = progress.times(100).toInt()
         }
 
         override fun onError(e: IProovException) =
             onResult(getString(R.string.error), e.localizedMessage)
 
-        override fun onCancelled(canceller: IProov.Canceller) =
-            onResult(getString(R.string.cancelled), "Cancelled by $canceller")
+        override fun onCancelled() =
+            onResult(getString(R.string.cancelled), null)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,13 +88,13 @@ class MainActivityCallback : AppCompatActivity() {
             }
         }
 
-        binding.versionTextView.text = getString(R.string.kotlin_version_format, iProovCallbackLauncher.sdkVersion)
+        binding.versionTextView.text = getString(R.string.kotlin_version_format, IProov.getSDKVersion())
 
-        iProovCallbackLauncher.listener = listener
+        IProov.registerListener(listener)
     }
 
     override fun onDestroy() {
-        iProovCallbackLauncher.listener = null
+        IProov.unregisterListener(listener)
         super.onDestroy()
     }
 
@@ -107,7 +105,7 @@ class MainActivityCallback : AppCompatActivity() {
 
         val apiClientFuel = ApiClientFuel(
             this,
-            Constants.FUEL_URL,
+            Constants.BASE_URL,
             Constants.API_KEY,
             Constants.SECRET
         )
@@ -121,7 +119,7 @@ class MainActivityCallback : AppCompatActivity() {
                 )
 
                 try {
-                    iProovCallbackLauncher.launch(this@MainActivityCallback, Constants.BASE_URL, token)
+                    IProov.launch(this@MainActivityKotlin, Constants.BASE_URL, token)
                 } catch (ex: Exception) {
                     withContext(Dispatchers.Main) {
                         onResult(getString(R.string.error), ex.localizedMessage)
@@ -146,7 +144,7 @@ class MainActivityCallback : AppCompatActivity() {
         binding.progressBar.progress = 0
         binding.progressBar.visibility = View.GONE
 
-        AlertDialog.Builder(this@MainActivityCallback)
+        AlertDialog.Builder(this@MainActivityKotlin)
             .setTitle(title)
             .setMessage(resultMessage)
             .setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.cancel() }
