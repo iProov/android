@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.iproov.example" >
+    package="com.iproov.example">
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivityCallback"
+        <!-- configChanges="uiMode" avoid the activity to be re-created when switching between light/dark mode, to avoid the activities re-create and losing the callback reference -->
+        <activity
+            android:name=".MainActivityCallback"
+            android:configChanges="uiMode"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
