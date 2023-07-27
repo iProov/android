@@ -3,7 +3,7 @@ plugins {
     id 'kotlin-android'
 }
 
-ext.iproovSdkVersion = "8.5.0"
+ext.iproovSdkVersion = "9.0.0-beta"
 
 android {
     compileSdkVersion 31

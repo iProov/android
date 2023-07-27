@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v8.5.0
+# iProov Android Biometrics SDK v9.0.0-beta
 
 ## Contents of this Package
 
@@ -34,7 +34,7 @@ iProov also supports [iOS](https://github.com/iproov/ios), [Xamarin](https://git
 
 ## Upgrading from Earlier Versions
 
-See the [Upgrade Guide](https://github.com/iProov/android/wiki/Upgrading-to-v8.x) for information about upgrading from earlier versions of the SDK.
+See the [Upgrade Guide](https://github.com/iProov/android/wiki/Upgrade-Guide) for information about upgrading from earlier versions of the SDK.
 
 ## Obtain API Credentials
 
@@ -58,7 +58,7 @@ The Android SDK is provided in Android Library Project (AAR) format as a Maven d
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:8.5.0')
+        implementation('com.iproov.sdk:iproov:9.0.0-beta')
     }
     ```
 
@@ -361,11 +361,10 @@ The following values are found at the top level of `IProov.Options`:
 | `promptBackgroundColor`     | The color of the prompt box.                                                                                                                                                                                                                                                                                                                                                                       | `#CC000000`                                 |
 | `promptRoundedCorners`      | Whether the prompt has rounded corners.                                                                                                                                                                                                                                                                                                                                                            | `true`                                      |
 | `disableExteriorEffects`    | Optionally disable blur and vignette outside the oval.                                                                                                                                                                                                                                                                                                                                             | `false`                                     |
-| `certificates`              | Optionally supply certificates used for pinning. If you are using a reverse proxy you may need to provide your own certificates. Certificate pinning is enabled by default. Certificates should be passed as a list of resource IDs or byte arrays (certificate content).<br /> See [below](#certificate-pinning) for more information                                                             | iProov Server Certificates                  |
+| `certificates`              | Optionally supply certificates used for pinning. If you are using a reverse proxy you may need to provide your own certificates. Certificate pinning is enabled by default. Certificate should be passed as a string (certificate`s subject public key info as SHA-256 hash).<br /> See [below](#certificate-pinning) for more information                                                         | iProov Server Certificates                  |
 | `timeoutSecs`               | The WebSocket streaming timeout in seconds. To disable timeout, set to 0.                                                                                                                                                                                                                                                                                                                          | `10`                                        |
 | `orientation`               | Set the orientation of the iProov activity. Possible values are (`PORTRAIT`, `REVERSE_PORTRAIT`, `LANDSCAPE` or `REVERSE_LANDSCAPE`.<br />**Note**: This option rotates the UI, not the camera. Supports USB cameras on `LANDSCAPE` displays, such as tablets and kiosks, where the camera is oriented normally. For Liveness Assurance, LANDSCAPE and REVERSE_LANDSCAPE is not allowed.           | `PORTRAIT`                                  |
 | `camera`                    | Either use the in-built front-facing camera (`FRONT`) or USB `EXTERNAL` camera support for kiosks.                                                                                                                                                                                                                                                                                                 | `FRONT`                                     |
-| `faceDetector` (deprecated) | Optionally select the face detector. May require the addition of other dependencies. This is a trade-off between speed, accuracy, and application size impact.<br />`AUTO` will try to use the BlazeFace or ML Kit face detector and fallback to `CLASSIC` if unavailable. See [Alternative Face Detectors](https://github.com/iProov/android/wiki/Alternative-Face-Detectors-(Deprecated-in-v8)). | `CLASSIC`                                   |
 
 #### Certificate Pinning
 
@@ -373,16 +372,22 @@ By default, the iProov SDK pins to the iProov server certificates, which are use
 
 If you are using your own reverse-proxy, you will need to update the pinning configuration to pin to your own certificate(s) instead.
 
-Certificates should be passed as an array of `Data`, which are DER-encoded X.509 certificates. You can load a DER-encoded certificate from your resources as follows:
+Certificates should be passed as a `String`, which is base64-encoded SHA-256 hash of a certificate's Subject Public Key Info. You can load a certificate as follows:
 
 ```kotlin
-options.certificates = listOf(Certificate.ResourceCertificate(R.raw.iproov__certificate))
+options.certificates = listOf(Certificate("O8qZKEXWWkMPISIpvB7DUow++JzIW2g+k9z3U/l5V94="))
 ```
 
-To convert from a `.crt` file to `.der`, use the following command:
+To get Subject Public Key Info from a `.crt`, use the following command:
 
 ```sh
-$ openssl x509 -in cert.crt -outform der -out cert.der
+$ openssl x509  -in cert.crt -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64
+```
+
+To get Subject Public Key Info from a `.der`, use the following command:
+
+```sh
+$ openssl x509 -inform der -in cert.der -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64
 ```
 
 When multiple certificates are passed, as long as the server matches **any** of the certificates, the connection will be allowed. Pinning is performed against the **whole** of the certificate.
@@ -403,18 +408,15 @@ The following values are found under `IProov.Options.genuinePresenceAssurance`.
 |-------------------------|----------------------------------------------------------------------------------------------------------------------------------------|---------------|
 | `readyOvalColor`        | Color for oval stroke when in a GPA "ready" state.                                                                                     | `#01AC41`     |
 | `notReadyOvalColor`     | Color for oval stroke when in the GPA "not ready" state.                                                                               | `Color.WHITE` |
-| `maxYaw` (deprecated)   | Specify the maximum deviation on the yaw axis of the user’s face. Do not change without advice. Applies only to MLKit Face Detector.   | `0.25`        |
-| `maxRoll` (deprecated)  | Specify the maximum deviation on the roll axis of the user’s face. Do not change without advice. Applies only to MLKit Face Detector.  | `0.25`        |
-| `maxPitch` (deprecated) | Specify the maximum deviation on the pitch axis of the user’s face. Do not change without advice. Applies only to MLKit Face Detector. | `0.25`        |
 
 ### Liveness Assurance Options
 
 The following values are found under `IProov.Options.livenessPresenceAssurance`.
 
-| Option name                | Description                                     | Defaults      |
-|----------------------------|-------------------------------------------------|---------------|
-| `ovalStrokeColor`          | Color for oval stroke during LA scan.       | `Color.WHITE` |
-| `completedOvalStrokeColor` | Color for oval stroke after LA scan completes.        | `#01AC41`     |
+| Option name                | Description                                    | Defaults      |
+|----------------------------|------------------------------------------------|---------------|
+| `ovalStrokeColor`          | Color for oval stroke during LA scan.          | `Color.WHITE` |
+| `completedOvalStrokeColor` | Color for oval stroke after LA scan completes. | `#01AC41`     |
 
 
 ## String Localization & Customization
@@ -463,18 +465,20 @@ The available failure reasons for Genuine Presence Assurance claims are as follo
 | `FACE_TOO_CLOSE`    | Move your face farther from the screen |
 | `SUNGLASSES`        | Remove sunglasses                      |
 | `OBSCURED_FACE`     | Remove any face coverings              |
-| `USER_TIMEOUT`      | Try again                              |
-| `NOT_SUPPORTED`     | Device is not supported                |
 
 #### Liveness Assurance
 
 The available failure reasons for Liveness Assurance claims are as follows:
 
-| Enum value          | `description` (English)                |
-|---------------------|----------------------------------------|
-| `UNKNOWN`           | Try again                              |
-| `USER_TIMEOUT`      | Try again                              |
-| `NOT_SUPPORTED`     | Device is not supported                |
+| Enum value        | `description` (English)                |
+|-------------------|----------------------------------------|
+| `UNKNOWN`         | Try again                              |
+| `TOO_BRIGHT`      | Move somewhere darker                  |
+| `TOO_DARK`        | Move somewhere brighter                |
+| `EYES_CLOSED`     | Keep your eyes open                    |
+| `MULTIPLE_FACES`  | Ensure only one person is visible      |
+| `SUNGLASSES`      | Remove sunglasses                      |
+| `OBSCURED_FACE`   | Remove any face coverings              |
 
 ### IProovException subclasses
 
