@@ -81,7 +81,7 @@ class MainActivityFlows : AppCompatActivity() {
                                 is IProov.IProovState.Success -> onResult(getString(R.string.success), "")
                                 is IProov.IProovState.Failure -> onResult(state.failureResult.reason.feedbackCode, getString(state.failureResult.reason.description))
                                 is IProov.IProovState.Error -> onResult(getString(R.string.error), state.exception.localizedMessage)
-                                is IProov.IProovState.Cancelled -> onResult(getString(R.string.cancelled), null)
+                                is IProov.IProovState.Canceled -> onResult(getString(R.string.canceled), null)
                             }
                         }
                     }

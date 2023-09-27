@@ -49,11 +49,11 @@ class MainActivityCallback : AppCompatActivity() {
             binding.progressBar.progress = progress.times(100).toInt()
         }
 
-        override fun onError(e: IProovException) =
-            onResult(getString(R.string.error), e.localizedMessage)
+        override fun onError(exception: IProovException) =
+            onResult(getString(R.string.error), exception.localizedMessage)
 
-        override fun onCancelled(canceller: IProov.Canceller) =
-            onResult(getString(R.string.cancelled), "Cancelled by $canceller")
+        override fun onCanceled(canceler: IProov.Canceler) =
+            onResult(getString(R.string.canceled), "Canceled by $canceler")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
