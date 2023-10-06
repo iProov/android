@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-ext.iproovSdkVersion = "9.0.0"
+ext.iproovSdkVersion = "9.0.1"
 
 android {
     compileSdk 34
