@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v9.0.2
+# iProov Android Biometrics SDK v9.0.3
 
 ## Contents of this Package
 
@@ -58,7 +58,7 @@ The Android SDK is provided in Android Library Project (AAR) format as a Maven d
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:9.0.2')
+        implementation('com.iproov.sdk:iproov:9.0.3')
     }
     ```
 
