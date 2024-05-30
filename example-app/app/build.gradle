@@ -3,9 +3,11 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-ext.iproovSdkVersion = "9.0.4"
+ext.iproovSdkVersion = "9.1.0"
 
 android {
+    namespace "com.iproov.example"
+
     compileSdk 34
 
     defaultConfig {
@@ -69,8 +71,8 @@ dependencies {
 
     implementation iproovDep()
 
-    implementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "2.0.1"
-    implementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "2.0.1"
+    implementation group: "com.iproov.android-api-client", name: "kotlin-fuel", version: "3.0.0"
+    implementation group: "com.iproov.android-api-client", name: "kotlin-common", version: "3.0.0"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1'

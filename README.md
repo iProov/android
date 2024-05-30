@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v9.0.4
+# iProov Android Biometrics SDK v9.1.0
 
 ## Contents of this Package
 
@@ -58,7 +58,7 @@ The Android SDK is provided in Android Library Project (AAR) format as a Maven d
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:9.0.4')
+        implementation('com.iproov.sdk:iproov:9.1.0')
     }
     ```
 
@@ -94,18 +94,127 @@ See the [REST API documentation](https://secure.iproov.me/docs.html) for details
 
 There are two ways to launch the SDK:
 
-[IProovCallbackLauncher](#iproovcallbacklauncher) is most suitable for:
-
-- Developers already familiar with previous versions of the iProov SDK who are looking for a simple upgrade path.
-- Java-only apps.
-- Kotlin apps which do not make use of [Flows](https://kotlinlang.org/docs/flow.html).
-
 [IProovFlowLauncher](#iproovflowlauncher) is most suitable for:
 
 - Kotlin apps.
 - Developers interested in the most modern API integration and who are familiar with [Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) and [Flows](https://kotlinlang.org/docs/flow.html).
+- The iProov-recommended approach
+
+[IProovCallbackLauncher](#iproovcallbacklauncher) is most suitable for:
+
+- Developers already familiar with version 7.x and earlier of the iProov SDK who are looking for a simple upgrade path.
+- Java-only apps.
+- Kotlin apps which do not make use of [Flows](https://kotlinlang.org/docs/flow.html).
 
 Both of these methods are demonstrated in the included [Example App](https://github.com/iProov/android/tree/master/example-app).
+
+### Understanding States and Sessions, and which architecture is best
+
+An iProov claim is started by calling a `launch()` function, which returns a `Session` (representing the claim).
+Each of these two methods (callback and flow) provide mechanisms to determine the STATE of the current `Session` (or claim).
+
+Since they are states, and not events, if you are not listening fast enough, you might miss intermediate states,
+however, in principle this is not a problem because the state progression is linear, terminal and not re-entrant.
+
+These states change as follows: Connecting and Connected indicate iProov performing an initial communication with the backend, after which the iProov UI
+will start and Progress state changes will be produced, even following the UI closing (after all images have been captured); and
+eventually, a terminate state will always be reached, as one of: Success, Failure, Error or Canceled.
+
+Since a calling Activity might use one callback-listener/flow for all `launch()` calls, then the Session.uuid will separate one claim from the next.
+This is straightforward in the recommended `IProovFlowLauncher`, since the Flow is a `StateFlow<IProov.IProovSessionState?>`, where `IProovSessionState` contains both the `Session` and the `IProovState`.
+Unfortunately, this is not the case with `IProovCallbackLauncher`, which is a facade over `IProovFlowLauncher`, and designed to mimic the SDK 7.x to make the transition to 8.x easier, thus it does not provide `Session` with each callback function. This was an oversight that will be corrected in the next major release: 10.0.0.
+
+### IProovFlowLauncher
+
+#### 1. Create an Instance of `IProovFlowLauncher`
+
+```kotlin
+val iProovFlowLauncher = IProovFlowLauncher()
+```
+
+#### 2. Collect from the Main Output Flow
+
+To monitor the progress of an iProov claim and receive the result, you collect from the `iProovFlowLauncher.sessionStates`. Each element of the Flow is an `IProovSessionState`, as shown below, consisting of a `Session` and an `IProovState`.
+
+```kotlin
+data class IProovSessionState(
+    val session: Session,
+    val state: IProovState
+)
+```
+
+Collecting from this Flow provides each `IProovState` from the `Session` we just launched. This Flow is continuous and can be used for multiple `Session`s, although iProov only allows one `Session` to be active at a time.
+
+Below is code with events completed (as used by the Example App). See the same events in [IProovCallbackLauncher](#iproovcallback) for detailed explanations and usage suggestions.
+
+```kotlin
+class MainActivityFlow : AppCompatActivity() {
+    private val iProovFlowLauncher: IProovFlowLauncher = IProovFlowLauncher()
+    private var session: IProov.Session? = null // Store active session from launch
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        lifecycleScope.launch(Dispatchers.Default) {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                iProovFlowLauncher.sessionsStates.collect { sessionState: IProov.IProovSessionState? ->
+                    if (session?.uuid == sessionState?.session?.uuid) {
+                        sessionState?.state?.let { state ->
+                            withContext(Dispatchers.Main) {
+                                when (state) {
+                                    is IProov.IProovState.Connecting -> binding.progressBar.isIndeterminate =
+                                        true
+                                    is IProov.IProovState.Connected -> binding.progressBar.isIndeterminate =
+                                        false
+                                    is IProov.IProovState.Processing -> binding.progressBar.progress =
+                                        state.progress.times(100).toInt()
+                                    is IProov.IProovState.Success -> onResult(getString(R.string.success), "")
+                                    is IProov.IProovState.Failure -> onResult(
+                                        state.failureResult.reason.feedbackCode,
+                                        getString(state.failureResult.reason.description)
+                                    )
+                                    is IProov.IProovState.Error -> onResult(
+                                        getString(R.string.error),
+                                        state.exception.localizedMessage
+                                    )
+                                    is IProov.IProovState.Canceled -> onResult(
+                                        getString(R.string.canceled),
+                                        null
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+#### 3. Launch a Claim
+
+Call `iProovFlowLauncher.launch()` in a (Default dispatcher) coroutine to initiate a claim.
+
+This starts background tasks to connect to the backend, then the iProov Activity starts and performs the scan, and finally it closes, returning to the original Activity while completing network activity and getting a result in the background.
+
+```kotlin
+class MainActivityFlow : AppCompatActivity() {
+    private val iProovFlowLauncher: IProovFlowLauncher = IProovFlowLauncher()
+    private var session: IProov.Session? = null // Store active session from launch
+
+    private fun launchIProov() {
+        val options = IProov.Options()
+        // Here you can customize any iProov options...
+        lifecycleScope.launch(Dispatchers.Default) {
+            session = iProovFlowLauncher.launch(
+                applicationContext,
+                "wss://eu.rp.secure.iproov.me/ws", // Streaming URL
+                "{{ your token here }}", // iProov token
+                options
+            )
+        }
+    }
+}
+```
 
 ### IProovCallbackLauncher
 
@@ -145,6 +254,7 @@ class MainActivityCallback : AppCompatActivity() {
         override fun onSuccess(result: IProov.SuccessResult) {
             // The user was successfully verified/enrolled.
             // You must always independently validate the token server-side (using the /validate API call) before performing any authenticated user actions.
+            // The "selfie" frame returned is only available for selected SPs, otherwise null
         }
 
         override fun onFailure(result: IProov.FailureResult) {
@@ -152,6 +262,7 @@ class MainActivityCallback : AppCompatActivity() {
             // The user was not successfully verified/enrolled as their identity could not be verified.
             // Or there was another issue with their verification/enrollment.
             // You might provide feedback to the user as to how to retry.
+            // The "selfie" frame returned is only available for selected SPs, otherwise null
         }
 
         override fun onCanceled(canceler: IProov.Canceler) {
@@ -191,7 +302,6 @@ class MainActivityCallback : AppCompatActivity() {
 > * You should maintain a reference to `iProovCallbackLauncher` whilst you have the listener registered.
 
 
-
 #### 3. Launch a Claim
 
 Call `iProovCallbackLauncher.launch()` to initiate a claim:
@@ -209,95 +319,6 @@ class MainActivityCallback : AppCompatActivity() {
             "{{ your token here }}", // iProov token
             options // Optional
         )
-    }
-}
-
-```
-
-### IProovFlowLauncher
-
-#### 1. Create an Instance of `IProovFlowLauncher`
-
-```kotlin
-val iProovFlowLauncher = IProovFlowLauncher()
-```
-
-#### 2. Collect from the Main Output Flow
-
-To monitor the progress of an iProov claim and receive the result, you collect from the `iProovFlowLauncher.sessionStates`. Each element of the Flow is an `IProovSessionState`, as shown below, consisting of a `Session` and an `IProovState`.
-
-```kotlin
-data class IProovSessionState(
-    val session: Session,
-    val state: IProovState
-)
-```
-
-Collecting from this Flow provides each `IProovState` from the `Session` we just launched. This Flow is continuous and can be used for multiple `Session`s, although iProov only allows one `Session` to be active at a time.
-
-Below is code with events completed (as used by the Example App). See the same events in [IProovCallbackLauncher](#iproovcallback) above for detailed explanations and usage suggestions.
-
-```kotlin
-class MainActivityFlow : AppCompatActivity() {
-    private val iProovFlowLauncher: IProovFlowLauncher = IProovFlowLauncher()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        lifecycleScope.launch(Dispatchers.Default) {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                iProovFlowLauncher.sessionsStates.collect { sessionState: IProov.IProovSessionState? ->
-                    sessionState?.state?.let { state ->
-                        withContext(Dispatchers.Main) {
-                            when (state) {
-                                is IProov.IProovState.Connecting -> binding.progressBar.isIndeterminate =
-                                    true
-                                is IProov.IProovState.Connected -> binding.progressBar.isIndeterminate =
-                                    false
-                                is IProov.IProovState.Processing -> binding.progressBar.progress =
-                                    state.progress.times(100).toInt()
-                                is IProov.IProovState.Success -> onResult(getString(R.string.success), "")
-                                is IProov.IProovState.Failure -> onResult(
-                                    state.failureResult.reason.feedbackCode,
-                                    getString(state.failureResult.reason.description)
-                                )
-                                is IProov.IProovState.Error -> onResult(
-                                    getString(R.string.error),
-                                    state.exception.localizedMessage
-                                )
-                                is IProov.IProovState.Canceled -> onResult(
-                                    getString(R.string.canceled),
-                                    null
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-```
-
-#### 3. Launch a Claim
-
-Call `iProovFlowLauncher.launch()` in a (Default dispatcher) coroutine to initiate a claim.
-
-This starts background tasks to connect to the backend, then the iProov Activity starts and performs the scan, and finally it closes, returning to the original Activity while completing network activity and getting a result in the background.
-
-```kotlin
-class MainActivityFlow : AppCompatActivity() {
-    private val iProovFlowLauncher: IProovFlowLauncher = IProovFlowLauncher()
-
-    private fun launchIProov() {
-        val options = IProov.Options()
-        // Here you can customize any iProov options...
-        lifecycleScope.launch(Dispatchers.Default) {
-            session = iProovFlowLauncher.launch(
-                applicationContext,
-                "wss://eu.rp.secure.iproov.me/ws", // Streaming URL
-                "{{ your token here }}", // iProov token
-                options
-            )
-        }
     }
 }
 ```
@@ -323,6 +344,60 @@ or
 scope.launch {
     iProovFlowLauncher.currentSession()?.cancel()
 }
+```
+
+### UI State (Optional)
+
+This feature was implemented in response to a specific request, but its applicability to other users may not be useful.
+
+To monitor iProov UI lifecycle of a claim and receive the result, you collect from the `iProovFlowLauncher.sessionsUIStates`. Each element of the Flow is an `IProovSessionUIState`.
+
+```kotlin
+private val iProovFlowLauncher: IProovFlowLauncher = IProovFlowLauncher()
+
+// collect the UI states
+iProovFlowLauncher.sessionsUIStates.collect { sessionUIStates ->
+    if (session?.uuid == sessionUIStates?.session?.uuid) {
+        sessionUIStates?.state?.let { state ->
+            when (state) {
+                IProov.IProovUIState.NotStarted -> {
+                    // Called before the iProov user interface is displayed.
+                }
+                IProov.IProovUIState.Started -> {
+                    // Called when the iProov user interface is displayed.
+                }
+                IProov.IProovUIState.Ended -> {
+                    // Called when the iProov user interface is dismissed.
+                }
+            }
+        }
+    }
+}
+```
+
+If you intend to use Callback, register an `IProovCallbackLauncher.UIListener` class by assigning it to `iProovCallbackLauncher.uiListener = uiListener`.
+
+When the listener is no longer required, unregister it by unassigning this way: `iProovCallbackLauncher.uiListener = null`.
+
+```kotlin
+private val iProovCallbackLauncher = IProovCallbackLauncher()
+private val uiListener = object : IProovCallbackLauncher.UIListener {
+    override fun onNotStarted() {
+       // Called before the iProov user interface is displayed.
+    }
+
+    override fun onStarted() {
+        // Called when the iProov user interface is displayed.
+    }
+
+    override fun onEnded() {
+        // Called when the iProov user interface is dismissed.
+    }
+}
+
+// assign it to iProovCallbackLauncher.uiListener
+iProovCallbackLauncher.uiListener = uiListener
+
 ```
 
 > **Note**: You can [customize]( #customize-the-user-experience) the user experience by passing in an `IProov.Options` object.

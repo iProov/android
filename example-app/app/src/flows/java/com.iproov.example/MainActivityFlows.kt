@@ -72,16 +72,43 @@ class MainActivityFlows : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.Default) {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 iProov.sessionsStates.collect { sessionState: IProov.IProovSessionState? ->
-                    sessionState?.state?.let { state ->
-                        withContext(Dispatchers.Main) {
-                            when (state) {
-                                is IProov.IProovState.Connecting -> binding.progressBar.isIndeterminate = true
-                                is IProov.IProovState.Connected -> binding.progressBar.isIndeterminate = false
-                                is IProov.IProovState.Processing -> binding.progressBar.progress = state.progress.times(100).toInt()
-                                is IProov.IProovState.Success -> onResult(getString(R.string.success), "")
-                                is IProov.IProovState.Failure -> onResult(state.failureResult.reason.feedbackCode, getString(state.failureResult.reason.description))
-                                is IProov.IProovState.Error -> onResult(getString(R.string.error), state.exception.localizedMessage)
-                                is IProov.IProovState.Canceled -> onResult(getString(R.string.canceled), null)
+
+                    if (session?.uuid == sessionState?.session?.uuid) {
+                        sessionState?.state?.let { state ->
+                            withContext(Dispatchers.Main) {
+                                when (state) {
+                                    is IProov.IProovState.Connecting ->
+                                        binding.progressBar.isIndeterminate =
+                                            true
+
+                                    is IProov.IProovState.Connected ->
+                                        binding.progressBar.isIndeterminate =
+                                            false
+
+                                    is IProov.IProovState.Processing ->
+                                        binding.progressBar.progress =
+                                            state.progress.times(100).toInt()
+
+                                    is IProov.IProovState.Success -> onResult(
+                                        getString(R.string.success),
+                                        "",
+                                    )
+
+                                    is IProov.IProovState.Failure -> onResult(
+                                        state.failureResult.reason.feedbackCode,
+                                        getString(state.failureResult.reason.description),
+                                    )
+
+                                    is IProov.IProovState.Error -> onResult(
+                                        getString(R.string.error),
+                                        state.exception.localizedMessage,
+                                    )
+
+                                    is IProov.IProovState.Canceled -> onResult(
+                                        getString(R.string.canceled),
+                                        null,
+                                    )
+                                }
                             }
                         }
                     }
@@ -104,7 +131,7 @@ class MainActivityFlows : AppCompatActivity() {
             this,
             Constants.FUEL_URL,
             Constants.API_KEY,
-            Constants.SECRET
+            Constants.SECRET,
         )
 
         uiScope.launch(Dispatchers.IO) {
@@ -112,7 +139,7 @@ class MainActivityFlows : AppCompatActivity() {
                 val token = apiClientFuel.getToken(
                     assuranceType,
                     claimType,
-                    username
+                    username,
                 )
 
                 if (!job.isActive) return@launch

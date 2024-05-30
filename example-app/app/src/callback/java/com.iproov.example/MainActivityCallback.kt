@@ -109,7 +109,7 @@ class MainActivityCallback : AppCompatActivity() {
             this,
             Constants.FUEL_URL,
             Constants.API_KEY,
-            Constants.SECRET
+            Constants.SECRET,
         )
 
         uiScope.launch(Dispatchers.IO) {
@@ -117,7 +117,7 @@ class MainActivityCallback : AppCompatActivity() {
                 val token = apiClientFuel.getToken(
                     assuranceType,
                     claimType,
-                    username
+                    username,
                 )
 
                 try {
