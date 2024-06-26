@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v9.1.0
+# iProov Android Biometrics SDK v9.1.1
 
 ## Contents of this Package
 
@@ -58,7 +58,7 @@ The Android SDK is provided in Android Library Project (AAR) format as a Maven d
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:9.1.0')
+        implementation('com.iproov.sdk:iproov:9.1.1')
     }
     ```
 
@@ -474,6 +474,10 @@ options.certificates = listOf()
 ```
 
 > **Warning**: Never disable certificate pinning in production apps!
+
+Should your app require additional certificate pinning at app level using the [Network Configuration file](https://developer.android.com/privacy-and-security/security-config), please contact our support team which can assist you with the implementation and will provide the latest list of certificates.
+
+Please note that this approach will require you to maintain and update the certificate list for your app to ensure ongoing security and functionality of the iProov SDK
 
 ### Genuine Presence Assurance Options
 
