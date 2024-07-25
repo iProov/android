@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v9.1.1
+# iProov Android Biometrics SDK v10.0.0
 
 ## Contents of this Package
 
@@ -16,7 +16,7 @@ The framework package is provided via this GitHub repository, which contains:
 
 This guide describes how to integrate iProov biometric assurance technologies into your Android app.
 
-iProov offers Genuine Presence Assurance™ technology and Liveness Assurance™ technology:
+iProov offers Genuine Presence Assurance™ technology (also known as "Dynamic Liveness") and Liveness Assurance™ technology (also known as "Express Liveness"):
 
 * [**Genuine Presence Assurance**](https://www.iproov.com/iproov-system/technology/genuine-presence-assurance) verifies that an online remote user is the right person, a real person and that they are authenticating right now, for purposes of access control and security.
 * [**Liveness Assurance**](https://www.iproov.com/iproov-system/technology/liveness-assurance) verifies a remote online user is the right person and a real person for access control and security.
@@ -28,7 +28,7 @@ iProov also supports [iOS](https://github.com/iproov/ios), [Xamarin](https://git
 ## Requirements
 
 - Android Studio
-- `minSdkVersion` API Level 21 (Android 5 Lollipop) and above
+- `minSdkVersion` API Level 26 (Android 8) and above
 - Compilation target, build tools, and Android compatibility libraries must be API level 31 or above
 - AndroidX
 
@@ -54,26 +54,19 @@ The Android SDK is provided in Android Library Project (AAR) format as a Maven d
     }
     ```
 
+Alternatively, in `settings.gradle` if you have opted to use `dependencyResolutionManagement { ... }`, then add here instead.
+
 3. Add the SDK version to the `dependencies` section in your `build.gradle` file:
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:9.1.1')
+        implementation('com.iproov.sdk:iproov:10.0.0')
     }
     ```
 
-4. Add support for Java 8 to your `build.gradle` file. Skip this step if Java 8 is enabled:
+4. Build your project
 
-    ```groovy
-    android {
-        compileOptions {
-            sourceCompatibility JavaVersion.VERSION_1_8
-            targetCompatibility JavaVersion.VERSION_1_8
-        }
-    }
-    ```
-
-5. Build your project
+> **TIP:** When testing development, using debuggable apps, iProov can provide "development" SPs for you to use.
 
 ## Get Started
 
@@ -90,322 +83,112 @@ See the [REST API documentation](https://secure.iproov.me/docs.html) for details
 
 > **TIP:** In a production app you typically obtain tokens via a server-to-server back-end call. For demos and testing, iProov provides Kotlin and Java sample code for obtaining tokens via [iProov API v2](https://eu.rp.secure.iproov.me/docs.html) with our open-source [Android API Client](https://github.com/iProov/android-api-client).
 
-### Choose an Architecture
+### Create a Session
 
-There are two ways to launch the SDK:
+For each scan, you need an `IProov.Session`, which you can then call `IProov.Session.start()` when you are ready to start (but only once).
 
-[IProovFlowLauncher](#iproovflowlauncher) is most suitable for:
-
-- Kotlin apps.
-- Developers interested in the most modern API integration and who are familiar with [Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) and [Flows](https://kotlinlang.org/docs/flow.html).
-- The iProov-recommended approach
-
-[IProovCallbackLauncher](#iproovcallbacklauncher) is most suitable for:
-
-- Developers already familiar with version 7.x and earlier of the iProov SDK who are looking for a simple upgrade path.
-- Java-only apps.
-- Kotlin apps which do not make use of [Flows](https://kotlinlang.org/docs/flow.html).
-
-Both of these methods are demonstrated in the included [Example App](https://github.com/iProov/android/tree/master/example-app).
-
-### Understanding States and Sessions, and which architecture is best
-
-An iProov claim is started by calling a `launch()` function, which returns a `Session` (representing the claim).
-Each of these two methods (callback and flow) provide mechanisms to determine the STATE of the current `Session` (or claim).
-
-Since they are states, and not events, if you are not listening fast enough, you might miss intermediate states,
-however, in principle this is not a problem because the state progression is linear, terminal and not re-entrant.
-
-These states change as follows: Connecting and Connected indicate iProov performing an initial communication with the backend, after which the iProov UI
-will start and Progress state changes will be produced, even following the UI closing (after all images have been captured); and
-eventually, a terminate state will always be reached, as one of: Success, Failure, Error or Canceled.
-
-Since a calling Activity might use one callback-listener/flow for all `launch()` calls, then the Session.uuid will separate one claim from the next.
-This is straightforward in the recommended `IProovFlowLauncher`, since the Flow is a `StateFlow<IProov.IProovSessionState?>`, where `IProovSessionState` contains both the `Session` and the `IProovState`.
-Unfortunately, this is not the case with `IProovCallbackLauncher`, which is a facade over `IProovFlowLauncher`, and designed to mimic the SDK 7.x to make the transition to 8.x easier, thus it does not provide `Session` with each callback function. This was an oversight that will be corrected in the next major release: 10.0.0.
-
-### IProovFlowLauncher
-
-#### 1. Create an Instance of `IProovFlowLauncher`
+Everything you need to run a scan is available in the `IProov` Object. Here you will find the function to create a `IProov.Session` as follows:
 
 ```kotlin
-val iProovFlowLauncher = IProovFlowLauncher()
+val session: IProov.Session = IProov.createSession(context, baseUrl, token, options)
 ```
 
-#### 2. Collect from the Main Output Flow
+- `context` - can be any Android context (your Activity or the Application context)
+- `baseUrl` - is the address of the server (SP) you are using
+- `token` - the single-use claim token you acquired in the prior step
+- `options` - are optional and referenced later in this document (they control the look and feel of the scan's UI among other aspects)
 
-To monitor the progress of an iProov claim and receive the result, you collect from the `iProovFlowLauncher.sessionStates`. Each element of the Flow is an `IProovSessionState`, as shown below, consisting of a `Session` and an `IProovState`.
+You now have a session and can start a scan, but first we need to talk about states, so you can know what happened.
+
+### States
+
+For the duration of a Scan, you can monitor its state. The primary state let's you know the progress and ultimately concludes with one of four terminal states.
+
+`IProov.State` is a sealed class with four intermediate states and four terminal states.
+
+Initially, the scan will begin with `IProov.State.Starting`, then it moves to `IProov.State.Connecting` as it tries to communicate with the server and reach `IProov.State.Connected` when it has done so successfully. Then the UI begins and over time various iterations of `IProov.State.Processing` will happen until a terminal state is produced.
+
+IProov's four terminal states are as follows:
+
+- `IProov.State.Success` - providing a `IProov.SuccessResult` (can contain a selfie frame, if set up for your account)
+- `IProov.State.Failure` - providing a `IProov.FailureResult` (contains a reason code; can contain a selfie frame, if set up for your account)
+- `IProov.State.Canceled` - providing a value indicating whether the `IProov.Canceler.USER` hit the back button or otherwise moved away from the app, or the `IProov.Session` was canceled by the `IProov.Canceler.INTEGRATION` i.e. the app called `IProov.Session.cancel()`
+- `IProov.State.Error` - providing an `IProovException` subclass indicating the cause of the error that prevented the claim from being completed
+
+The last two (`Canceled` and `Error`) can interrupt the sequence at any time.
+
+### Listening to the State
+
+The Session provides a `val state: StateFlow<IProov.State>` to be collected from.
+
+### UIStates (optional)
+
+Additionally, for those wanting to monitor the user experience, there are also UIStates, which indicate when the Session's UI starts and stops.
+
+Similarly, the Session provides a `val uiState: StateFlow<IProov.UIState>` to be collected from.
+
+### Starting the Session
+
+Now the hard work is done, and starting the `IProov.Session` is simply achieved with a call to `IProov.Session.start()`.
+
+Two possible errors at this point to be aware of:
+
+1. `session.start()` might cause an `IProov.State.Error` in the Flow, containing a `CaptureAlreadyActiveException`. This is caused if a previous `IProov.Session.start()` has yet to complete. You will need to create a new `Session` to try again.
+2. `session.start()` might throw a `SessionCannotBeStartedTwiceException`. This is caused if `IProov.Session.start()` is called twice on the same session, no matter the outcome of the first call (a new session is always required).
+
+### Examples
+
+This is demonstrated in the included [Example App](https://github.com/iProov/android/tree/master/example-app), from where the following snippets were taken.
+
+Starting a Session, once you have obtained a token, and then observing on the State is as simple as this:
 
 ```kotlin
-data class IProovSessionState(
-    val session: Session,
-    val state: IProovState
-)
-```
-
-Collecting from this Flow provides each `IProovState` from the `Session` we just launched. This Flow is continuous and can be used for multiple `Session`s, although iProov only allows one `Session` to be active at a time.
-
-Below is code with events completed (as used by the Example App). See the same events in [IProovCallbackLauncher](#iproovcallback) for detailed explanations and usage suggestions.
-
-```kotlin
-class MainActivityFlow : AppCompatActivity() {
-    private val iProovFlowLauncher: IProovFlowLauncher = IProovFlowLauncher()
-    private var session: IProov.Session? = null // Store active session from launch
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        lifecycleScope.launch(Dispatchers.Default) {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                iProovFlowLauncher.sessionsStates.collect { sessionState: IProov.IProovSessionState? ->
-                    if (session?.uuid == sessionState?.session?.uuid) {
-                        sessionState?.state?.let { state ->
-                            withContext(Dispatchers.Main) {
-                                when (state) {
-                                    is IProov.IProovState.Connecting -> binding.progressBar.isIndeterminate =
-                                        true
-                                    is IProov.IProovState.Connected -> binding.progressBar.isIndeterminate =
-                                        false
-                                    is IProov.IProovState.Processing -> binding.progressBar.progress =
-                                        state.progress.times(100).toInt()
-                                    is IProov.IProovState.Success -> onResult(getString(R.string.success), "")
-                                    is IProov.IProovState.Failure -> onResult(
-                                        state.failureResult.reason.feedbackCode,
-                                        getString(state.failureResult.reason.description)
-                                    )
-                                    is IProov.IProovState.Error -> onResult(
-                                        getString(R.string.error),
-                                        state.exception.localizedMessage
-                                    )
-                                    is IProov.IProovState.Canceled -> onResult(
-                                        getString(R.string.canceled),
-                                        null
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+    @Throws(SessionCannotBeStartedTwiceException::class)
+    private fun startScan(token: String) {
+        IProov.createSession(applicationContext, Constants.BASE_URL, token).let { session ->
+            // Observe first, then start
+            observeSessionState(session) {
+                session.start()
             }
         }
     }
-}
-```
 
-#### 3. Launch a Claim
-
-Call `iProovFlowLauncher.launch()` in a (Default dispatcher) coroutine to initiate a claim.
-
-This starts background tasks to connect to the backend, then the iProov Activity starts and performs the scan, and finally it closes, returning to the original Activity while completing network activity and getting a result in the background.
-
-```kotlin
-class MainActivityFlow : AppCompatActivity() {
-    private val iProovFlowLauncher: IProovFlowLauncher = IProovFlowLauncher()
-    private var session: IProov.Session? = null // Store active session from launch
-
-    private fun launchIProov() {
-        val options = IProov.Options()
-        // Here you can customize any iProov options...
-        lifecycleScope.launch(Dispatchers.Default) {
-            session = iProovFlowLauncher.launch(
-                applicationContext,
-                "wss://eu.rp.secure.iproov.me/ws", // Streaming URL
-                "{{ your token here }}", // iProov token
-                options
-            )
+    private fun observeSessionState(session: IProov.Session, whenReady: (() -> Unit)? = null) {
+        sessionStateJob?.cancel()
+        sessionStateJob = lifecycleScope.launch(Dispatchers.IO) {
+            session.state
+                .onSubscription { whenReady?.invoke() }
+                .collect { state ->
+                    //TODO Action on State
+                }
         }
     }
-}
 ```
 
-### IProovCallbackLauncher
-
-#### 1. Create an instance of IProovCallbackLauncher
+Since you might need to cope with configuration changes you can fetch the current Session again this way:
 
 ```kotlin
-val iProovCallbackLauncher: IProovCallbackLauncher = IProovCallbackLauncher()
-```
-
-#### 2. Register a Listener
-
-To monitor the progress of an iProov claim and receive the result, register an `IProovCallbackLauncher.Listener` class by assigning it to `iProovCallbackLauncher.listener = myListener`.
-
-When the listener is no longer required, unregister it by unassigning this way: `iProovCallbackLauncher.listener = null`.
-
-Complete the functions to handle events coming out of the claim.
-
-```kotlin
-class MainActivityCallback : AppCompatActivity() {
-    private val iProovCallbackLauncher = IProovCallbackLauncher()
-    private val listener = object : IProovCallbackLauncher.Listener {
-        override fun onConnecting() {
-            // Called when the SDK is connecting to the server. You could provide an indeterminate
-            // progress indication to let the user know that the connection is being established.
-        }
-
-        override fun onConnected() {
-            // The SDK has connected and the iProov user interface is now displayed. You
-            // could hide any progress indicator at this point.
-        }
-
-        override fun onProcessing(progress: Double, message: String) {
-            // The SDK updates your app with the streaming progress to the server and the user authentication.
-            // Called multiple time as the progress updates. You could update a determinate progress indicator.
-        }
-
-        override fun onSuccess(result: IProov.SuccessResult) {
-            // The user was successfully verified/enrolled.
-            // You must always independently validate the token server-side (using the /validate API call) before performing any authenticated user actions.
-            // The "selfie" frame returned is only available for selected SPs, otherwise null
-        }
-
-        override fun onFailure(result: IProov.FailureResult) {
-            val reason: FailureReason = result.reason
-            // The user was not successfully verified/enrolled as their identity could not be verified.
-            // Or there was another issue with their verification/enrollment.
-            // You might provide feedback to the user as to how to retry.
-            // The "selfie" frame returned is only available for selected SPs, otherwise null
-        }
-
-        override fun onCanceled(canceler: IProov.Canceler) {
-            // Either the user canceled iProov by pressing the Close button at the top right or
-            // the Home button (canceler == USER)
-            // Or the app canceled using Session.cancel() (canceler = APP).
-            // You should use this to determine the next step in your flow.
-        }
-
-        override fun onError(e: IProovException) {
-            // The user was not successfully verified/enrolled due to an error, for example, a lost internet connection.
-            // You can obtain the reason from the reason property. It will be called once or not at all.
-            // You should establish an actionable based on the kind of error preventing claim completion.
-        }
-    }
-
-    // Overrides ----
+class MainActivity : AppCompatActivity() {
+    private var sessionStateJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        iProovCallbackLauncher.listener = listener
-    }
-
-    override fun onDestroy() {
-        iProovCallbackLauncher.listener = null
-        super.onDestroy()
-    }
-}
-```
-
-> ##### Notes:
->
-> * You should register the listener in `Activity.onCreate()`.
-> * You can register only one listener.
-> * Registering the same listener more than once has no effect.
-> * You should unregister a listener in `onDestroy()` when you are finished with it, by setting to `null`.
-> * You should maintain a reference to `iProovCallbackLauncher` whilst you have the listener registered.
-
-
-#### 3. Launch a Claim
-
-Call `iProovCallbackLauncher.launch()` to initiate a claim:
-
-```kotlin
-class MainActivityCallback : AppCompatActivity() {
-    private val iProovCallbackLauncher: IProovCallbackLauncher = IProovCallbackLauncher()
-
-    private fun launchIProov() {
-        val options = IProov.Options()
-        // Here you can customize any iProov options...
-        val session = iProovCallback.launch(
-            this, // Reference to current activity
-            "wss://eu.rp.secure.iproov.me/ws", // Streaming URL
-            "{{ your token here }}", // iProov token
-            options // Optional
-        )
-    }
-}
-```
-
-### Session
-
-A `Session` represents the lifecycle of a single claim. It has:
-
-- `uuid` - this is unique to every session, even those without a token such a `InvalidSession`
-- `token` - this is unique, and when using `IProovFlowLauncher` is can be used to distinguish events of one Session from another
-- `currentState` - the current state of the claim, of the form `IProov.IProovState`, which `IProovFlowLauncher` receives
-- `isActive` - whether the claim is still in progress (another cannot be started if this is true)
-- `cancel()` - this allows the application to abort the claim
-
-As an alternative to keeping the `Session` returned from `launch()`, the current or last `Session` can also be acquired (and canceled) these ways, respectively:
-
-```kotlin
-iProovCallbackLauncher.currentSession()?.cancel()
-```
-or
-
-```kotlin
-scope.launch {
-    iProovFlowLauncher.currentSession()?.cancel()
-}
-```
-
-### UI State (Optional)
-
-This feature was implemented in response to a specific request, but its applicability to other users may not be useful.
-
-To monitor iProov UI lifecycle of a claim and receive the result, you collect from the `iProovFlowLauncher.sessionsUIStates`. Each element of the Flow is an `IProovSessionUIState`.
-
-```kotlin
-private val iProovFlowLauncher: IProovFlowLauncher = IProovFlowLauncher()
-
-// collect the UI states
-iProovFlowLauncher.sessionsUIStates.collect { sessionUIStates ->
-    if (session?.uuid == sessionUIStates?.session?.uuid) {
-        sessionUIStates?.state?.let { state ->
-            when (state) {
-                IProov.IProovUIState.NotStarted -> {
-                    // Called before the iProov user interface is displayed.
-                }
-                IProov.IProovUIState.Started -> {
-                    // Called when the iProov user interface is displayed.
-                }
-                IProov.IProovUIState.Ended -> {
-                    // Called when the iProov user interface is dismissed.
-                }
-            }
+        // In case this activity was recycled during the Session, we reconnect to the current one
+        IProov.session?.let { session ->
+            observeSessionState(session)
         }
     }
 }
 ```
 
-If you intend to use Callback, register an `IProovCallbackLauncher.UIListener` class by assigning it to `iProovCallbackLauncher.uiListener = uiListener`.
-
-When the listener is no longer required, unregister it by unassigning this way: `iProovCallbackLauncher.uiListener = null`.
-
-```kotlin
-private val iProovCallbackLauncher = IProovCallbackLauncher()
-private val uiListener = object : IProovCallbackLauncher.UIListener {
-    override fun onNotStarted() {
-       // Called before the iProov user interface is displayed.
-    }
-
-    override fun onStarted() {
-        // Called when the iProov user interface is displayed.
-    }
-
-    override fun onEnded() {
-        // Called when the iProov user interface is dismissed.
-    }
-}
-
-// assign it to iProovCallbackLauncher.uiListener
-iProovCallbackLauncher.uiListener = uiListener
-
-```
+Of course, using a `ViewModel` would prevent the need for this.
 
 > **Note**: You can [customize]( #customize-the-user-experience) the user experience by passing in an `IProov.Options` object.
 
 > **Warning**:
 >
 > - The iProov process can be manipulated locally by a malicious user therefore never use iProov as a local authentication method. You cannot trust the returned success result to prove that the user was authenticated or enrolled successfully.
-> - You can treat the success callback as a hint to your app to update the user interface but you must always independently validate the token server-side (using the `validate` API call) before performing any authenticated user actions.
+> - You can treat the success state as a hint to your app to update the user interface but you must always independently validate the token server-side (using the `validate` API call) before performing any authenticated user actions.
 
 > **Warning**:
 >
@@ -413,7 +196,7 @@ iProovCallbackLauncher.uiListener = uiListener
 
 ## Customize the User Experience
 
-You can customize the iProov user experience by passing in an instance of `IProov.Options` to the `launch()` function of instances of either `IProovCallbackLauncher` or `IProovFlowLauncher`.
+You can customize the iProov user experience by passing in an instance of `IProov.Options` to the call to `IProov.createSession()`.
 
 > **Note**: The defaults defined support accessibility requirements and have been verified to [comply with WCAG 2.1 AA guidelines](https://www.iproov.com/blog/biometric-authentication-liveness-accessibility-inclusivity-wcag-regulations). Changing any of these could invalidate compliance.
 
@@ -483,10 +266,10 @@ Please note that this approach will require you to maintain and update the certi
 
 The following values are found under `IProov.Options.genuinePresenceAssurance`.
 
-| Option name             | Description                                                                                                                            | Defaults      |
-|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------|---------------|
-| `readyOvalColor`        | Color for oval stroke when in a GPA "ready" state.                                                                                     | `#01AC41`     |
-| `notReadyOvalColor`     | Color for oval stroke when in the GPA "not ready" state.                                                                               | `Color.WHITE` |
+| Option name               | Description                                              | Defaults      |
+|---------------------------|----------------------------------------------------------|---------------|
+| `readyOvalStrokeColor`    | Color for oval stroke when in a GPA "ready" state.       | `#01AC41`     |
+| `notReadyOvalStrokeColor` | Color for oval stroke when in the GPA "not ready" state. | `Color.WHITE` |
 
 ### Liveness Assurance Options
 
@@ -502,16 +285,18 @@ The following values are found under `IProov.Options.livenessPresenceAssurance`.
 
 The SDK ships with support for the following languages:
 
-- English (United States) - `en-US`
-- Dutch - `nl`
-- French - `fr`
-- German - `de`
-- Italian - `it`
-- Portuguese - `pt`
-- Portuguese (Brazil) - `pt-BR`
-- Spanish - `es`
-- Spanish (Columbia) - `es-CO`
-- Welsh - `cy-GB`
+| Language                | Code    |
+|-------------------------|---------|
+| English (United States) | `en-US` |
+| Dutch                   | `nl`    |
+| French                  | `fr`    |
+| German                  | `de`    |
+| Italian                 | `it`    |
+| Portuguese              | `pt`    |
+| Portuguese (Brazil)     | `pt-BR` |
+| Spanish                 | `es`    |
+| Spanish (Columbia)      | `es-CO` |
+| Welsh                   | `cy-GB` |
 
 You can customize the strings in the app or localize them into a different language,
 
@@ -519,51 +304,42 @@ All strings are prefixed with `iproov__` and you can override them in `strings.x
 
 ## Failures and Errors
 
+### Failures
+
 A **failure** occurs when iProov successfully processes a claim but the user's identity cannot be verified.
 
 - The capture was successfully received and processed by the server, which returns a result.
-- The failure results in a `FailureResult`, which includes an enum called `reason` which has the following properties:
+- The failure results in a `FailureResult`, which includes an enum called `FailureReason` which has the following properties:
     - `feedbackCode` - A string representation of the feedback code.
     - `description` - You should present this to the user as it may provide an informative hint for the user to increase their chances of iProoving successfully next time.
 
 An **error** occurs when a capture claim fails completely and iProov is unable to process it. Errors result in an `IProovException`.
 
-#### Genuine Presence Assurance
+The available failure reasons for claims are as follows:
 
-The available failure reasons for Genuine Presence Assurance claims are as follows:
+| `FailureReason` value | `description` (English)                | GPA | LA |
+|-----------------------|----------------------------------------|---|----|
+| `UNKNOWN`             | Try again                              | ✅ | ✅  |
+| `TOO_MUCH_MOVEMENT`   | Keep still                             | ✅ | ⚠️ |
+| `TOO_BRIGHT`          | Move somewhere darker                  | ✅ | ⚠️ |
+| `TOO_DARK`            | Move somewhere brighter                | ✅ | ⚠️ |
+| `MISALIGNED_FACE`     | Keep your face in the oval             | ✅ | ❌  |
+| `EYES_CLOSED`         | Keep your eyes open                    | ✅ | ⚠️ |
+| `FACE_TOO_FAR`        | Move your face closer to the screen    | ✅ | ❌  |
+| `FACE_TOO_CLOSE`      | Move your face farther from the screen | ✅ | ❌  |
+| `SUNGLASSES`          | Remove sunglasses                      | ✅ | ⚠️ |
+| `OBSCURED_FACE`       | Remove any face coverings              | ✅ | ❌  |
+| `MULTIPLE_FACES`      | Ensure only one person is visible      | ⚠️ | ⚠️ |
 
-| Enum value          | `description` (English)                |
-|---------------------|----------------------------------------|
-| `UNKNOWN`           | Try again                              |
-| `TOO_MUCH_MOVEMENT` | Keep still                             |
-| `TOO_BRIGHT`        | Move somewhere darker                  |
-| `TOO_DARK`          | Move somewhere brighter                |
-| `MISALIGNED_FACE`   | Keep your face in the oval             |
-| `EYES_CLOSED`       | Keep your eyes open                    |
-| `FACE_TOO_FAR`      | Move your face closer to the screen    |
-| `FACE_TOO_CLOSE`    | Move your face farther from the screen |
-| `SUNGLASSES`        | Remove sunglasses                      |
-| `OBSCURED_FACE`     | Remove any face coverings              |
+Key: ✅ = will be returned, ❌ = will not be returned, ⚠️ = may be returned in the future
 
-#### Liveness Assurance
+These are not an indication of tests being performed but only whether reasons of failure are reported.
 
-The available failure reasons for Liveness Assurance claims are as follows:
+### Errors
 
-| Enum value        | `description` (English)                |
-|-------------------|----------------------------------------|
-| `UNKNOWN`         | Try again                              |
-| `TOO_BRIGHT`      | Move somewhere darker                  |
-| `TOO_DARK`        | Move somewhere brighter                |
-| `EYES_CLOSED`     | Keep your eyes open                    |
-| `MULTIPLE_FACES`  | Ensure only one person is visible      |
-| `SUNGLASSES`      | Remove sunglasses                      |
-| `OBSCURED_FACE`   | Remove any face coverings              |
+An **error** occurs when an iProov claim cannot be processed completely, in which case one of the following `IProovException` classes will be surfaced:
 
-### IProovException subclasses
-
-In the event of an error, one of the following `IProovException` classes will be surfaced:
-
-| Exception subclass                | Further details                                                                                                                                                                                |
+| Exception subclass                | Further details                                                                                                                                                                            |
 |-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `MultiWindowUnsupportedException` | The user attempted to iProov in split-screen/multi-screen mode, which is not supported.                                                                                                    |
 | `CaptureAlreadyActiveException`   | An existing iProov capture is already in progress. Wait until the current capture completes before starting a new one.                                                                     |
@@ -576,7 +352,6 @@ In the event of an error, one of the following `IProovException` classes will be
 | `UnsupportedDeviceException`      | The device is not supported, for example, does not have a front-facing camera.                                                                                                             |
 | `InvalidOptionsException`         | An error occurred when trying to apply the options you specified.                                                                                                                          |
 
-
 ## Example Project
 
 For a simple iProov experience that is ready to run out-of-the-box, see the example project on [GitHub](https://github.com/iProov/android/tree/master/example-app):
@@ -584,8 +359,6 @@ For a simple iProov experience that is ready to run out-of-the-box, see the exam
 1. Open the `example-app` project in Android Studio.
 
 2. Open the `Constants.kt` file and insert your API Key and Secret at the relevant points.
-
-3. Choose between `callback` (`IProovCallbackLauncher`) and `flows` (`IProovFlowLauncher`) variants by changing the build variant in Android Studio.
 
 > **Warning**: The example app uses the [Android API Client](https://github.com/iProov/android-api-client) to directly fetch tokens on-device, which is insecure. Production implementations of iProov should always obtain tokens securely from a server-to-server call.
 

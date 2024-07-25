@@ -6,9 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.json.jsonDeserializer
 import com.iproov.androidapiclient.AssuranceType
@@ -16,22 +14,23 @@ import com.iproov.androidapiclient.ClaimType
 import com.iproov.androidapiclient.DemonstrationPurposesOnly
 import com.iproov.androidapiclient.kotlinfuel.ApiClientFuel
 import com.iproov.example.databinding.ActivityMainBinding
-import com.iproov.sdk.IProov
-import com.iproov.sdk.IProovFlowLauncher
+import com.iproov.sdk.api.IProov
+import com.iproov.sdk.api.exception.SessionCannotBeStartedTwiceException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivityFlows : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
     private lateinit var binding: ActivityMainBinding
-    private val iProov = IProovFlowLauncher()
-    private var session: IProov.Session? = null
+    private var sessionStateJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,53 +66,60 @@ class MainActivityFlows : AppCompatActivity() {
             }
         }
 
-        binding.versionTextView.text = getString(R.string.kotlin_version_format, iProov.sdkVersion)
+        binding.versionTextView.text = getString(R.string.kotlin_version_format, IProov.sdkVersion)
 
-        lifecycleScope.launch(Dispatchers.Default) {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                iProov.sessionsStates.collect { sessionState: IProov.IProovSessionState? ->
+        // In case this activity was recycled during the Session, we reconnect to the current one
+        IProov.session?.let { session ->
+            observeSessionState(session)
+        }
+    }
 
-                    if (session?.uuid == sessionState?.session?.uuid) {
-                        sessionState?.state?.let { state ->
-                            withContext(Dispatchers.Main) {
-                                when (state) {
-                                    is IProov.IProovState.Connecting ->
-                                        binding.progressBar.isIndeterminate =
-                                            true
-
-                                    is IProov.IProovState.Connected ->
-                                        binding.progressBar.isIndeterminate =
-                                            false
-
-                                    is IProov.IProovState.Processing ->
-                                        binding.progressBar.progress =
-                                            state.progress.times(100).toInt()
-
-                                    is IProov.IProovState.Success -> onResult(
-                                        getString(R.string.success),
-                                        "",
-                                    )
-
-                                    is IProov.IProovState.Failure -> onResult(
-                                        state.failureResult.reason.feedbackCode,
-                                        getString(state.failureResult.reason.description),
-                                    )
-
-                                    is IProov.IProovState.Error -> onResult(
-                                        getString(R.string.error),
-                                        state.exception.localizedMessage,
-                                    )
-
-                                    is IProov.IProovState.Canceled -> onResult(
-                                        getString(R.string.canceled),
-                                        null,
-                                    )
+    private fun observeSessionState(session: IProov.Session, whenReady: (() -> Unit)? = null) {
+        sessionStateJob?.cancel()
+        sessionStateJob = lifecycleScope.launch(Dispatchers.IO) {
+            session.state
+                .onSubscription { whenReady?.invoke() }
+                .collect { state ->
+                    if (sessionStateJob?.isActive == true) {
+                        withContext(Dispatchers.Main) {
+                            when (state) {
+                                is IProov.State.Starting -> {
                                 }
+                                is IProov.State.Connecting ->
+                                    binding.progressBar.isIndeterminate =
+                                        true
+
+                                is IProov.State.Connected ->
+                                    binding.progressBar.isIndeterminate =
+                                        false
+
+                                is IProov.State.Processing ->
+                                    binding.progressBar.progress =
+                                        state.progress.times(100).toInt()
+
+                                is IProov.State.Success -> onResult(
+                                    getString(R.string.success),
+                                    "",
+                                )
+
+                                is IProov.State.Failure -> onResult(
+                                    state.failureResult.reason.feedbackCode,
+                                    getString(state.failureResult.reason.description),
+                                )
+
+                                is IProov.State.Error -> onResult(
+                                    getString(R.string.error),
+                                    state.exception.localizedMessage,
+                                )
+
+                                is IProov.State.Canceled -> onResult(
+                                    getString(R.string.canceled),
+                                    null,
+                                )
                             }
                         }
                     }
                 }
-            }
         }
     }
 
@@ -143,9 +149,7 @@ class MainActivityFlows : AppCompatActivity() {
                 )
 
                 if (!job.isActive) return@launch
-                launch(Dispatchers.Default) {
-                    session = iProov.launch(applicationContext, Constants.BASE_URL, token, IProov.Options())
-                }
+                startScan(token)
             } catch (ex: Exception) {
                 withContext(Dispatchers.Main) {
                     ex.printStackTrace()
@@ -161,11 +165,21 @@ class MainActivityFlows : AppCompatActivity() {
         }
     }
 
+    @Throws(SessionCannotBeStartedTwiceException::class)
+    private fun startScan(token: String) {
+        IProov.createSession(applicationContext, Constants.BASE_URL, token).let { session ->
+            // Observe first, then start
+            observeSessionState(session) {
+                session.start()
+            }
+        }
+    }
+
     private fun onResult(title: String?, resultMessage: String?) {
         binding.progressBar.progress = 0
         binding.progressBar.visibility = View.GONE
 
-        AlertDialog.Builder(this@MainActivityFlows)
+        AlertDialog.Builder(this@MainActivity)
             .setTitle(title)
             .setMessage(resultMessage)
             .setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.cancel() }

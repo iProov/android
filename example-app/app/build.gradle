@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-ext.iproovSdkVersion = "9.1.1"
+ext.iproovSdkVersion = "10.0.0"
 
 android {
     namespace "com.iproov.example"
@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.iproov.example"
-        minSdk 21
+        minSdk 26
         targetSdkVersion 34
         versionCode 1
         versionName '1.0.0'
@@ -41,20 +41,6 @@ android {
 
     buildFeatures {
         viewBinding true
-    }
-
-    flavorDimensions = ["impl"]
-
-    productFlavors {
-        callback {
-            dimension "impl"
-            applicationIdSuffix ".callback"
-        }
-
-        flows {
-            dimension "impl"
-            applicationIdSuffix ".flows"
-        }
     }
 }
 
