@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v10.0.0
+# iProov Android Biometrics SDK v10.0.1
 
 ## Contents of this Package
 
@@ -60,7 +60,7 @@ Alternatively, in `settings.gradle` if you have opted to use `dependencyResoluti
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:10.0.0')
+        implementation('com.iproov.sdk:iproov:10.0.1')
     }
     ```
 
