@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v10.0.1
+# iProov Android Biometrics SDK v10.0.2
 
 ## Contents of this Package
 
@@ -60,7 +60,7 @@ Alternatively, in `settings.gradle` if you have opted to use `dependencyResoluti
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:10.0.1')
+        implementation('com.iproov.sdk:iproov:10.0.2')
     }
     ```
 
@@ -351,6 +351,7 @@ An **error** occurs when an iProov claim cannot be processed completely, in whic
 | `NetworkException`                | An error occurred with communications to the server. Typically indicates a device connectivity issue, for example, the user's session has timed out or the internet service has been lost. |
 | `UnsupportedDeviceException`      | The device is not supported, for example, does not have a front-facing camera.                                                                                                             |
 | `InvalidOptionsException`         | An error occurred when trying to apply the options you specified.                                                                                                                          |
+| `ConsentRequiredException`        | The user has not granted consent.                                                                                                                                                          |
 
 ## Example Project
 
