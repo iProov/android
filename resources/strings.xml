@@ -43,6 +43,8 @@
   <string name="iproov__prompt_get_ready">Get ready…</string>
   <string name="iproov__prompt_hold_still">Hold still</string>
   <string name="iproov__prompt_liveness_scan_completed">Scan completed</string>
+  <string name="iproov__prompt_move_down">Move down</string>
+  <string name="iproov__prompt_move_up">Move up</string>
   <string name="iproov__prompt_too_bright">Go somewhere shadier</string>
   <string name="iproov__prompt_too_close">Too close</string>
   <string name="iproov__prompt_too_far">Move closer</string>
