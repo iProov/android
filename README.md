@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v10.1.0
+# iProov Android Biometrics SDK v10.2.0
 
 ## Contents of this Package
 
@@ -60,7 +60,7 @@ Alternatively, in `settings.gradle` if you have opted to use `dependencyResoluti
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:10.1.0')
+        implementation('com.iproov.sdk:iproov:10.2.0')
     }
     ```
 
@@ -364,6 +364,18 @@ For a simple iProov experience that is ready to run out-of-the-box, see the exam
 2. Open the `Constants.kt` file and insert your API Key and Secret at the relevant points.
 
 > **Warning**: The example app uses the [Android API Client](https://github.com/iProov/android-api-client) to directly fetch tokens on-device, which is insecure. Production implementations of iProov should always obtain tokens securely from a server-to-server call.
+
+## Protobuf Libraries
+
+Google provides two variants of their Protobuf Java library: `protobuf-java` (full) and `protobuf-javalite` (lite). These cannot coexist.
+
+They strongly recommend using the lite version for mobile applications, thus the standard version of the iProov SDK has the lite variant as a dependency.
+
+That said, there are libraries that app developers need, which have dependencies on the full variant, so the app developers are forced to exclude the lite version and rely on the full version to avoid class conflicts that break the build.
+
+To support app developers that find they must use the full variant, we now publish our own variant that has only the full protobuf as a dependency.
+
+To use that just add `"-pf"` to the end of the iProov SDK version name e.g. `10.1.0` -> `10.1.0-pf`.
 
 ## Additional Documentation
 

@@ -3,12 +3,24 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-ext.iproovSdkVersion = "10.1.0"
+ext.iproovSdkVersion = "10.2.0"
 
 android {
     namespace "com.iproov.example"
 
     compileSdk 34
+
+    flavorDimensions += "protobuf"
+    productFlavors {
+        create("lite") {
+            dimension = "protobuf"
+            isDefault = true
+        }
+
+        create("full") {
+            dimension = "protobuf"
+        }
+    }
 
     defaultConfig {
         applicationId "com.iproov.example"
