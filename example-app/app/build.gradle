@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-ext.iproovSdkVersion = "10.2.0"
+ext.iproovSdkVersion = "10.2.1"
 
 android {
     namespace "com.iproov.example"

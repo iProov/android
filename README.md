@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v10.2.0
+# iProov Android Biometrics SDK v10.2.1
 
 ## Contents of this Package
 
@@ -31,6 +31,7 @@ iProov also supports [iOS](https://github.com/iproov/ios), [Xamarin](https://git
 - `minSdkVersion` API Level 26 (Android 8) and above
 - Compilation target, build tools, and Android compatibility libraries must be API level 31 or above
 - AndroidX
+- Camera and Internet permissions (defined in the manifest) - Camera permission will be requested and handled by this SDK, if needed
 
 ## Upgrading from Earlier Versions
 
@@ -60,7 +61,7 @@ Alternatively, in `settings.gradle` if you have opted to use `dependencyResoluti
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:10.2.0')
+        implementation('com.iproov.sdk:iproov:10.2.1')
     }
     ```
 
