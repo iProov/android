@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v10.2.1
+# iProov Android Biometrics SDK v10.3.0
 
 ## Contents of this Package
 
@@ -61,7 +61,7 @@ Alternatively, in `settings.gradle` if you have opted to use `dependencyResoluti
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:10.2.1')
+        implementation('com.iproov.sdk:iproov:10.3.0')
     }
     ```
 
@@ -111,8 +111,8 @@ Initially, the scan will begin with `IProov.State.Starting`, then it moves to `I
 
 IProov's four terminal states are as follows:
 
-- `IProov.State.Success` - providing a `IProov.SuccessResult` (can contain a selfie frame, if set up for your account)
-- `IProov.State.Failure` - providing a `IProov.FailureResult` (contains a reason code; can contain a selfie frame, if set up for your account)
+- `IProov.State.Success` - providing a `IProov.SuccessResult` (frame is deprecated and will be null)
+- `IProov.State.Failure` - providing a `IProov.FailureResult` (contains a reason code; frame is deprecated and will be null)
 - `IProov.State.Canceled` - providing a value indicating whether the `IProov.Canceler.USER` hit the back button or otherwise moved away from the app, or the `IProov.Session` was canceled by the `IProov.Canceler.INTEGRATION` i.e. the app called `IProov.Session.cancel()`
 - `IProov.State.Error` - providing an `IProovException` subclass indicating the cause of the error that prevented the claim from being completed
 
