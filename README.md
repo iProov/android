@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Android Biometrics SDK v10.3.0
+# iProov Biometric Authentication SDK for Android v10.3.1
 
 ## Contents of this Package
 
@@ -14,16 +14,27 @@ The framework package is provided via this GitHub repository, which contains:
 
 ## Introduction
 
-This guide describes how to integrate iProov biometric assurance technologies into your Android app.
+This guide describes how to integrate iProov biometric assurance technologies into your Android app, or SDK.
 
-iProov offers Genuine Presence Assurance™ technology (also known as "Dynamic Liveness") and Liveness Assurance™ technology (also known as "Express Liveness"):
+iProov offers two powerful authentication solutions:
 
-* [**Genuine Presence Assurance**](https://www.iproov.com/iproov-system/technology/genuine-presence-assurance) verifies that an online remote user is the right person, a real person and that they are authenticating right now, for purposes of access control and security.
-* [**Liveness Assurance**](https://www.iproov.com/iproov-system/technology/liveness-assurance) verifies a remote online user is the right person and a real person for access control and security.
+* **Dynamic Liveness™** technology (our **Genuine Presence Assurance™** solution) verifies that an online remote user is the right person, a real person, and that they are authenticating right now, for purposes of access control and security.
+* **Express Liveness™** technology (our **Liveness Assurance™** solution) verifies that a remote online user is the right person and a real person for access control and security.
 
-Find out more about how to use iProov in your user journeys in the [Implementation Guide](https://docs.iproov.com/docs/Content/ImplementationGuide/implementation-intro.htm).
+### Software Download & Installation
 
-iProov also supports [iOS](https://github.com/iproov/ios), [Xamarin](https://github.com/iproov/xamarin), [Flutter](https://github.com/iproov/flutter), [React Native](https://github.com/iproov/react-native), and [Web](https://github.com/iProov/web).
+The iProov SDK can be downloaded and installed directly into your Android application, or incorporated into your own SDK.
+
+Our downloadable software components implementing **Dynamic Liveness™** and **Express Liveness™** technologies integrate seamlessly with your existing user journeys.
+
+### Web Services & API Access
+
+In addition to our downloadable software components, iProov provides identity authentication services through our secure API and web-based administration portal.
+These services enable organizations to implement **Dynamic Liveness™** and **Express Liveness™** verification capabilities across their digital platforms.
+
+Find out more about how to use iProov in your user journeys in the [Implementation Guide](https://docs.iproov.com/implementation_A-Z/architecutre_overview).
+
+iProov also supports [iOS](https://github.com/iproov/ios), [Flutter](https://github.com/iproov/flutter), [MAUI](https://github.com/iProov/dotnet-maui), [React Native](https://github.com/iproov/react-native), and [Web](https://github.com/iProov/web).
 
 ## Requirements
 
@@ -61,7 +72,7 @@ Alternatively, in `settings.gradle` if you have opted to use `dependencyResoluti
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:10.3.0')
+        implementation('com.iproov.sdk:iproov:10.3.1')
     }
     ```
 
@@ -272,6 +283,7 @@ The following values are found under `IProov.Options.genuinePresenceAssurance`.
 | `readyOvalStrokeColor`    | Color for oval stroke when in a GPA "ready" state.       | `#01AC41`     |
 | `notReadyOvalStrokeColor` | Color for oval stroke when in the GPA "not ready" state. | `Color.WHITE` |
 | `controlYPosition`        | Whether to control y position of the face showing prompts. | `false`       |
+| `scanningPrompts`         | Show a prompt 'Scanning' during GPA scan.<br/>Show a prompt 'Scan Completed' after GPA scan completes. | `false`       |
 
 
 ### Liveness Assurance Options
