@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Biometric Authentication SDK for Android v10.3.2
+# iProov Biometric Authentication SDK for Android v10.4.0
 
 ## Contents of this Package
 
@@ -72,7 +72,7 @@ Alternatively, in `settings.gradle` if you have opted to use `dependencyResoluti
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:10.3.2')
+        implementation('com.iproov.sdk:iproov:10.4.0')
     }
     ```
 
@@ -278,11 +278,12 @@ Please note that this approach will require you to maintain and update the certi
 
 The following values are found under `IProov.Options.genuinePresenceAssurance`.
 
-| Option name               | Description                                              | Defaults      |
-|---------------------------|----------------------------------------------------------|---------------|
-| `readyOvalStrokeColor`    | Color for oval stroke when in a GPA "ready" state.       | `#01AC41`     |
-| `notReadyOvalStrokeColor` | Color for oval stroke when in the GPA "not ready" state. | `Color.WHITE` |
-| `controlYPosition`        | Whether to control y position of the face showing prompts. | `false`       |
+| Option name               | Description                                                                                            | Defaults      |
+|---------------------------|--------------------------------------------------------------------------------------------------------|---------------|
+| `readyOvalStrokeColor`    | Color for oval stroke when in a GPA "ready" state.                                                     | `#01AC41`     |
+| `notReadyOvalStrokeColor` | Color for oval stroke when in the GPA "not ready" state.                                               | `Color.WHITE` |
+| `controlYPosition`        | Whether to control y position of the face showing prompts.                                             | `false`       |
+| `controlXPosition`        | Whether to control x position of the face showing prompts.                                             | `false`       |
 | `scanningPrompts`         | Show a prompt 'Scanning' during GPA scan.<br/>Show a prompt 'Scan Completed' after GPA scan completes. | `false`       |
 
 
