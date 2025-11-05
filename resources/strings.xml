@@ -9,7 +9,6 @@
   <string name="iproov__error_capture_already_active">An existing capture is already in progress</string>
   <string name="iproov__error_consent_required">You cannot use iProov unless you grant consent</string>
   <string name="iproov__error_device_not_supported">Device is not supported</string>
-  <string name="iproov__error_face_detector">Face detector error</string>
   <string name="iproov__error_invalid_options">Invalid iProov options</string>
   <string name="iproov__error_listener_not_registered">Before calling IProov.launch(), you should register a listener with IProov.registerListener()</string>
   <string name="iproov__error_multi_window_mode_unsupported">Application is in multi-window mode</string>
@@ -19,17 +18,32 @@
   <string name="iproov__error_session_cannot_be_started_twice">A Session cannot be started twice</string>
   <string name="iproov__error_unexpected_error">Unexpected error</string>
   <string name="iproov__error_user_timeout">Try again</string>
-  <string name="iproov__failure_eyes_closed">Keep your eyes open</string>
+  //old UFCs - remove
   <string name="iproov__failure_face_too_close">Move your face farther from the screen</string>
   <string name="iproov__failure_face_too_far">Move your face closer to the screen</string>
   <string name="iproov__failure_misaligned_face">Keep your face in the oval</string>
-  <string name="iproov__failure_multiple_faces">Ensure only one person is visible</string>
-  <string name="iproov__failure_obscured_face">Remove any face coverings</string>
   <string name="iproov__failure_sunglasses">Remove sunglasses</string>
   <string name="iproov__failure_too_bright">Move somewhere darker</string>
   <string name="iproov__failure_too_dark">Move somewhere brighter</string>
   <string name="iproov__failure_too_much_movement">Keep still</string>
   <string name="iproov__failure_unknown">Try again</string>
+  //new UFCs - keep
+  <string name="iproov__failure_system_error">System error.</string>
+  <string name="iproov__failure_lighting_issues">Make sure your face is well lit and free from glare.</string>
+  <string name="iproov__failure_face_not_found">Align your face in the oval and then try to keep still.</string>
+  <string name="iproov__failure_timeout">System timeout.</string>
+  <string name="iproov__failure_obscured_face">Make sure your whole face is visible and remove any accessories that might cover your face.</string>
+  <string name="iproov__failure_multiple_faces">Ensure only one person is visible.</string>
+  <string name="iproov__failure_eyewear">Remove your eyewear.</string>
+  <string name="iproov__failure_device_issue">Try a different device.</string>
+  <string name="iproov__failure_rejected">Transaction could not be completed.</string>
+  <string name="iproov__failure_background_issue">Move to a different location with a neutral background.</string>
+  <string name="iproov__failure_eyes_closed">Make sure your eyes are open.</string>
+  <string name="iproov__failure_motion_issue">Try a different device.</string>
+  <string name="iproov__failure_device_restart">Please restart your device and try again.</string>
+  <string name="iproov__failure_frames_blurry">Align your face in the oval and then try to keep still. Please try again.</string>
+  <string name="iproov__failure_user_not_found">Transaction could not be completed.</string>
+  <string name="iproov__failure_processing_fault">Please try again.</string>
   <string name="iproov__language_file">en</string>
   <string name="iproov__progress_assessing_genuine_presence">Assessing genuine presence…</string>
   <string name="iproov__progress_assessing_liveness">Assessing liveness…</string>

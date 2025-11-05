@@ -102,10 +102,16 @@ class MainActivity : AppCompatActivity() {
                                     "",
                                 )
 
-                                is IProov.State.Failure -> onResult(
-                                    state.failureResult.reason.feedbackCode,
-                                    getString(state.failureResult.reason.description),
-                                )
+                                is IProov.State.Failure -> {
+                                    val descriptions = state.failureResult.reasons.joinToString(separator = "\n") { it ->
+                                        getString(it.description)
+                                    }
+                                    val feedbacCodes = state.failureResult.reasons.joinToString(separator = ", ") { it -> it.feedbackCode }
+                                    onResult(
+                                        feedbacCodes,
+                                        descriptions,
+                                    )
+                                }
 
                                 is IProov.State.Error -> onResult(
                                     getString(R.string.error),

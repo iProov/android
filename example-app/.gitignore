@@ -36,19 +36,7 @@ captures/
 
 # IntelliJ
 *.iml
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/gradle.xml
-.idea/assetWizardSettings.xml
-.idea/dictionaries
-.idea/libraries
-.idea/caches
-.idea/encodings.xml
-.idea/modules.xml
-.idea/android.iml
-.idea/vcs.xml
-.idea/misc.xml
-.idea/compiler.xml
+.idea/*
 
 # Keystore files
 # Uncomment the following line if you do not want to check your keystore files in.
