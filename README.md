@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Face SDK for Android v11.0.0
+# iProov Face SDK for Android v11.1.0
 
 ## Contents of this Package
 
@@ -74,7 +74,7 @@ Alternatively, in `settings.gradle` if you have opted to use `dependencyResoluti
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:11.0.0')
+        implementation('com.iproov.sdk:iproov:11.1.0')
     }
     ```
 

@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-ext.iproovSdkVersion = "11.0.0"
+ext.iproovSdkVersion = "11.1.0"
 
 android {
     namespace "com.iproov.example"
@@ -22,6 +22,7 @@ android {
         }
     }
 
+    // For 16KB alignment of C libs until move to Gradle 8
     packagingOptions {
         jniLibs {
             useLegacyPackaging true
