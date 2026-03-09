@@ -1,0 +1,23 @@
+[versions]
+minSdk = "26"
+compileSdk = "34"
+targetSdk = "34"
+
+agp = "8.2.0"
+kotlin = "1.8.10"
+iproovSDK = "11.1.1"
+appcompat = "1.3.1"
+androidLifecycle = "2.2.0"
+androidxConstraintlayout = "2.1.4"
+fuel = "3.0.0"
+
+[libraries]
+iproov-sdk = { group = "com.iproov.sdk", name = "iproov", version.ref = "iproovSDK" }
+androidX-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+android-constraint-layout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidxConstraintlayout" }
+kotlin-fuel = { group = "com.iproov.android-api-client", name = "kotlin-fuel", version.ref = "fuel" }
+android-lifecycle = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidLifecycle" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

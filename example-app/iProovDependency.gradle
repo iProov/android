@@ -1,3 +1,0 @@
-project.dependencies.ext.iproovDep = {
-    "com.iproov.sdk:iproov:${ext.iproovSdkVersion}"
-}
