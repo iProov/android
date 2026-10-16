@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Face SDK for Android v11.1.1
+# iProov Face SDK for Android v12.0.0
 
 ## Contents of this Package
 
@@ -39,12 +39,16 @@ iProov also supports [iOS](https://github.com/iproov/ios), [Flutter](https://git
 ## Requirements
 
 - Android Studio
-- `minSdkVersion` API Level 26 (Android 8) and above
-- Kotlin 1.8.10 or above
-- JVM Target of 18 or above
+- `minSdk` API Level 29 (Android 10) and above
+- Kotlin 2.0.21 or above
+- JVM Target of 17 or above
 - Compilation target, build tools, and Android compatibility libraries must be API level 31 or above
 - AndroidX
 - Camera and Internet permissions (defined in the manifest) - Camera permission will be requested and handled by this SDK, if needed
+
+### Firebase Cloud Firestore
+
+Firestore versions before 27.0.0 depend on `protolite-well-known-types`, which contains its own copy of `com.google.protobuf.DescriptorProtos`. `protobuf-javalite` 4.27.0 and later contain the same class, so the build fails with `Duplicate class com.google.protobuf.DescriptorProtos`. To fix this, upgrade to Firestore 27.0.0 or later, or force `protobuf-javalite` 3.25.8, which the standard iProov SDK also supports. The `-pf` SDK requires `protobuf-java` 4.33.5 or later.
 
 ## Upgrading from Earlier Versions
 
@@ -74,7 +78,7 @@ Alternatively, in `settings.gradle` if you have opted to use `dependencyResoluti
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:11.1.1')
+        implementation('com.iproov.sdk:iproov:12.0.0')
     }
     ```
 
@@ -82,9 +86,17 @@ Alternatively, in `settings.gradle` if you have opted to use `dependencyResoluti
 
 > **TIP:** When testing development, using debuggable apps, iProov can provide "development" SPs for you to use.
 
-## Get Started
+## Getting Started
 
-To enrol (register) or verify (login) a user, follow the steps below.
+The overall process is summarised as follows:
+
+1. Get a token (in production this will be server to server, for dev and testing without a server use the Api Client)
+2. Create a `Session` (with `Options`), then call `start()` on it
+3. Receive a `StateFlow` of `State` telling you how the scan progresses and ends, which can be one of:
+   a. Success (Scan was Complete, result was positive)
+   b. Failure (Scan was Complete, result was negative)
+   c. Canceled (by USER moving away, or INTEGRATOR calling `Session.cancel()`)
+   d. Error (Scan was incomplete)
 
 ### Get a Token
 
@@ -95,9 +107,9 @@ Obtain these tokens:
 
 See the [REST API documentation](https://secure.iproov.me/docs.html) for details about how to generate tokens.
 
-> **TIP:** In a production app you typically obtain tokens via a server-to-server back-end call. For demos and testing, iProov provides Kotlin and Java sample code for obtaining tokens via [iProov API v2](https://eu.rp.secure.iproov.me/docs.html) with our open-source [Android API Client](https://github.com/iProov/android-api-client).
+> ** ⚠️WARNING ** In a production app you should obtain tokens via a server-to-server back-end call. For demos and testing, iProov provides Kotlin and Java sample code for obtaining tokens via [iProov API v2](https://eu.rp.secure.iproov.me/docs.html) with our open-source [Android API Client](https://github.com/iProov/android-api-client).
 
-### Create a Session
+### Create and Start a Session
 
 For each scan, you need an `IProov.Session`, which you can then call `IProov.Session.start()` when you are ready to start (but only once).
 
@@ -126,8 +138,8 @@ Initially, the scan will begin with `IProov.State.Starting`, then it moves to `I
 
 IProov's four terminal states are as follows:
 
-- `IProov.State.Success` - providing a `IProov.SuccessResult` (frame is deprecated and will be null)
-- `IProov.State.Failure` - providing a `IProov.FailureResult` (contains a reason code; frame is deprecated and will be null)
+- `IProov.State.Success`
+- `IProov.State.Failure` - providing a `List<IProov.FailureReason>`
 - `IProov.State.Canceled` - providing a value indicating whether the `IProov.Canceler.USER` hit the back button or otherwise moved away from the app, or the `IProov.Session` was canceled by the `IProov.Canceler.INTEGRATION` i.e. the app called `IProov.Session.cancel()`
 - `IProov.State.Error` - providing an `IProovException` subclass indicating the cause of the error that prevented the claim from being completed
 
@@ -151,6 +163,10 @@ Two possible errors at this point to be aware of:
 
 1. `session.start()` might cause an `IProov.State.Error` in the Flow, containing a `CaptureAlreadyActiveException`. This is caused if a previous `IProov.Session.start()` has yet to complete. You will need to create a new `Session` to try again.
 2. `session.start()` might throw a `SessionCannotBeStartedTwiceException`. This is caused if `IProov.Session.start()` is called twice on the same session, no matter the outcome of the first call (a new session is always required).
+
+### Canceling a Session
+
+The app can call `session.cancel()` at any time, whether or not `session.start()` has been called. Repeatedly calling `cancel()` is idempotent. If the session has not been started it will no longer be available to start. Cancel always results in an `isFinal` state, probably `IProov.State.Canceled(IProov.Canceler.INTEGRATION)`.
 
 ### Examples
 
@@ -225,7 +241,7 @@ The following values are found at the top level of `IProov.Options`:
 | `title`                  | The custom title displayed during a claim scan.                                                                                                                                                                                                                                                                                                                                          | `""` (Empty string)                         |
 | `titleTextColor`         | The color of the text in the title.                                                                                                                                                                                                                                                                                                                                                      | `Color.WHITE`                               |
 | `headerBackgroundColor`  | The background color of the header bar.                                                                                                                                                                                                                                                                                                                                                  | `Transparent`                               |
-| `filter`                 | The filter applied to the camera preview as either `LineDrawingFilter` or `NaturalFilter`. With `NaturalFilter` in LA, `surroundColor` will be opaque on the new rounded mask area.                                                                                                                                                                                                      | `LineDrawingFilter()`                       |
+| `filter`                 | The filter applied to the camera preview as either `LineDrawingFilter` or `NaturalFilter`. With `NaturalFilter` in LA, `surroundColor` will be opaque on the new rounded mask area.                                                                                                                                                                                                      | `NaturalFilter()`                           |
 | `surroundColor`          | The color of the area outside the guideline oval. With Clear and Blur natural filters in LA, this colour will be fully opaque on the new rounded mask area.                                                                                                                                                                                                                              | `#66000000`                                 |
 | `font`                   | Optional custom font for the title and prompt as either `PathFont` or `ResourceFont`.                                                                                                                                                                                                                                                                                                    | `null`                                      |
 | `logo`                   | Optional custom logo in the header as `BitmapIcon`, `DrawableIcon` or `ResourceIcon`.                                                                                                                                                                                                                                                                                                    | `null`                                      |
@@ -237,7 +253,7 @@ The following values are found at the top level of `IProov.Options`:
 | `disableExteriorEffects` | Optionally disable blur and vignette outside the oval.                                                                                                                                                                                                                                                                                                                                   | `false`                                     |
 | `certificates`           | Certificates to be passed as a string (the certificate's Subject Public Key Info as SHA-256 hash).<br /> See [below](#certificate-pinning) for more information                                               | iProov Server Certificates                  |
 | `timeoutSecs`            | The WebSocket streaming timeout in seconds. To disable timeout, set to 0.                                                                                                                                                                                                                                                                                                                | `10`                                        |
-| `orientation`            | Set the orientation of the iProov activity. Possible values are (`PORTRAIT`, `REVERSE_PORTRAIT`, `LANDSCAPE` or `REVERSE_LANDSCAPE`.<br />**Note**: This option rotates the UI, not the camera. Supports USB cameras on `LANDSCAPE` displays, such as tablets and kiosks, where the camera is oriented normally. For Liveness Assurance, LANDSCAPE and REVERSE_LANDSCAPE is not allowed. | `PORTRAIT`                                  |
+
 
 #### Certificate Pinning
 
@@ -280,6 +296,17 @@ The following values are found under `IProov.Options.genuinePresenceAssurance`.
 | `controlYPosition`        | Whether to control y position of the face showing prompts.                                             | `false`       |
 | `controlXPosition`        | Whether to control x position of the face showing prompts.                                             | `false`       |
 | `scanningPrompts`         | Show a prompt 'Scanning' during GPA scan.<br/>Show a prompt 'Scan Completed' after GPA scan completes. | `false`       |
+| `accessibility`           | Controls to improve conditions to support visually challenged users                                    | (data class)  |
+
+#### Accessibility Options
+
+The follow options are available for Dynamic (genuinePresenceAssurance) only. They can be used together in any combinations to assist users who are visually challenged to align their face for a scan to start.
+
+| Option name          | Description                                 | Defaults |
+|----------------------|---------------------------------------------|----------|
+| `isVibrationEnabled` | Add progressive vibration to the experience | false    |
+| `isSoundEnabled`     | Add progressive sound to the experience     | false    |
+| `isColorEnabled`     | Add progressive color to the experience     | false    |
 
 
 ### Liveness Assurance Options
@@ -320,42 +347,45 @@ All strings are prefixed with `iproov__` and you can override them in your `stri
 A **failure** occurs when iProov successfully processes a claim but the user's identity cannot be verified.
 
 - The capture was successfully received and processed by the server, which returns a result.
-- The failure results in a `FailureResult`, which contains a property named `reasons` that is a list of `FailureReason`. A `FailureReason` is an enum which has the following properties:
+- The failure provides a `reasons` property, which is a list of `FailureReason`. There can be up to three provided. A `FailureReason` is an enum which has the following properties:
     - `feedbackCode` - A string representation of the feedback code.
     - `description` - You should present this to the user as it may provide an informative hint for the user to increase their chances of iProoving successfully next time.
 
-An **error** occurs when a capture claim fails completely and iProov is unable to process it. Errors result in an `IProovException`.
-
 The available failure reasons for claims are as follows:
 
-| `FailureReason` value | `description` (English)                | GPA | LA |
-|-----------------------|----------------------------------------|---|---|
-| `UNKNOWN`             | Try again                              | ✅ | ❌ |
-| `TOO_MUCH_MOVEMENT`   | Keep still                             | ✅ | ❌ |
-| `TOO_BRIGHT`          | Move somewhere darker                  | ✅ | ❌ |
-| `TOO_DARK`            | Move somewhere brighter                | ✅ | ❌ |
-| `MISALIGNED_FACE`     | Keep your face in the oval             | ✅ | ❌ |
-| `FACE_TOO_FAR`        | Move your face closer to the screen    | ✅ | ❌ |
-| `FACE_TOO_CLOSE`      | Move your face farther from the screen | ✅ | ❌ |
-| `SUNGLASSES`          | Remove sunglasses                      | ✅ | ❌ |
-| `OBSCURED_FACE`       | Remove any face coverings              | ✅ | ✅ |
-| `EYES_CLOSED`         | Keep your eyes open                    | ✅ | ✅ |
-| `MULTIPLE_FACES`      | Ensure only one person is visible      | ✅️ | ✅️ |
-| `BACKGROUND_ISSUE`    | Move to a different location with a neutral background. | ⚠️ | ✅ |
-| `DEVICE_ISSUE`        | Try a different device. | ⚠️ | ✅ |
-| `EYEWEAR`             | Remove your eyewear. | ⚠️ | ✅ |
-| `FACE_NOT_FOUND`      | Align your face in the oval and then try to keep still. | ⚠️ | ✅ |
-| `FRAMES_BLURRY`       | Align your face in the oval and then try to keep still. Please try again. | ⚠️ | ✅ |
-| `MOTION_ISSUE`        | Try a different device. | ⚠️ | ✅ |
-| `LIGHTING_ISSUES`     | Make sure your face is well lit and free from glare. | ⚠️ | ✅ |
-| `REJECTED`            | Transaction could not be completed. | ⚠️ | ✅ |
-| `SYSTEM_ERROR`        | System error. | ⚠️ | ✅ |
-| `TIMEOUT`             | System timeout. | ⚠️ | ✅ |
-| `USER_NOT_FOUND`      | Transaction could not be completed. | ⚠️ | ✅ |
-| `DEVICE_RESTART`      | Please restart your device and try again. | ⚠️ | ✅ |
-| `PROCESSING_FAULT`    | Please try again. | ⚠️ | ✅ |
+| `FailureReason` value | `description` (English)                                                   |
+|-----------------------|---------------------------------------------------------------------------|
+| `SYSTEM_ERROR`        | System error.                                                             |
+| `LIGHTING_ISSUES`     | Make sure your face is well lit and free from glare.                      |
+| `FACE_NOT_FOUND`      | Align your face in the oval and then try to keep still.                   |
+| `TIMEOUT`             | System timeout.                                                           |
+| `EYEWEAR`             | Remove your eyewear.                                                      |
+| `DEVICE_ISSUE`        | Try a different device.                                                   |
+| `REJECTED`            | Transaction could not be completed.                                       |
+| `BACKGROUND_ISSUE`    | Move to a different location with a neutral background.                   |
+| `MOTION_ISSUE`        | Try a different device.                                                   |
+| `DEVICE_RESTART`      | Please restart your device and try again.                                 |
+| `FRAMES_BLURRY`       | Align your face in the oval and then try to keep still. Please try again. |
+| `USER_NOT_FOUND`      | Transaction could not be completed.                                       |
+| `PROCESSING_FAULT`    | Please try again.                                                         |
 
-Key: ✅ = will be returned, ❌ = will not be returned, ⚠️ = may be returned in the future
+Our legacy codes below, may be returned in some scenarios (e.g. older SDKs /  features not yet enabled for your service provider)
+
+|  `FailureReason` value | `description` (English)                                                                    | GPA | LA |
+|------------------------|--------------------------------------------------------------------------------------------|---|---|
+| `UNKNOWN`              | Try again                                                                                  | ✅ | ❌ |
+| `TOO_MUCH_MOVEMENT`    | Keep still                                                                                 | ✅ | ❌ |
+| `TOO_BRIGHT`           | Move somewhere darker                                                                      | ✅ | ❌ |
+| `TOO_DARK`             | Move somewhere brighter                                                                    | ✅ | ❌ |
+| `MISALIGNED_FACE`      | Keep your face in the oval                                                                 | ✅ | ❌ |
+| `FACE_TOO_FAR`         | Move your face closer to the screen                                                        | ✅ | ❌ |
+| `FACE_TOO_CLOSE`       | Move your face farther from the screen                                                     | ✅ | ❌ |
+| `SUNGLASSES`           | Remove sunglasses                                                                          | ✅ | ❌ |
+| `OBSCURED_FACE`        | Make sure your whole face is visible and remove any accessories that might cover your face | ✅ | ✅ |
+| `EYES_CLOSED`          | Make sure your eyes are open                                                               | ✅ | ✅ |
+| `MULTIPLE_FACES`       | Ensure only one person is visible                                                          | ✅️ | ✅️ |
+
+Key: ✅ = will be returned, ❌ = will not be returned
 
 These are not an indication of tests being performed but only whether reasons of failure are reported.
 
@@ -372,7 +402,9 @@ An **error** occurs when an iProov claim cannot be processed completely, in whic
 | `UnexpectedErrorException`        | An unrecoverable error occurred during the transaction.                                                                                                                                    |
 | `ServerException`                 | The token was invalidated server-side or some other unrecoverable server error occurred.                                                                                                   |
 | `NetworkException`                | An error occurred with communications to the server. Typically indicates a device connectivity issue, for example, the user's session has timed out or the internet service has been lost. |
-| `UnsupportedDeviceException`      | The device is not supported, for example, does not have a front-facing camera.                                                                                                             |
+| `UnsupportedDeviceException`      | The device is not supported, for example, does not have a front-facing camera. Do not retry.                                                                                               |
+| `UnsupportedOSVersionException`   | The operating system version is not supported. Do not retry.                                                                                                                               |
+| `UnsupportedSDKVersionException`  | The SDK version is not supported. Do not retry.                                                                                                                                            |
 | `InvalidOptionsException`         | An error occurred when trying to apply the options you specified.                                                                                                                          |
 | `ConsentRequiredException`        | The user has not granted consent. For iProov internal use only. You can safely ignore.                                                                                                     |
 

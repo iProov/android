@@ -9,6 +9,8 @@
   <string name="iproov__error_capture_already_active">An existing capture is already in progress</string>
   <string name="iproov__error_consent_required">You cannot use iProov unless you grant consent</string>
   <string name="iproov__error_device_not_supported">Device is not supported</string>
+  <string name="iproov__error_os_version_not_supported">Operating system version is not supported</string>
+  <string name="iproov__error_sdk_version_not_supported">SDK version is not supported</string>
   <string name="iproov__error_invalid_options">Invalid iProov options</string>
   <string name="iproov__error_listener_not_registered">Before calling IProov.launch(), you should register a listener with IProov.registerListener()</string>
   <string name="iproov__error_multi_window_mode_unsupported">Application is in multi-window mode</string>

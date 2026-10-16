@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.json.jsonDeserializer
@@ -20,7 +22,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,6 +41,19 @@ class MainActivity : AppCompatActivity() {
 
         if (Constants.API_KEY.isEmpty() || Constants.SECRET.isEmpty()) {
             throw IllegalStateException("You must set the API_KEY and SECRET values in the Constants.kt file!")
+        }
+
+        val rootLayout = binding.root
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { view, windowInsets ->
+            // Extract the sizes of the system bars (status + navigation bars)
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            // Apply the insets as padding to your view
+            view.setPadding(insets.left, insets.top, insets.right, insets.bottom)
+
+            // Return CONSUMED if you don't want child views to also react to these insets
+            WindowInsetsCompat.CONSUMED
         }
 
         arrayOf(binding.enrolGpaButton, binding.verifyLaButton, binding.verifyGpaButton).forEach { it ->
@@ -103,12 +117,10 @@ class MainActivity : AppCompatActivity() {
                                 )
 
                                 is IProov.State.Failure -> {
-                                    val descriptions = state.failureResult.reasons.joinToString(separator = "\n") { it ->
-                                        getString(it.description)
-                                    }
-                                    val feedbacCodes = state.failureResult.reasons.joinToString(separator = ", ") { it -> it.feedbackCode }
+                                    val descriptions = state.reasons.joinToString(separator = "\n") { getString(it.description) }
+                                    val feedbackCodes = state.reasons.joinToString(separator = ", ") { it.feedbackCode }
                                     onResult(
-                                        feedbacCodes,
+                                        feedbackCodes,
                                         descriptions,
                                     )
                                 }
