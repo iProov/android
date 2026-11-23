@@ -41,7 +41,7 @@
   <string name="iproov__failure_rejected">Transaction could not be completed.</string>
   <string name="iproov__failure_background_issue">Move to a different location with a neutral background.</string>
   <string name="iproov__failure_eyes_closed">Make sure your eyes are open.</string>
-  <string name="iproov__failure_motion_issue">Try a different device.</string>
+  <string name="iproov__failure_motion_issue">Align your face in the oval and then try to keep still.</string>
   <string name="iproov__failure_device_restart">Please restart your device and try again.</string>
   <string name="iproov__failure_frames_blurry">Align your face in the oval and then try to keep still. Please try again.</string>
   <string name="iproov__failure_user_not_found">Transaction could not be completed.</string>

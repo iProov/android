@@ -1,7 +1,7 @@
 
 ![iProov: Flexible authentication for identity assurance](images/banner.jpg)
 
-# iProov Face SDK for Android v12.0.0
+# iProov Face SDK for Android v12.1.0
 
 ## Contents of this Package
 
@@ -78,7 +78,7 @@ Alternatively, in `settings.gradle` if you have opted to use `dependencyResoluti
 
     ```groovy
     dependencies {
-        implementation('com.iproov.sdk:iproov:12.0.0')
+        implementation('com.iproov.sdk:iproov:12.1.0')
     }
     ```
 
@@ -363,7 +363,7 @@ The available failure reasons for claims are as follows:
 | `DEVICE_ISSUE`        | Try a different device.                                                   |
 | `REJECTED`            | Transaction could not be completed.                                       |
 | `BACKGROUND_ISSUE`    | Move to a different location with a neutral background.                   |
-| `MOTION_ISSUE`        | Try a different device.                                                   |
+| `MOTION_ISSUE`        | Align your face in the oval and then try to keep still.                   |
 | `DEVICE_RESTART`      | Please restart your device and try again.                                 |
 | `FRAMES_BLURRY`       | Align your face in the oval and then try to keep still. Please try again. |
 | `USER_NOT_FOUND`      | Transaction could not be completed.                                       |
